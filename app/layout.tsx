@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import { SITE } from "@/content/site";
 import { MotionProvider } from "@/lib/animations/MotionProvider";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -31,7 +33,17 @@ export default function RootLayout({
       className={`${fraunces.variable} ${inter.variable} grain h-full antialiased`}
     >
       <body suppressHydrationWarning className="flex min-h-full flex-col">
-        <MotionProvider>{children}</MotionProvider>
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-cream focus:px-4 focus:py-2 focus:font-sans focus:text-sm focus:text-stage"
+        >
+          Skip to content
+        </a>
+        <MotionProvider>
+          <Header />
+          {children}
+          <Footer />
+        </MotionProvider>
       </body>
     </html>
   );
