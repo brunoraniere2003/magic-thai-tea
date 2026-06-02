@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Design tokens — single source of truth (see docs/blueprint.md §1)
+   ============================================================ */
+@theme {
+  /* Stage (base) */
+  --color-stage: #0b0a09; /* deep warm black — the stage */
+  --color-cream: #f4efe6; /* primary text */
+  --color-stone: #a39b8e; /* secondary text */
+
+  /* Magic */
+  --color-ember: #ff5e1a;
+  --color-gold: #e0a040;
+  --color-crimson: #3a0e08;
+
+  /* Tea */
+  --color-tea: #6e8b6a;
+  --color-amber: #c99a4e;
+  --color-tea-cream: #ede3d0;
+
+  /* Tai Chi */
+  --color-mist: #9daab2;
+  --color-ink: #14110f;
+  --color-jade: #afc4b4;
+}
+
+/* Fonts bound to the CSS variables injected by next/font */
+@theme inline {
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+}
+
+html {
+  background-color: var(--color-stage);
+  color: var(--color-cream);
+}
+
+body {
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Film grain — cheap, CSS-only cinematic texture (applied via .grain) */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Respect users who ask for less motion (WCAG / constitution §4) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

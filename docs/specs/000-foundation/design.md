@@ -1,5 +1,7 @@
 # Spec 000 — Foundation · Design
 
+> **Ajustes na execução** (ver `../../adr/0001-foundation-stack.md`): gerenciador **npm** no lugar de pnpm; tokens via **`@theme`** em `app/globals.css` (Tailwind v4 CSS-first). Versões: Next 16.2.7, React 19.2.4, Tailwind v4, Vitest 4, Playwright 1.6.
+
 ## Abordagem
 Gerar o projeto com `create-next-app` (App Router + TypeScript + Tailwind + ESLint) e **adaptar** à árvore do blueprint (sem `src/` — `app/` na raiz). Adicionar tooling de qualidade e testes, tokens como fonte única, e CI. Nada além da fundação.
 

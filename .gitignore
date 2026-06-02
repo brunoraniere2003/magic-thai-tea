@@ -10,6 +10,7 @@ build/
 dist/
 *.tsbuildinfo
 next-env.d.ts
+.vercel
 
 # === Environment & secrets (NEVER commit) ===
 .env
