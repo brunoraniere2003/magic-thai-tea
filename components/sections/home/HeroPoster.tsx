@@ -1,17 +1,26 @@
+import Image from "next/image";
+
 /**
- * Static, beautiful fallback behind the Hero — and the default for
- * reduced-motion / low-tier devices. Purely decorative, so aria-hidden.
- * (The reactive fluid in Camada B layers on top of this same look.)
+ * Static background behind the Hero — and the default for reduced-motion /
+ * low-tier devices and mobile. A placeholder atmospheric image, darkened for
+ * legibility, with a warm glow. The reactive fluid (Camada B) layers on top.
+ * Purely decorative → aria-hidden.
  */
 export function HeroPoster() {
   return (
     <div aria-hidden className="absolute inset-0 bg-stage">
-      {/* warm ember glow rising from the bottom (magic) */}
-      <div className="absolute inset-0 bg-[radial-gradient(120%_85%_at_50%_125%,rgba(255,94,26,0.20),transparent_60%)]" />
-      {/* soft gold halo from the top */}
-      <div className="absolute inset-0 bg-[radial-gradient(85%_60%_at_50%_-10%,rgba(224,160,64,0.12),transparent_55%)]" />
-      {/* deep vignette to seat the stage */}
-      <div className="absolute inset-0 bg-[radial-gradient(100%_100%_at_50%_50%,transparent_55%,rgba(0,0,0,0.55))]" />
+      <Image
+        src="/images/hero-bg.jpg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover opacity-60"
+      />
+      {/* darken for text legibility */}
+      <div className="absolute inset-0 bg-gradient-to-t from-stage via-stage/55 to-stage/75" />
+      {/* warm ember glow rising from the bottom */}
+      <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_125%,rgba(255,94,26,0.16),transparent_60%)]" />
     </div>
   );
 }

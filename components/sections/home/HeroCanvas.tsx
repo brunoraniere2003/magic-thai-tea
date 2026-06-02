@@ -8,8 +8,9 @@ import WebGLFluidEnhanced from "webgl-fluid-enhanced";
  * webgl-fluid-enhanced. GPU-bound; gated to high-tier devices by <Hero>
  * and paused when scrolled out of view. Decorative only → aria-hidden.
  *
- * We drive the splats ourselves from window pointer events so the effect
- * works regardless of stacking/pointer-events (the content sits on top).
+ * We drive the splats ourselves from window pointer events. The library
+ * normalises X by canvas.width (device px) but Y by canvas.clientHeight
+ * (CSS px), so X must be scaled by devicePixelRatio and Y must not.
  */
 export function HeroCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -22,28 +23,26 @@ export function HeroCanvas() {
     simulation.setConfig({
       simResolution: 128,
       dyeResolution: 1024,
-      densityDissipation: 2.6,
-      velocityDissipation: 1.8,
+      densityDissipation: 3.4,
+      velocityDissipation: 2.2,
       pressure: 0.8,
-      curl: 12,
-      splatRadius: 0.2,
-      splatForce: 6000,
+      curl: 9,
+      splatRadius: 0.08, // small, delicate trail
+      splatForce: 4500,
       shading: true,
       colorful: false,
       colorPalette: ["#ff6a1a", "#e0a040", "#c9762e", "#ffb347"],
       hover: false, // we drive the splats ourselves (below)
       transparent: true,
-      brightness: 0.5,
+      brightness: 0.4,
       bloom: true,
-      bloomIntensity: 0.5,
+      bloomIntensity: 0.4,
       sunrays: false,
     });
     simulation.start();
-    // A few splats on load so there is life before the pointer moves.
-    simulation.multipleSplats(6);
+    // A couple of small splats so there's a hint of life before moving.
+    simulation.multipleSplats(2);
 
-    // Drive splats from real pointer movement, listening on window so it
-    // works even though the content layer sits above the canvas.
     let lastX = 0;
     let lastY = 0;
     let seeded = false;
@@ -54,7 +53,9 @@ export function HeroCanvas() {
         const dx = x - lastX;
         const dy = y - lastY;
         if (Math.abs(dx) + Math.abs(dy) > 2) {
-          simulation.splatAtLocation(x, y, dx * 8, dy * 8);
+          const dpr = window.devicePixelRatio || 1;
+          // X scaled by dpr (canvas.width is device px); Y left as CSS px.
+          simulation.splatAtLocation(x * dpr, y, dx * 5, dy * 5);
         }
       }
       lastX = x;
@@ -63,7 +64,7 @@ export function HeroCanvas() {
     };
     window.addEventListener("pointermove", onPointerMove, { passive: true });
 
-    // Pause the simulation while the Hero is scrolled out of view.
+    // Pause while scrolled out of view.
     let running = true;
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -86,8 +87,6 @@ export function HeroCanvas() {
     };
   }, []);
 
-  // Outer wrapper stays absolute (out of flow); the library mutates the
-  // inner container's style (position/display), so we isolate it here.
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
       <div ref={containerRef} className="h-full w-full" />
