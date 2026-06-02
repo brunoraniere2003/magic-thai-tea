@@ -16,7 +16,7 @@ vi.mock("@/components/motion", () => {
   }) {
     return <Tag className={className}>{children}</Tag>;
   }
-  return { Stagger: Pass, Reveal: Pass, SplitReveal: Pass };
+  return { Stagger: Pass, Reveal: Pass, SplitReveal: Pass, Parallax: Pass };
 });
 
 // next/link → plain anchor (no router needed in unit tests).

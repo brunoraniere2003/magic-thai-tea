@@ -1,6 +1,6 @@
 "use client";
 
-import { Stagger } from "@/components/motion";
+import { Stagger, Parallax } from "@/components/motion";
 
 export interface HowItWorksStep {
   title: string;
@@ -17,9 +17,13 @@ export function HowItWorks({ steps }: HowItWorksProps) {
     <Stagger as="ol" className="grid gap-8 sm:grid-cols-3">
       {steps.map((step, index) => (
         <li key={step.title} className="flex flex-col gap-3">
-          <span className="font-display text-4xl text-gold/80">
+          <Parallax
+            as="span"
+            speed={-22}
+            className="block font-display text-5xl text-gold/80"
+          >
             {String(index + 1).padStart(2, "0")}
-          </span>
+          </Parallax>
           <h3 className="font-display text-xl text-cream">{step.title}</h3>
           <p className="font-sans text-sm leading-relaxed text-stone">
             {step.description}

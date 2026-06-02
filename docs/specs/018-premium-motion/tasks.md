@@ -9,11 +9,12 @@
 - [x] Bônus: `Reveal`/`Stagger` robustos (`onEnter`) — revelam em âncora/refresh (corrige bug).
 
 ## T3 — Tríptico que revela 🟡 _(R5)_
-- [x] Hover rico (elevação + borda/glow na cor do mundo).
-- [ ] Pin+scrub (desktop) "trava e revela um mundo de cada vez".
+- [x] Reveal em cascata dramático (stagger) + hover rico (elevação + borda/glow na cor do mundo).
+- [ ] "Trava e revela" (pin/sticky+scrub) — **adiado**: conflito ScrollTrigger×Lenis (pin não reserva espaço → sobreposição; scrub não atualiza confiável). Revisitar c/ `normalizeScroll`/scrollerProxy, ou nas landings.
 
-## T4 — Profundidade & micro-interações ⏳ _(R6)_
-- [ ] Parallax (imagem do Hero ao rolar, números do `Process`); foco nos campos do form.
+## T4 — Profundidade & micro-interações 🟡 _(R6)_
+- [x] Parallax nos números gigantes do `Process`.
+- [ ] (Opcional) parallax na imagem do Hero; foco nos campos do form.
 
 ## T5 — Fechamento ⏳ _(R7)_
 - [x] lint+typecheck+test+build+e2e verdes; ADR 0004.

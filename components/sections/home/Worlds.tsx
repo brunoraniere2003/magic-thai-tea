@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Stagger } from "@/components/motion";
 import { SectionHeading } from "@/components/shared";
@@ -21,7 +23,11 @@ const accents: Record<WorldKey, { eyebrow: string; hover: string }> = {
   },
 };
 
-/** The three-worlds triptych — the centerpiece of the Home. */
+/**
+ * The three-worlds triptych — the centerpiece. The worlds reveal one after
+ * another (dramatic stagger) as the row enters view; on a wide screen each card
+ * lifts and lights up in its world's color on hover. Static under reduced motion.
+ */
 export function Worlds() {
   return (
     <section
@@ -34,7 +40,13 @@ export function Worlds() {
         align="center"
         className="mx-auto mb-14 max-w-2xl"
       />
-      <Stagger as="ul" className="grid gap-6 lg:grid-cols-3">
+      <Stagger
+        as="ul"
+        stagger={0.18}
+        y={36}
+        duration={0.9}
+        className="grid gap-6 lg:grid-cols-3"
+      >
         {HOME.worlds.map((world) => (
           <li key={world.key}>
             <Link

@@ -20,4 +20,4 @@ O "wow" da Home vem de coreografia de scroll + tipografia + hover, não de mais 
 
 ## Consequências
 - Hero touch: ponteiro mapeado pela caixa do canvas (`getBoundingClientRect`) → segue o dedo mesmo rolado; não dispara fora da Hero.
-- Pendente nesta spec: pin "trava e revela" do tríptico (R5) + parallax de profundidade e micro-interações (R6).
+- Tríptico (R5): o "trava e revela" foi tentado de 2 formas — `ScrollTrigger pin` (não reserva o pin-spacer com Lenis → o conteúdo seguinte sobrepõe) e `position: sticky` + scrub (o scrub não atualiza de forma confiável com o Lenis). **Adiado:** entregue como reveal em cascata dramático + hover (estável). Revisitar com `ScrollTrigger.normalizeScroll()` / scrollerProxy do Lenis, ou nas landings (menos conteúdo abaixo). Parallax (R6): números do `Process` via `Parallax`.
