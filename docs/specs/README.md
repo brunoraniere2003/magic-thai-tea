@@ -15,7 +15,7 @@ Fluxo: escrever spec → **revisão do dono** → implementar em TDD → PR.
 | 005 | section-primitives | ✅ done | 002 |
 | 006 | shared-blocks | ✅ done | 004, 005 |
 | 007 | fluid-signature-tea | ⚪ planned | 001, 003 |
-| 008 | home-page | ⚪ planned | 004–007 |
+| 008 | home-page | ✅ done | 004–006 |
 | 009 | particles-signature-magic | ⚪ planned | 002, 003 |
 | 010 | ink-signature-taichi | ⚪ planned | 002, 003 |
 | 011 | signatures-integration | ⚪ planned | 007, 009, 010 |

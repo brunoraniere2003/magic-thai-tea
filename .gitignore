@@ -31,6 +31,9 @@ test-results/
 .idea/
 *.pem
 
+# === Local tooling (preview launch config) ===
+.claude/
+
 # === Logs ===
 *.log
 npm-debug.log*
