@@ -25,7 +25,7 @@ Fluxo: escrever spec → **revisão do dono** → implementar em TDD → PR.
 | 015 | support-pages | ⚪ planned | 004, 006 |
 | 016 | seo-analytics-compliance | ⚪ planned | 004, 015 |
 | 017 | perf-a11y-launch | ⚪ planned | TODAS |
-| 018 | premium-motion | 🟡 in progress | 001, 004, 005, 008 |
+| 018 | premium-motion | ✅ done | 001, 004, 005, 008 |
 
 **Caminho crítico:** `000 → 002/003 → 001 → 004/005/006 → 007 → 008`; em paralelo `009/010 → 011 → 012/013/014`; depois `015/016 → 017`.
 
