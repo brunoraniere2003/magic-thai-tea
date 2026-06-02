@@ -7,10 +7,10 @@ Fluxo: escrever spec → **revisão do dono** → implementar em TDD → PR.
 
 | # | Spec | Status | Depende de |
 |---|---|---|---|
-| 000 | foundation | 🔵 in review | — |
-| 002 | motion-core | ⚪ planned | 000 |
-| 003 | adaptive-runtime | ⚪ planned | 000 |
-| 001 | hero | ⚪ planned | 000, 002, 003 |
+| 000 | foundation | ✅ done | — |
+| 002 | motion-core | ⚪ planned (adiado p/ a Home) | 000 |
+| 003 | adaptive-runtime | ✅ done | 000 |
+| 001 | hero | ✅ done | 000, 003 |
 | 004 | layout-shell | ⚪ planned | 000, 003 |
 | 005 | section-primitives | ⚪ planned | 002 |
 | 006 | shared-blocks | ⚪ planned | 004, 005 |

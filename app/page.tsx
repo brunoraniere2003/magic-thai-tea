@@ -1,13 +1,9 @@
-import { HeroContent } from "@/components/sections/home/HeroContent";
-import { HeroPoster } from "@/components/sections/home/HeroPoster";
+import { Hero } from "@/components/sections/home/Hero";
 
 export default function Home() {
   return (
     <main className="relative flex flex-1 flex-col">
-      <section className="relative flex min-h-screen flex-col overflow-hidden">
-        <HeroPoster />
-        <HeroContent />
-      </section>
+      <Hero />
     </main>
   );
 }

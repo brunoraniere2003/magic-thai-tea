@@ -10,17 +10,23 @@
 - [x] Pôster estático (palco + brilho de brasa/dourado), `aria-hidden`.
 
 ### A3 — Integração na page ✅ _(R1, R4)_
-- [x] `app/page.tsx` monta a seção Hero (poster + content). Verificado em desktop (1440×900) e mobile.
+- [x] Seção Hero (poster + content). Verificado em desktop (1440×900) e mobile.
 
-## Camada B — Fumaça (o wow) ⏳ em andamento
-### B1 — Worker + solver Pavel _(R2)_
-- [ ] Porta do fluid (MIT, manter copyright). Teste: contrato de mensagens + smoke.
-### B2 — Hero client + gating _(R2, R3)_
-- [ ] `Hero` decide Canvas vs Poster (hooks + feature-detect). Teste unit do gating.
-### B3 — HeroCanvas _(R2, R4)_
-- [ ] `dynamic ssr:false`; `transferControlToOffscreen`; ponteiro→worker (throttle rAF).
-### B4 — Perf + a11y _(R4, R5)_
-- [ ] perf-budget gate; golden do pôster; e2e CLS~0 + axe AA.
+## Camada B — Fumaça (o wow) ✅
+### B1 — Solver Pavel (webgl-fluid-enhanced) ✅ _(R2)_
+- [x] Solver integrado (MIT), paleta dourada, splat baixo, transparente.
 
-## Fechamento
-- [ ] lint + typecheck + test + e2e + build verdes; changelog; merge.
+### B2 — Hero client + gating ✅ _(R2, R3)_
+- [x] `Hero` decide fumaça vs pôster (`shouldAnimateHero` + hooks + feature-detect). Teste unit do gating (4 casos).
+
+### B3 — HeroCanvas ✅ _(R2, R4)_
+- [x] `dynamic ssr:false`; pausa via IntersectionObserver quando oculto. Invólucro externo isola o container da lib (corrige layout).
+
+### B4 — Perf + a11y 🔸 parcial (resto → Fase H)
+- [x] As 3 proteções (gating + reduzir-movimento + pausa-quando-oculto) + canvas `aria-hidden`.
+- [ ] Golden screenshot + axe AA automatizado + auditoria CWV → Fase H (hardening/launch).
+
+## Fechamento ✅
+- [x] lint + typecheck + test (19/19) + e2e + build verdes.
+- [x] Changelog + ADR 0002.
+- [ ] Merge `feat/001-hero` → `main`.
