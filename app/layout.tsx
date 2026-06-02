@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import { SITE } from "@/content/site";
+import { MotionProvider } from "@/lib/animations/MotionProvider";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -30,7 +31,7 @@ export default function RootLayout({
       className={`${fraunces.variable} ${inter.variable} grain h-full antialiased`}
     >
       <body suppressHydrationWarning className="flex min-h-full flex-col">
-        {children}
+        <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
   );
