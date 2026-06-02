@@ -1,5 +1,6 @@
 "use client";
 
+import { createElement } from "react";
 import type { ElementType, HTMLAttributes, ReactNode } from "react";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { useDeviceTier } from "@/lib/hooks/useDeviceTier";
@@ -47,9 +48,5 @@ export function Parallax({
     { enabled: shouldDriveOnScroll({ reducedMotion, tier }) && !disabled },
   );
 
-  return (
-    <Tag ref={ref} {...rest}>
-      {children}
-    </Tag>
-  );
+  return createElement(Tag, { ref, ...rest }, children);
 }

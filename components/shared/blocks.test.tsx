@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, fireEvent } from "@testing-library/react";
-import type { ElementType, ReactNode } from "react";
+import { createElement, type ElementType, type ReactNode } from "react";
 
 // Motion primitives render as plain passthrough wrappers in unit tests
 // (their gating/animation is covered by primitives.test.tsx).
@@ -14,7 +14,7 @@ vi.mock("@/components/motion", () => {
     as?: ElementType;
     className?: string;
   }) {
-    return <Tag className={className}>{children}</Tag>;
+    return createElement(Tag, { className }, children);
   }
   return { Stagger: Pass, Reveal: Pass, SplitReveal: Pass, Parallax: Pass };
 });

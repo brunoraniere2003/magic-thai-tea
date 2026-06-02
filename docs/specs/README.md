@@ -27,7 +27,7 @@ Fluxo: escrever spec → **revisão do dono** → implementar em TDD → PR.
 | 017 | perf-a11y-launch | ⚪ planned | TODAS |
 | 018 | premium-motion | ✅ done | 001, 004, 005, 008 |
 | 019 | immersive-home (epic) | ✅ done | 018 |
-| 020 | webgl-runtime | ⚪ planned | 002, 003, 019 |
+| 020 | webgl-runtime | ✅ done | 002, 003, 019 |
 | 021 | card-deck-worlds | ⚪ planned | 020 |
 | 022 | growing-video-reel | ⚪ planned | 020 |
 | 023 | magic-curtain | ⚪ planned | 020, 022 |

@@ -31,3 +31,22 @@ export function shouldDriveOnScroll({
 }: DriveModeInput): boolean {
   return !reducedMotion && tier === "high";
 }
+
+export interface Render3DInput {
+  reducedMotion: boolean;
+  tier: DeviceTier;
+  webglSupported: boolean;
+}
+
+/**
+ * Heavy 3D (Three.js) runs ONLY on a capable device WITH WebGL and no
+ * reduced-motion request — otherwise the static poster (the default) is shown.
+ * Mirrors `shouldAnimateHero`; this is the gate for the whole 3D runtime.
+ */
+export function shouldRender3D({
+  reducedMotion,
+  tier,
+  webglSupported,
+}: Render3DInput): boolean {
+  return tier === "high" && !reducedMotion && webglSupported;
+}

@@ -1,5 +1,6 @@
 "use client";
 
+import { createElement } from "react";
 import type { ElementType, HTMLAttributes, ReactNode } from "react";
 import { useSplitReveal } from "@/lib/animations/useSplitReveal";
 
@@ -16,9 +17,5 @@ export interface SplitRevealProps extends HTMLAttributes<HTMLElement> {
 export function SplitReveal({ children, as, ...rest }: SplitRevealProps) {
   const Tag = (as ?? "h2") as ElementType;
   const ref = useSplitReveal<HTMLElement>();
-  return (
-    <Tag ref={ref} {...rest}>
-      {children}
-    </Tag>
-  );
+  return createElement(Tag, { ref, ...rest }, children);
 }

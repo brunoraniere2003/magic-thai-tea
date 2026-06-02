@@ -1,5 +1,6 @@
 "use client";
 
+import { createElement } from "react";
 import type { ElementType, HTMLAttributes, ReactNode } from "react";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { shouldRevealOnScroll } from "@/lib/animations/scrollAnimationMode";
@@ -57,9 +58,5 @@ export function Reveal({
     { enabled: shouldRevealOnScroll({ reducedMotion }) },
   );
 
-  return (
-    <Tag ref={ref} {...rest}>
-      {children}
-    </Tag>
-  );
+  return createElement(Tag, { ref, ...rest }, children);
 }
