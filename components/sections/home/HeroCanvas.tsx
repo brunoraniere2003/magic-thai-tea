@@ -52,26 +52,46 @@ export function HeroCanvas() {
     let lastY = 0;
     let seeded = false;
 
+    // Map the pointer to the canvas's own box so the splat lands under the
+    // finger/cursor even after the page has scrolled. Returns null when the
+    // pointer is outside the Hero (so other sections never trigger splats).
+    const toCanvas = (
+      event: PointerEvent,
+    ): { x: number; y: number } | null => {
+      const rect = container.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      if (x < 0 || y < 0 || x > rect.width || y > rect.height) return null;
+      return { x, y };
+    };
+
     const onPointerMove = (event: PointerEvent) => {
-      const x = event.clientX;
-      const y = event.clientY;
-      if (seeded) {
-        const dx = x - lastX;
-        const dy = y - lastY;
-        if (Math.abs(dx) + Math.abs(dy) > 2) splatAt(x, y, dx * 5, dy * 5);
+      const point = toCanvas(event);
+      if (!point) {
+        seeded = false; // pointer left the Hero — restart tracking on return
+        return;
       }
-      lastX = x;
-      lastY = y;
+      if (seeded) {
+        const dx = point.x - lastX;
+        const dy = point.y - lastY;
+        if (Math.abs(dx) + Math.abs(dy) > 2) {
+          splatAt(point.x, point.y, dx * 5, dy * 5);
+        }
+      }
+      lastX = point.x;
+      lastY = point.y;
       seeded = true;
     };
 
     // On press/touch-start: reset tracking (so a new touch elsewhere doesn't
     // fire one huge cross-screen splat) and a gentle puff where it lands.
     const onPointerDown = (event: PointerEvent) => {
-      lastX = event.clientX;
-      lastY = event.clientY;
+      const point = toCanvas(event);
+      if (!point) return;
+      lastX = point.x;
+      lastY = point.y;
       seeded = true;
-      splatAt(event.clientX, event.clientY, 0, -60);
+      splatAt(point.x, point.y, 0, -60);
     };
 
     window.addEventListener("pointermove", onPointerMove, { passive: true });
