@@ -7,6 +7,9 @@ import WebGLFluidEnhanced from "webgl-fluid-enhanced";
  * The reactive fluid layer — Pavel Dobryakov's WebGL fluid (MIT), via
  * webgl-fluid-enhanced. GPU-bound; gated to high-tier devices by <Hero>
  * and paused when scrolled out of view. Decorative only → aria-hidden.
+ *
+ * We drive the splats ourselves from window pointer events so the effect
+ * works regardless of stacking/pointer-events (the content sits on top).
  */
 export function HeroCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -28,14 +31,37 @@ export function HeroCanvas() {
       shading: true,
       colorful: false,
       colorPalette: ["#ff6a1a", "#e0a040", "#c9762e", "#ffb347"],
-      hover: true,
+      hover: false, // we drive the splats ourselves (below)
       transparent: true,
       brightness: 0.5,
       bloom: true,
-      bloomIntensity: 0.55,
+      bloomIntensity: 0.5,
       sunrays: false,
     });
     simulation.start();
+    // A few splats on load so there is life before the pointer moves.
+    simulation.multipleSplats(6);
+
+    // Drive splats from real pointer movement, listening on window so it
+    // works even though the content layer sits above the canvas.
+    let lastX = 0;
+    let lastY = 0;
+    let seeded = false;
+    const onPointerMove = (event: PointerEvent) => {
+      const x = event.clientX;
+      const y = event.clientY;
+      if (seeded) {
+        const dx = x - lastX;
+        const dy = y - lastY;
+        if (Math.abs(dx) + Math.abs(dy) > 2) {
+          simulation.splatAtLocation(x, y, dx * 8, dy * 8);
+        }
+      }
+      lastX = x;
+      lastY = y;
+      seeded = true;
+    };
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
 
     // Pause the simulation while the Hero is scrolled out of view.
     let running = true;
@@ -54,6 +80,7 @@ export function HeroCanvas() {
     observer.observe(container);
 
     return () => {
+      window.removeEventListener("pointermove", onPointerMove);
       observer.disconnect();
       simulation.stop();
     };
