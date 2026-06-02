@@ -9,14 +9,14 @@ export function Contact() {
       id="contact"
       className="mx-auto max-w-3xl scroll-mt-24 px-6 py-24 sm:py-32"
     >
+      <SectionHeading
+        eyebrow={HOME.contact.eyebrow}
+        title={HOME.contact.title}
+        intro={HOME.contact.intro}
+        align="center"
+        className="mx-auto mb-12 max-w-2xl"
+      />
       <Reveal>
-        <SectionHeading
-          eyebrow={HOME.contact.eyebrow}
-          title={HOME.contact.title}
-          intro={HOME.contact.intro}
-          align="center"
-          className="mx-auto mb-12 max-w-2xl"
-        />
         <ContactForm />
       </Reveal>
     </section>

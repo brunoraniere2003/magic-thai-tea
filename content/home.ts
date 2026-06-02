@@ -16,6 +16,12 @@ export interface HeroContent {
 
 export type WorldKey = "magic" | "tea" | "taichi";
 
+export interface StatementSegment {
+  text: string;
+  /** Highlight color tied to a world, if any. */
+  world?: WorldKey;
+}
+
 export interface World {
   key: WorldKey;
   eyebrow: string;
@@ -51,7 +57,7 @@ export interface HomeCtaContent {
 
 export interface HomeContent {
   hero: HeroContent;
-  statement: string;
+  statement: StatementSegment[];
   worldsHeading: SectionIntro;
   worlds: World[];
   about: { eyebrow: string; title: string; body: string[] };
@@ -72,8 +78,16 @@ export const HOME: HomeContent = {
     scrollCue: "Scroll to enter",
   },
 
-  statement:
-    "Magic, tea, and tai chi. Three arts, one pursuit — the moment a room goes quiet and leans in.",
+  statement: [
+    { text: "Magic", world: "magic" },
+    { text: ", " },
+    { text: "tea", world: "tea" },
+    { text: ", and " },
+    { text: "tai chi", world: "taichi" },
+    {
+      text: ". Three arts, one pursuit — the moment a room goes quiet and leans in.",
+    },
+  ],
 
   worldsHeading: {
     eyebrow: "Three worlds",

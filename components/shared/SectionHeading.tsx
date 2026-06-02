@@ -1,4 +1,7 @@
+"use client";
+
 import type { ElementType, ReactNode } from "react";
+import { Reveal, SplitReveal } from "@/components/motion";
 
 export interface SectionHeadingProps {
   eyebrow?: string;
@@ -10,7 +13,7 @@ export interface SectionHeadingProps {
   className?: string;
 }
 
-/** Consistent section header: optional eyebrow + title + optional intro. */
+/** Section header: eyebrow (fade) + title (kinetic line reveal) + intro (fade). */
 export function SectionHeading({
   eyebrow,
   title,
@@ -19,24 +22,34 @@ export function SectionHeading({
   as,
   className = "",
 }: SectionHeadingProps) {
-  const Heading = (as ?? "h2") as ElementType;
+  const headingTag = as ?? "h2";
   const alignment =
     align === "center" ? "items-center text-center" : "items-start text-left";
 
   return (
     <div className={`flex flex-col gap-4 ${alignment} ${className}`.trim()}>
       {eyebrow ? (
-        <p className="font-sans text-xs uppercase tracking-[0.3em] text-stone">
+        <Reveal
+          as="p"
+          className="font-sans text-xs uppercase tracking-[0.3em] text-stone"
+        >
           {eyebrow}
-        </p>
+        </Reveal>
       ) : null}
-      <Heading className="max-w-2xl font-display text-3xl leading-tight text-cream sm:text-5xl">
+      <SplitReveal
+        as={headingTag}
+        className="max-w-2xl font-display text-3xl leading-tight text-cream sm:text-5xl"
+      >
         {title}
-      </Heading>
+      </SplitReveal>
       {intro ? (
-        <p className="max-w-2xl font-sans text-base leading-relaxed text-stone sm:text-lg">
+        <Reveal
+          as="p"
+          delay={0.1}
+          className="max-w-2xl font-sans text-base leading-relaxed text-stone sm:text-lg"
+        >
           {intro}
-        </p>
+        </Reveal>
       ) : null}
     </div>
   );

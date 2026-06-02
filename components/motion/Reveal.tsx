@@ -36,18 +36,22 @@ export function Reveal({
   const Tag = (as ?? "div") as ElementType;
   const reducedMotion = useReducedMotion();
   const ref = useScrollAnimation<HTMLElement>(
-    ({ element, gsap }) => {
-      gsap.from(element, {
-        autoAlpha: 0,
-        y,
-        duration,
-        delay,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: element,
-          start,
-          toggleActions: "play none none reverse",
-        },
+    ({ element, gsap, ScrollTrigger }) => {
+      gsap.set(element, { autoAlpha: 0, y });
+      // onEnter fires immediately if the trigger is already in view at build
+      // time (anchor jump / scrolled reload) — content never stays hidden.
+      ScrollTrigger.create({
+        trigger: element,
+        start,
+        once: true,
+        onEnter: () =>
+          gsap.to(element, {
+            autoAlpha: 1,
+            y: 0,
+            duration,
+            delay,
+            ease: "power2.out",
+          }),
       });
     },
     { enabled: shouldRevealOnScroll({ reducedMotion }) },

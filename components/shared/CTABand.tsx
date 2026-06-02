@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SplitReveal } from "@/components/motion";
 import { buttonClasses, type ButtonVariant } from "@/components/ui/Button";
 
 export interface CTAAction {
@@ -41,9 +42,12 @@ export function CTABand({ title, body, primary, secondary }: CTABandProps) {
   return (
     <div className="mx-auto max-w-7xl px-6">
       <div className="flex flex-col items-center gap-6 rounded-3xl border border-stone/15 bg-cream/[0.03] px-8 py-14 text-center">
-        <h2 className="max-w-2xl font-display text-3xl leading-tight text-cream sm:text-4xl">
+        <SplitReveal
+          as="h2"
+          className="max-w-2xl font-display text-3xl leading-tight text-cream sm:text-4xl"
+        >
           {title}
-        </h2>
+        </SplitReveal>
         {body ? (
           <p className="max-w-xl font-sans text-base text-stone">{body}</p>
         ) : null}

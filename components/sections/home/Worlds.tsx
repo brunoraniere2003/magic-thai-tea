@@ -3,10 +3,22 @@ import { Stagger } from "@/components/motion";
 import { SectionHeading } from "@/components/shared";
 import { HOME, type WorldKey } from "@/content/home";
 
-const accents: Record<WorldKey, string> = {
-  magic: "text-gold",
-  tea: "text-amber",
-  taichi: "text-jade",
+const accents: Record<WorldKey, { eyebrow: string; hover: string }> = {
+  magic: {
+    eyebrow: "text-gold",
+    hover:
+      "hover:border-gold/40 hover:shadow-[0_24px_70px_-28px_rgba(224,160,64,0.5)]",
+  },
+  tea: {
+    eyebrow: "text-amber",
+    hover:
+      "hover:border-amber/40 hover:shadow-[0_24px_70px_-28px_rgba(201,154,78,0.5)]",
+  },
+  taichi: {
+    eyebrow: "text-jade",
+    hover:
+      "hover:border-jade/40 hover:shadow-[0_24px_70px_-28px_rgba(175,196,180,0.5)]",
+  },
 };
 
 /** The three-worlds triptych — the centerpiece of the Home. */
@@ -27,10 +39,10 @@ export function Worlds() {
           <li key={world.key}>
             <Link
               href={world.href}
-              className="group flex h-full flex-col gap-4 rounded-3xl border border-stone/15 bg-cream/[0.02] p-8 transition-colors hover:border-stone/35 hover:bg-cream/[0.04]"
+              className={`group flex h-full flex-col gap-4 rounded-3xl border border-stone/15 bg-cream/[0.02] p-8 transition-all duration-500 hover:-translate-y-1.5 hover:bg-cream/[0.04] ${accents[world.key].hover}`}
             >
               <span
-                className={`font-sans text-xs uppercase tracking-[0.3em] ${accents[world.key]}`}
+                className={`font-sans text-xs uppercase tracking-[0.3em] ${accents[world.key].eyebrow}`}
               >
                 {world.eyebrow}
               </span>

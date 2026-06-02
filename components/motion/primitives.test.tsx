@@ -52,7 +52,8 @@ describe("section primitives", () => {
     it("builds a gsap tween when motion is allowed", () => {
       render(<Reveal>hello</Reveal>);
       expect(h.context).toHaveBeenCalledTimes(1);
-      expect(h.from).toHaveBeenCalledTimes(1);
+      expect(h.set).toHaveBeenCalled();
+      expect(h.create).toHaveBeenCalledTimes(1);
     });
 
     it("does NOT touch gsap under reduced motion (content stays final)", () => {
@@ -78,7 +79,8 @@ describe("section primitives", () => {
       );
       expect(getByText("a")).toBeInTheDocument();
       expect(getByText("b")).toBeInTheDocument();
-      expect(h.from).toHaveBeenCalledTimes(1);
+      expect(h.set).toHaveBeenCalled();
+      expect(h.create).toHaveBeenCalledTimes(1);
     });
 
     it("stays static under reduced motion", () => {

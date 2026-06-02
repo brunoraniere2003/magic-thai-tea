@@ -35,20 +35,24 @@ export function Stagger({
   const Tag = (as ?? "div") as ElementType;
   const reducedMotion = useReducedMotion();
   const ref = useScrollAnimation<HTMLElement>(
-    ({ element, gsap }) => {
+    ({ element, gsap, ScrollTrigger }) => {
       const targets = element.children;
       if (targets.length === 0) return;
-      gsap.from(targets, {
-        autoAlpha: 0,
-        y,
-        duration,
-        stagger,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: element,
-          start,
-          toggleActions: "play none none reverse",
-        },
+      gsap.set(targets, { autoAlpha: 0, y });
+      // onEnter fires immediately if already in view at build time (anchor
+      // jump / scrolled reload) — the cascade never stays hidden.
+      ScrollTrigger.create({
+        trigger: element,
+        start,
+        once: true,
+        onEnter: () =>
+          gsap.to(targets, {
+            autoAlpha: 1,
+            y: 0,
+            duration,
+            stagger,
+            ease: "power2.out",
+          }),
       });
     },
     { enabled: shouldRevealOnScroll({ reducedMotion }) },

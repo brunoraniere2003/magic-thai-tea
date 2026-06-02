@@ -1,17 +1,20 @@
 # Spec 018 — Premium Motion · Tasks
 
-## T1 — Correções de UX _(R1, R2, R3)_
-- [ ] Fix do toque (`HeroCanvas`, `getBoundingClientRect` + limites).
-- [ ] Cabeçalho com fundo ao rolar + menu fullscreen animado (`Header`).
+## T1 — Correções de UX ✅ _(R1, R2, R3)_
+- [x] Fix do toque (`HeroCanvas`, `getBoundingClientRect` + limites).
+- [x] Cabeçalho com fundo ao rolar + menu fullscreen animado (`Header`).
 
-## T2 — Tipografia cinética _(R4)_
-- [ ] `useSplitReveal` + `SplitReveal` (SplitText) + aplicar nos títulos; cores na frase de impacto.
+## T2 — Tipografia cinética ✅ _(R4)_
+- [x] `useSplitReveal` + `SplitReveal` (SplitText) + aplicar nos títulos; cores na frase de impacto.
+- [x] Bônus: `Reveal`/`Stagger` robustos (`onEnter`) — revelam em âncora/refresh (corrige bug).
 
-## T3 — Tríptico que revela _(R5)_
-- [ ] `Worlds` com pin+scrub (desktop) / empilhado (mobile) + hover rico.
+## T3 — Tríptico que revela 🟡 _(R5)_
+- [x] Hover rico (elevação + borda/glow na cor do mundo).
+- [ ] Pin+scrub (desktop) "trava e revela um mundo de cada vez".
 
-## T4 — Profundidade & micro-interações _(R6)_
-- [ ] Parallax nos pontos certos; `Process` (números/conector); hovers; foco no form.
+## T4 — Profundidade & micro-interações ⏳ _(R6)_
+- [ ] Parallax (imagem do Hero ao rolar, números do `Process`); foco nos campos do form.
 
-## T5 — Fechamento _(R7)_
-- [ ] lint+typecheck+test+build+e2e; changelog + ADR 0004; verificação real; aprovação do dono.
+## T5 — Fechamento ⏳ _(R7)_
+- [x] lint+typecheck+test+build+e2e verdes; ADR 0004.
+- [ ] Verificação real desktop; aprovação do dono; merge.
