@@ -50,18 +50,20 @@ export function HeroPoster() {
     <div aria-hidden className="absolute inset-0 overflow-hidden bg-stage">
       <div ref={layerRef} className="absolute inset-0 will-change-transform">
         <Image
-          src="/images/hero-gold-waves.jpg"
+          src="/images/hero-ethan-tea.jpg"
           alt=""
           fill
           priority
           sizes="100vw"
-          className="object-cover opacity-70"
+          className="object-cover object-center"
         />
       </div>
-      {/* darken for text legibility */}
-      <div className="absolute inset-0 bg-gradient-to-t from-stage via-stage/40 to-stage/65" />
-      {/* warm ember glow rising from the bottom */}
-      <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_125%,rgba(255,94,26,0.16),transparent_60%)]" />
+      {/* light scrim so the headline stays legible without hiding the photo */}
+      <div className="absolute inset-0 bg-stage/30" />
+      {/* vertical gradient: heavier at the top (eyebrow) and bottom (CTAs) */}
+      <div className="absolute inset-0 bg-gradient-to-b from-stage/70 via-stage/15 to-stage/85" />
+      {/* warm golden glow rising from the bottom */}
+      <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_125%,rgba(224,160,64,0.16),transparent_60%)]" />
     </div>
   );
 }
