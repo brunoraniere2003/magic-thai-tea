@@ -26,6 +26,17 @@ Fluxo: escrever spec → **revisão do dono** → implementar em TDD → PR.
 | 016 | seo-analytics-compliance | ⚪ planned | 004, 015 |
 | 017 | perf-a11y-launch | ⚪ planned | TODAS |
 | 018 | premium-motion | ✅ done | 001, 004, 005, 008 |
+| 019 | immersive-home (epic) | ✅ done | 018 |
+| 020 | webgl-runtime | ⚪ planned | 002, 003, 019 |
+| 021 | card-deck-worlds | ⚪ planned | 020 |
+| 022 | growing-video-reel | ⚪ planned | 020 |
+| 023 | magic-curtain | ⚪ planned | 020, 022 |
+| 024 | infinite-parallax-gallery | ⚪ planned | 002, 005 |
+| 025 | real-3d-objects | ⚪ planned | 020 |
+| 026 | home-reassembly | ⚪ planned | 021–025 |
+| 027 | page-zoom-transition | ⚪ planned | 019, 026, 012–014 |
+
+> **Epic 019 (immersive-home):** reverte o ADR 0004 §4 ("sem WebGL na Home") via ADR 0005; as assinaturas 007/009/010/011 e as landings 012–014 passam a reusar o runtime 3D da **020**.
 
 **Caminho crítico:** `000 → 002/003 → 001 → 004/005/006 → 007 → 008`; em paralelo `009/010 → 011 → 012/013/014`; depois `015/016 → 017`.
 
