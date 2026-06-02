@@ -9,6 +9,7 @@ describe("SITE content", () => {
     expect(SITE.nav.length).toBeGreaterThan(0);
     expect(SITE.contact.email).toBeTruthy();
     expect(SITE.contact.sms).toBeTruthy();
+    expect(typeof SITE.contact.formspreeEndpoint).toBe("string");
     expect(SITE.seo.title).toBeTruthy();
     expect(SITE.seo.description).toBeTruthy();
   });

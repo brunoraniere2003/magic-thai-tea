@@ -14,6 +14,8 @@ export interface SiteContact {
   email: string;
   /** Click-to-text number in E.164 format (placeholder — Google Voice TBD). */
   sms: string;
+  /** Formspree form endpoint for the contact form (placeholder — form id TBD). */
+  formspreeEndpoint: string;
 }
 
 export interface SiteSocial {
@@ -49,6 +51,7 @@ export const SITE: Site = {
   contact: {
     email: "hello@ethanholtzman.example", // placeholder
     sms: "+10000000000", // placeholder
+    formspreeEndpoint: "", // placeholder — Formspree form id TBD
   },
   social: {
     instagram: "https://instagram.com/", // placeholder

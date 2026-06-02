@@ -13,7 +13,7 @@ Fluxo: escrever spec → **revisão do dono** → implementar em TDD → PR.
 | 001 | hero | ✅ done | 000, 003 |
 | 004 | layout-shell | ✅ done | 000, 003 |
 | 005 | section-primitives | ✅ done | 002 |
-| 006 | shared-blocks | ⚪ planned | 004, 005 |
+| 006 | shared-blocks | ✅ done | 004, 005 |
 | 007 | fluid-signature-tea | ⚪ planned | 001, 003 |
 | 008 | home-page | ⚪ planned | 004–007 |
 | 009 | particles-signature-magic | ⚪ planned | 002, 003 |
