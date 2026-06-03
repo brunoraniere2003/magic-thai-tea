@@ -38,7 +38,11 @@ export function Stage3D({
 
   return (
     <div ref={ref} className={className}>
-      {poster}
+      {/* Poster paints when the 3D layer is OFF (no-WebGL / reduced-motion /
+          low-tier). When the 3D is on we hide the poster — otherwise its full-
+          bleed cards bleed past the smaller 3D deck and show as already-flipped
+          cards behind the canvas. */}
+      {!enabled ? poster : null}
       {/* The scene mounts only while in view: it's then born with active=true,
           so the Canvas starts in frameloop "always" (the "never"→"always" switch
           never fires, which r3f doesn't resume from) and the WebGL context is

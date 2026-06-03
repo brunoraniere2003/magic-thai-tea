@@ -41,9 +41,10 @@ describe("Stage3D", () => {
     renderScene: () => <div>SCENE</div>,
   };
 
-  it("always renders the poster", () => {
-    const { getByText } = render(<Stage3D {...props} />);
-    expect(getByText("POSTER")).toBeInTheDocument();
+  it("hides the poster when the 3D layer is on (otherwise it bleeds past the scene)", () => {
+    const { queryByText, getByText } = render(<Stage3D {...props} />);
+    expect(getByText("SCENE")).toBeInTheDocument();
+    expect(queryByText("POSTER")).toBeNull();
   });
 
   it("mounts the scene on a capable device (high-tier + WebGL)", () => {
@@ -84,8 +85,12 @@ describe("Stage3D", () => {
         disconnect() {}
       },
     );
-    const { getByText, queryByText } = render(<Stage3D {...props} />);
-    expect(getByText("POSTER")).toBeInTheDocument();
+    // Scene mounts only while in view, so it's null here. The poster stays
+    // hidden because the 3D layer is still ENABLED for this device (a high-tier
+    // + WebGL run that's just scrolled away) — showing it would flash full-bleed
+    // cards behind a soon-to-mount scene.
+    const { queryByText } = render(<Stage3D {...props} />);
     expect(queryByText("SCENE")).toBeNull();
+    expect(queryByText("POSTER")).toBeNull();
   });
 });
