@@ -22,6 +22,15 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!enabled) return;
 
+    // Scroll-driven scenes (the card deck, etc.) must always play from their
+    // start. Don't let the browser restore a mid-page scroll on reload — that
+    // would resume with the deck already spread/flipped. Pin to the top before
+    // Lenis reads the initial scroll position.
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
+
     gsap.registerPlugin(ScrollTrigger);
 
     const lenis = new Lenis();
