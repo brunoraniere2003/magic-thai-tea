@@ -3,11 +3,15 @@
 import { useRef } from "react";
 import dynamic from "next/dynamic";
 import { Stage3D } from "@/webgl/core/Stage3D";
-import type { DeckCard } from "@/webgl/cards/CardDeckScene";
+import { DeckPoster } from "@/webgl/cards/DeckPoster";
+import type { DeckCard } from "@/webgl/cards/FlippingCardsScene";
 import { HOME, type WorldKey } from "@/content/home";
 
-const CardDeckScene = dynamic(
-  () => import("@/webgl/cards/CardDeckScene").then((m) => m.CardDeckScene),
+const FlippingCardsScene = dynamic(
+  () =>
+    import("@/webgl/cards/FlippingCardsScene").then(
+      (m) => m.FlippingCardsScene,
+    ),
   { ssr: false },
 );
 
@@ -17,9 +21,22 @@ const accentColor: Record<WorldKey, string> = {
   taichi: "#afc4b4",
 };
 
-/** Dev-only: the card deck at a fixed spread, at the top, so it's screenshot-able. */
+/** The five canonical phases of the choreography, for inspection/screenshots. */
+const PRESETS = [
+  { label: "stacked", value: 0 },
+  { label: "spreading", value: 0.2 },
+  { label: "spread", value: 0.4 },
+  { label: "mid-flip", value: 0.65 },
+  { label: "revealed", value: 1 },
+] as const;
+
+/**
+ * Dev-only: drive the flipping-cards choreography by hand (presets + slider)
+ * to inspect/screenshot each phase. Writes straight to the progress ref — no
+ * React state, same pattern the scroll uses.
+ */
 export function DeckDemo() {
-  const progressRef = useRef(0.7);
+  const progressRef = useRef(0);
   const cards: DeckCard[] = HOME.worlds.map((w) => ({
     image: w.image,
     color: accentColor[w.key],
@@ -28,24 +45,47 @@ export function DeckDemo() {
   }));
 
   return (
-    <main className="h-screen bg-stage">
-      <div className="relative h-screen overflow-hidden">
+    <main className="relative h-screen bg-stage">
+      <div className="absolute inset-0">
         <Stage3D
           className="absolute inset-0"
           interactive
-          poster={
-            <div className="flex h-full w-full items-center justify-center text-stone">
-              poster fallback
-            </div>
-          }
+          poster={<DeckPoster />}
           renderScene={(active) => (
-            <CardDeckScene
+            <FlippingCardsScene
               active={active}
               progressRef={progressRef}
               cards={cards}
               onSelect={() => {}}
             />
           )}
+        />
+      </div>
+
+      <div className="absolute inset-x-0 bottom-0 z-10 flex flex-wrap items-center gap-3 bg-stage/80 p-4 backdrop-blur">
+        {PRESETS.map((preset) => (
+          <button
+            key={preset.label}
+            type="button"
+            onClick={() => {
+              progressRef.current = preset.value;
+            }}
+            className="rounded-full border border-stone/30 px-4 py-2 font-sans text-sm text-cream transition-colors hover:border-gold"
+          >
+            {preset.label}
+          </button>
+        ))}
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.01}
+          defaultValue={0}
+          onChange={(e) => {
+            progressRef.current = Number(e.target.value);
+          }}
+          className="ml-auto w-64"
+          aria-label="scroll progress"
         />
       </div>
     </main>

@@ -26,6 +26,11 @@
 ## Rota dev (`app/dev/deck/DeckDemo.tsx`)
 - Troca o spread fixo por **controle de progresso** (range 0–1 + presets das 5 fases: stacked/spreading/spread/mid-flip/revealed) escrevendo direto no `progressRef` → screenshots determinísticos por fase + calibração de timing ao vivo.
 
+## Correção do runtime (frameloop) — descoberta nesta peça
+- **Bug:** o `R3FCanvas` alternava `frameloop` `"never"`↔`"always"` conforme o `active` (in-view). O r3f **não retoma** o loop na transição `"never"→"always"` → a cena congelava (zero draw calls) e não reagia ao scroll. Afetava também o cubo (020) e afetaria a Home.
+- **Fix (em `webgl/core/`):** a cena passa a **montar só quando `enabled && active`** (`Stage3D`). Assim o `<Canvas>` nasce já com `active=true` → `frameloop="always"` desde o 1º frame (a transição problemática nunca ocorre), e o contexto WebGL é **liberado ao sair de tela** (era a intenção original do comentário do `R3FCanvas`). `useInViewActive` ganhou `rootMargin: "300px"` para pré-montar antes de entrar (sem flash).
+- Teste novo em `Stage3D.test.tsx`: "não monta a cena fora de tela (só poster)".
+
 ## Test strategy
-- unit: `cardChoreography.test.ts` — p=0 (verso/empilhado), p=1 (frente/espalhado, todas), p=0.65 (carta 0 virada / carta 2 ainda verso), monotonia do flip, clamps, helpers. Gating reusa `shouldRender3D`/`shouldDriveOnScroll` (já testados). Smoke do poster.
-- Visual real: as 5 fases no `/dev/deck` (desktop high-tier) + poster (reduced-motion/mobile).
+- unit: `cardChoreography.test.ts` — p=0 (verso/empilhado), p=1 (frente/espalhado, todas), p=0.65 (carta 0 virada / carta 2 ainda verso), monotonia do flip, clamps, helpers. Gating reusa `shouldRender3D`/`shouldDriveOnScroll` (já testados). Smoke do poster + Stage3D (in-view/out-of-view).
+- Visual real: as fases no `/dev/deck` (desktop high-tier) — **provado**: stacked (verso empilhado) → spread (3 versos gold/amber/jade) → mid-flip (carta 0 virada, 1–2 verso) → revealed (3 frentes) — + poster (reduced-motion/mobile).
