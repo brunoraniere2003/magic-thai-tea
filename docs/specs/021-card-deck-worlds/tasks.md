@@ -1,18 +1,22 @@
 # Spec 021 — Card-Deck Worlds · Tasks
 
-## T1 — Conteúdo
-- [x] `content/home.ts`: adicionar `image` por mundo (worlds) + teste de shape.
+> Pivô: a coreografia mudou de "deck em leque" (reprovado) para "empilha → espalha → vira uma a uma" (Lusion Area of Expertise).
 
-## T2 — Cena 3D (`webgl/cards/`)
-- [x] `CardDeckScene` + `Card` (planos com textura, espalham no scroll via progress, hover acende).
+## T1 — Coreografia pura (TDD)
+- [ ] `webgl/cards/cardChoreography.ts` + `.test.ts`: `cardTransform(p,index,count)` + helpers (`clamp01`, `easeInOutCubic`) + constantes nomeadas. RED→GREEN. ≥80%.
 
-## T3 — Integração
-- [x] Reescrever `Worlds.tsx`: `Stage3D` (deck) + poster (3 cards estáticos com link) + `useDriveProgress`.
-- [x] `Stage3D`: prop `interactive` (default false) pra liberar pointer-events na cena clicável.
-- [x] `app/dev/deck/`: rota dev-only (404 em prod) — inspetor visual do deck (spread fixo, screenshot-able).
+## T2 — Cena 3D
+- [ ] `webgl/cards/FlippingCardsScene.tsx`: `<group>` com 2 faces (frente/verso) + `useFrame`+`MathUtils.damp` rumo ao `cardTransform` + luzes. Smoke test.
 
-## T4 — Fechamento
-- [x] Verificação real: deck 3D desktop (3 cartas em leque, texturas, hover) + poster mobile/reduced (e2e reduced-motion).
-- [x] lint + typecheck + test (77) + build + e2e (4) — todos verdes.
-- [x] changelog do dia atualizado.
-- [ ] checkpoint do dono (aguardando aprovação visual antes do ff-merge na main).
+## T3 — Fallback
+- [ ] Extrair `webgl/cards/DeckPoster.tsx` (3 cards com link) de dentro do `Worlds.tsx`. Smoke.
+
+## T4 — Integração
+- [ ] `Worlds.tsx`: trocar `CardDeckScene`→`FlippingCardsScene`, `h-[220vh]`→`h-[300vh]`, manter gating/interactive/onSelect + usar o `DeckPoster` extraído.
+- [ ] `app/dev/deck/DeckDemo.tsx`: controle de progresso (range + presets das 5 fases).
+
+## T5 — Limpeza
+- [ ] Remover `webgl/cards/CardDeckScene.tsx` e imports órfãos (zero código morto).
+
+## T6 — Fechamento
+- [ ] lint+typecheck+test+build+e2e; golden das 5 fases no `/dev/deck`; changelog do dia; checkpoint do dono antes do ff-merge na main.
