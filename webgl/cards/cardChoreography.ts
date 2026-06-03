@@ -27,8 +27,10 @@ export const CARD_CHOREOGRAPHY = {
   FLIP_END: 1,
   /** Horizontal distance between neighbouring cards once spread. */
   CARD_GAP: 1.9,
-  /** Extra fraction of a slice each flip lasts, so flips overlap softly. */
-  FLIP_OVERLAP: 0.5,
+  /** How long one card's flip lasts, in units of p. */
+  FLIP_DURATION: 0.36,
+  /** Gap between the start of consecutive flips (< DURATION → they overlap). */
+  FLIP_STAGGER: 0.16,
   /** Depth between stacked cards before they spread (avoids z-fighting). */
   STACK_DEPTH: 0.04,
   /** Damping speed for the scene's useFrame (frame-rate independent). */
@@ -51,8 +53,15 @@ export function cardTransform(
   index: number,
   count: number,
 ): CardTarget {
-  const { SPREAD_END, FLIP_START, FLIP_END, CARD_GAP, FLIP_OVERLAP, STACK_DEPTH } =
-    CARD_CHOREOGRAPHY;
+  const {
+    SPREAD_END,
+    FLIP_START,
+    FLIP_END,
+    CARD_GAP,
+    FLIP_DURATION,
+    FLIP_STAGGER,
+    STACK_DEPTH,
+  } = CARD_CHOREOGRAPHY;
 
   const progress = clamp01(p);
   const offset = index - (count - 1) / 2;
@@ -62,11 +71,11 @@ export function cardTransform(
   const x = offset * CARD_GAP * spread;
   const z = index * STACK_DEPTH * (1 - spread);
 
-  // Phase B — staggered flip (rotationY 0→π), one card after another.
-  const slice = (FLIP_END - FLIP_START) / count;
-  const winLen = slice * (1 + FLIP_OVERLAP);
-  const start = FLIP_START + index * slice;
-  const end = Math.min(start + winLen, FLIP_END);
+  // Phase B — staggered, OVERLAPPING flip (rotationY 0→π): each card starts
+  // FLIP_STAGGER after the previous, so the next begins while the previous is
+  // still mid-turn (STAGGER < DURATION). The last card lands exactly at p=1.
+  const start = FLIP_START + index * FLIP_STAGGER;
+  const end = Math.min(start + FLIP_DURATION, FLIP_END);
   const flip = easeInOutCubic(clamp01((progress - start) / (end - start)));
   const rotationY = flip * Math.PI;
 

@@ -31,6 +31,11 @@
 - **Fix (em `webgl/core/`):** a cena passa a **montar só quando `enabled && active`** (`Stage3D`). Assim o `<Canvas>` nasce já com `active=true` → `frameloop="always"` desde o 1º frame (a transição problemática nunca ocorre), e o contexto WebGL é **liberado ao sair de tela** (era a intenção original do comentário do `R3FCanvas`). `useInViewActive` ganhou `rootMargin: "300px"` para pré-montar antes de entrar (sem flash).
 - Teste novo em `Stage3D.test.tsx`: "não monta a cena fora de tela (só poster)".
 
+## Refinamentos rodada 2 (dono aprovou a coreografia, pediu 3 ajustes)
+- **Flip mais encadeado:** `FLIP_OVERLAP` → `FLIP_DURATION=0.36` + `FLIP_STAGGER=0.16`. Janelas novas: carta0 **0.40–0.76** · carta1 **0.56–0.92** · carta2 **0.72–1.0** — a 2ª arranca quando a 1ª está ~44% virada (antes ~80%); a última fecha cravada em p=1. +2 testes de overlap (assert `toBeGreaterThan(0)`, nunca `toBeCloseTo`).
+- **Cantos arredondados** (`webgl/cards/roundedPlaneGeometry.ts`, novo): `THREE.Shape`+`ShapeGeometry` com **UVs recalculados** `(pos+half)/size`→0..1 (o ShapeGeometry gera UV em coords de mundo e quebraria a textura). Raio `CARD_W*0.09≈0.135`, clamp `min(r,w/2,h/2)`. Uma geometria **singleton** compartilhada pelas 2 faces das 3 cartas; substitui os `planeGeometry`. Teste de UV em `roundedPlaneGeometry.test.ts` (3 testes, roda em jsdom).
+- **Verso de baralho dourado** (`webgl/cards/makeCardBackTexture.ts`, novo): Canvas 2D 600×840 → `CanvasTexture` (**singleton**): fundo crimson `#3a0e08`, dourado `#e0a040` (fogo do Hero) + realce `#ffb347`; borda dupla + losango art-déco central + cantos. `SRGBColorSpace` (senão o dourado lava) + `LinearFilter` (non-POT). Verso **IGUAL nas 3** (baralho real). Substitui `color={card.color}` por `map`; `DeckCard.color` mantido (reservado p/ acento por mundo).
+
 ## Test strategy
 - unit: `cardChoreography.test.ts` — p=0 (verso/empilhado), p=1 (frente/espalhado, todas), p=0.65 (carta 0 virada / carta 2 ainda verso), monotonia do flip, clamps, helpers. Gating reusa `shouldRender3D`/`shouldDriveOnScroll` (já testados). Smoke do poster + Stage3D (in-view/out-of-view).
 - Visual real: as fases no `/dev/deck` (desktop high-tier) — **provado**: stacked (verso empilhado) → spread (3 versos gold/amber/jade) → mid-flip (carta 0 virada, 1–2 verso) → revealed (3 frentes) — + poster (reduced-motion/mobile).

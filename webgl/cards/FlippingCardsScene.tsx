@@ -4,12 +4,15 @@ import { useRef, Suspense } from "react";
 import type { RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
-import { MathUtils, type Group } from "three";
+import { MathUtils, type BufferGeometry, type Group } from "three";
 import { R3FCanvas } from "@/webgl/core/R3FCanvas";
 import { cardTransform, CARD_CHOREOGRAPHY } from "@/webgl/cards/cardChoreography";
+import { roundedPlaneGeometry } from "@/webgl/cards/roundedPlaneGeometry";
+import { getCardBackTexture } from "@/webgl/cards/makeCardBackTexture";
 
 export interface DeckCard {
   image: string;
+  /** Per-world accent — reserved for border/hover tinting (the back is shared). */
   color: string;
   href: string;
   label: string;
@@ -19,6 +22,16 @@ const CARD_W = 1.5;
 const CARD_H = 2.1;
 /** Each face sits this far from the group's mid-plane: kills z-fighting. */
 const FACE_OFFSET = 0.012;
+/** Corner radius ≈ 9% of the width — soft "playing card" corners. */
+const CARD_RADIUS = CARD_W * 0.09;
+
+// One shared rounded-card geometry for every face of every card (built lazily,
+// client-side). r3f never disposes a geometry passed by prop, so a singleton is
+// safe and avoids creating six identical geometries.
+let cardGeometry: BufferGeometry | null = null;
+function getCardGeometry(): BufferGeometry {
+  return (cardGeometry ??= roundedPlaneGeometry(CARD_W, CARD_H, CARD_RADIUS));
+}
 
 interface FlipCardProps {
   card: DeckCard;
@@ -69,15 +82,17 @@ function FlipCard({ card, index, count, progressRef, onSelect }: FlipCardProps) 
       }}
     >
       {/* Front — world image; pre-rotated 180° so it reads un-mirrored at π. */}
-      <mesh position={[0, 0, FACE_OFFSET]} rotation={[0, Math.PI, 0]}>
-        <planeGeometry args={[CARD_W, CARD_H]} />
+      <mesh
+        geometry={getCardGeometry()}
+        position={[0, 0, FACE_OFFSET]}
+        rotation={[0, Math.PI, 0]}
+      >
         <meshStandardMaterial map={texture} roughness={0.6} metalness={0.1} />
       </mesh>
-      {/* Back — placeholder in the world accent color; visible at rest. */}
-      <mesh position={[0, 0, -FACE_OFFSET]}>
-        <planeGeometry args={[CARD_W, CARD_H]} />
+      {/* Back — the shared gold art-deco card back; visible at rest. */}
+      <mesh geometry={getCardGeometry()} position={[0, 0, -FACE_OFFSET]}>
         <meshStandardMaterial
-          color={card.color}
+          map={getCardBackTexture()}
           roughness={0.5}
           metalness={0.2}
         />

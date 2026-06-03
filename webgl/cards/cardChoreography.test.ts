@@ -128,3 +128,19 @@ describe("cardTransform — robustness", () => {
     expect(cardTransform(1, 0, 1).rotationY).toBeCloseTo(Math.PI);
   });
 });
+
+describe("cardTransform — flips overlap (cards chain into each other)", () => {
+  // The next card must start flipping while the previous is mid-turn, not after
+  // it finishes. Assert strictly > 0 (the value is tiny right at the overlap
+  // point), never toBeCloseTo(0).
+  it("when card 0 reaches ~0.5π, card 1 has already started", () => {
+    const pHalf = 0.58; // FLIP_START + 0.5 * FLIP_DURATION = 0.40 + 0.18
+    expect(cardTransform(pHalf, 0, 3).rotationY).toBeCloseTo(Math.PI * 0.5, 2);
+    expect(cardTransform(pHalf, 1, 3).rotationY).toBeGreaterThan(0);
+  });
+  it("when card 1 reaches ~0.5π, card 2 has already started", () => {
+    const pHalf = 0.74; // FLIP_START + FLIP_STAGGER + 0.5 * FLIP_DURATION
+    expect(cardTransform(pHalf, 1, 3).rotationY).toBeCloseTo(Math.PI * 0.5, 2);
+    expect(cardTransform(pHalf, 2, 3).rotationY).toBeGreaterThan(0);
+  });
+});
