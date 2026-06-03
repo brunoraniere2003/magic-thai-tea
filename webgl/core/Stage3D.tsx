@@ -39,7 +39,11 @@ export function Stage3D({
   return (
     <div ref={ref} className={className}>
       {poster}
-      {enabled ? (
+      {/* The scene mounts only while in view: it's then born with active=true,
+          so the Canvas starts in frameloop "always" (the "never"→"always" switch
+          never fires, which r3f doesn't resume from) and the WebGL context is
+          released when scrolled away. */}
+      {enabled && active ? (
         <div
           aria-hidden
           className={`absolute inset-0 ${interactive ? "" : "pointer-events-none"}`}

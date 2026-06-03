@@ -20,10 +20,17 @@ import { Stage3D } from "./Stage3D";
 describe("Stage3D", () => {
   beforeEach(() => {
     h.state = { reducedMotion: false, tier: "high", webgl: true };
+    // In view by default: fire the callback with isIntersecting=true on observe.
     vi.stubGlobal(
       "IntersectionObserver",
       class {
-        observe() {}
+        cb: (entries: { isIntersecting: boolean }[]) => void;
+        constructor(cb: (entries: { isIntersecting: boolean }[]) => void) {
+          this.cb = cb;
+        }
+        observe() {
+          this.cb([{ isIntersecting: true }]);
+        }
         disconnect() {}
       },
     );
@@ -60,6 +67,25 @@ describe("Stage3D", () => {
   it("does NOT mount the scene on a low-tier device", () => {
     h.state.tier = "low";
     const { queryByText } = render(<Stage3D {...props} />);
+    expect(queryByText("SCENE")).toBeNull();
+  });
+
+  it("does NOT mount the scene while scrolled out of view (poster only)", () => {
+    vi.stubGlobal(
+      "IntersectionObserver",
+      class {
+        cb: (entries: { isIntersecting: boolean }[]) => void;
+        constructor(cb: (entries: { isIntersecting: boolean }[]) => void) {
+          this.cb = cb;
+        }
+        observe() {
+          this.cb([{ isIntersecting: false }]);
+        }
+        disconnect() {}
+      },
+    );
+    const { getByText, queryByText } = render(<Stage3D {...props} />);
+    expect(getByText("POSTER")).toBeInTheDocument();
     expect(queryByText("SCENE")).toBeNull();
   });
 });

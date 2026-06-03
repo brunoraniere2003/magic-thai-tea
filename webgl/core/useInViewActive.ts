@@ -20,7 +20,8 @@ export function useInViewActive<T extends HTMLElement = HTMLDivElement>(): {
     if (!element) return;
     const observer = new IntersectionObserver(
       ([entry]) => setActive(entry.isIntersecting),
-      { threshold: 0 },
+      // Mount the scene a bit before it scrolls in, so WebGL is ready (no flash).
+      { threshold: 0, rootMargin: "300px" },
     );
     observer.observe(element);
     return () => observer.disconnect();
