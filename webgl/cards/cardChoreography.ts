@@ -26,7 +26,7 @@ export const CARD_CHOREOGRAPHY = {
   FLIP_START: 0.4,
   FLIP_END: 1,
   /** Horizontal distance between neighbouring cards once spread. */
-  CARD_GAP: 1.9,
+  CARD_GAP: 2.05,
   /** How long one card's flip lasts, in units of p. */
   FLIP_DURATION: 0.36,
   /** Gap between the start of consecutive flips (< DURATION → they overlap). */

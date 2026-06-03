@@ -18,8 +18,8 @@ export interface DeckCard {
   label: string;
 }
 
-const CARD_W = 1.5;
-const CARD_H = 2.1;
+const CARD_W = 1.8;
+const CARD_H = 2.52;
 /** Each face sits this far from the group's mid-plane: kills z-fighting. */
 const FACE_OFFSET = 0.012;
 /** Corner radius ≈ 9% of the width — soft "playing card" corners. */
