@@ -31,7 +31,14 @@ const accentColor: Record<WorldKey, string> = {
  */
 export function Worlds() {
   const router = useRouter();
-  const { triggerRef, progressRef } = useDriveProgress<HTMLDivElement>();
+  const { triggerRef, progressRef } = useDriveProgress<HTMLDivElement>({
+    // Map progress to the window where the deck is stuck centered on screen:
+    // p=0 the instant it pins (stacked, face-down) — before that the scrub
+    // clamps to 0, so the deck waits stacked. p reaches 1 with ~30vh of travel
+    // still pinned, so the three flipped cards hold a beat before releasing.
+    start: "top top",
+    end: "+=170%",
+  });
 
   const cards: DeckCard[] = HOME.worlds.map((world) => ({
     image: world.image,
@@ -42,18 +49,18 @@ export function Worlds() {
 
   return (
     <section id="worlds" className="scroll-mt-24">
-      <div className="mx-auto max-w-7xl px-6 pt-24 sm:pt-32">
+      <div className="mx-auto max-w-7xl px-6 pt-16 sm:pt-20">
         <SectionHeading
           eyebrow={HOME.worldsHeading.eyebrow}
           title={HOME.worldsHeading.title}
           align="center"
-          className="mx-auto mb-10 max-w-2xl"
+          className="mx-auto mb-6 max-w-2xl"
         />
       </div>
 
       {/* 300vh of travel: enough scroll for the spread + three flips to breathe. */}
       <div ref={triggerRef} className="relative h-[300vh]">
-        <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
+        <div className="sticky top-0 flex h-screen items-start justify-center overflow-hidden pt-24 sm:pt-28">
           <Stage3D
             className="absolute inset-0"
             interactive
