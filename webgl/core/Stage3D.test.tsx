@@ -71,26 +71,11 @@ describe("Stage3D", () => {
     expect(queryByText("SCENE")).toBeNull();
   });
 
-  it("does NOT mount the scene while scrolled out of view (poster only)", () => {
-    vi.stubGlobal(
-      "IntersectionObserver",
-      class {
-        cb: (entries: { isIntersecting: boolean }[]) => void;
-        constructor(cb: (entries: { isIntersecting: boolean }[]) => void) {
-          this.cb = cb;
-        }
-        observe() {
-          this.cb([{ isIntersecting: false }]);
-        }
-        disconnect() {}
-      },
-    );
-    // Scene mounts only while in view, so it's null here. The poster stays
-    // hidden because the 3D layer is still ENABLED for this device (a high-tier
-    // + WebGL run that's just scrolled away) — showing it would flash full-bleed
-    // cards behind a soon-to-mount scene.
-    const { queryByText } = render(<Stage3D {...props} />);
-    expect(queryByText("SCENE")).toBeNull();
+  it("keeps the scene mounted on a capable device (no in-view gating)", () => {
+    // Scene now mounts from the start and stays mounted on every capable
+    // device so scrolling away and back never shows a mount/unmount gap.
+    const { getByText, queryByText } = render(<Stage3D {...props} />);
+    expect(getByText("SCENE")).toBeInTheDocument();
     expect(queryByText("POSTER")).toBeNull();
   });
 });

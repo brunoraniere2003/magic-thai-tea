@@ -5,7 +5,6 @@ import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { useDeviceTier } from "@/lib/hooks/useDeviceTier";
 import { useWebGLSupported } from "@/lib/hooks/useWebGLSupported";
 import { shouldRender3D } from "@/lib/animations/scrollAnimationMode";
-import { useInViewActive } from "./useInViewActive";
 
 export interface Stage3DProps {
   /** Static fallback — ALWAYS rendered first (shell before WebGL, SSR-safe). */
@@ -34,25 +33,22 @@ export function Stage3D({
   const tier = useDeviceTier();
   const webglSupported = useWebGLSupported();
   const enabled = shouldRender3D({ reducedMotion, tier, webglSupported });
-  const { ref, active } = useInViewActive<HTMLDivElement>();
 
   return (
-    <div ref={ref} className={className}>
+    <div className={className}>
       {/* Poster paints when the 3D layer is OFF (no-WebGL / reduced-motion /
           low-tier). When the 3D is on we hide the poster — otherwise its full-
-          bleed cards bleed past the smaller 3D deck and show as already-flipped
-          cards behind the canvas. */}
+          bleed cards bleed past the smaller 3D deck. */}
       {!enabled ? poster : null}
-      {/* The scene mounts only while in view: it's then born with active=true,
-          so the Canvas starts in frameloop "always" (the "never"→"always" switch
-          never fires, which r3f doesn't resume from) and the WebGL context is
-          released when scrolled away. */}
-      {enabled && active ? (
+      {/* The scene mounts from the start on every capable device and stays
+          mounted (active=true always) so scrolling away and back never shows a
+          mount/unmount gap. */}
+      {enabled ? (
         <div
           aria-hidden
           className={`absolute inset-0 ${interactive ? "" : "pointer-events-none"}`}
         >
-          {renderScene(active)}
+          {renderScene(true)}
         </div>
       ) : null}
     </div>
