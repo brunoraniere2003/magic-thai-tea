@@ -21,7 +21,7 @@ test("home renders the three worlds and the conversion path", async ({
 
   // Card content + social proof.
   await expect(
-    page.getByText(/close-up wonder your guests will retell/i),
+    page.getByText(/impossible things, inches from your eyes/i),
   ).toBeVisible();
   await expect(page.getByText(/not one person looked away/i)).toBeVisible();
 

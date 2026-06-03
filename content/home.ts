@@ -29,6 +29,8 @@ export interface World {
   essence: string;
   description: string;
   href: string;
+  /** Card face image (placeholder until Ethan's real media). */
+  image: string;
 }
 
 export interface SectionIntro {
@@ -103,6 +105,7 @@ export const HOME: HomeContent = {
       description:
         "Card miracles and sleight of hand, performed table to table — close-up wonder your guests will retell for years.",
       href: "/magic",
+      image: "/images/worlds/magic.jpg",
     },
     {
       key: "tea",
@@ -112,6 +115,7 @@ export const HOME: HomeContent = {
       description:
         "A gongfu tea ceremony for your guests — fragrance, ritual, and stillness, poured one careful cup at a time.",
       href: "/tea",
+      image: "/images/worlds/tea.jpg",
     },
     {
       key: "taichi",
@@ -121,6 +125,7 @@ export const HOME: HomeContent = {
       description:
         "Private and group classes in tai chi's moving meditation — balance, breath, and a quiet kind of power.",
       href: "/tai-chi",
+      image: "/images/worlds/taichi.jpg",
     },
   ],
 

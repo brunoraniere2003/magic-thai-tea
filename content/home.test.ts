@@ -9,6 +9,7 @@ describe("HOME content", () => {
       expect(world.essence).toBeTruthy();
       expect(world.description).toBeTruthy();
       expect(world.href.startsWith("/")).toBe(true);
+      expect(world.image).toBeTruthy();
     }
   });
 

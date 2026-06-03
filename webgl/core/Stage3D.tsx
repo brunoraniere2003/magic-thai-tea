@@ -14,6 +14,8 @@ export interface Stage3DProps {
   renderScene: (active: boolean) => ReactNode;
   /** Wrapper classes; provide the box (e.g. `absolute inset-0`). */
   className?: string;
+  /** When true, the 3D layer receives pointer events (a clickable scene). */
+  interactive?: boolean;
 }
 
 /**
@@ -22,7 +24,12 @@ export interface Stage3DProps {
  * and no reduced-motion. The scene pauses while scrolled away. Reduced-motion /
  * low-tier / no-WebGL = poster only, never instantiating WebGL.
  */
-export function Stage3D({ poster, renderScene, className }: Stage3DProps) {
+export function Stage3D({
+  poster,
+  renderScene,
+  className,
+  interactive = false,
+}: Stage3DProps) {
   const reducedMotion = useReducedMotion();
   const tier = useDeviceTier();
   const webglSupported = useWebGLSupported();
@@ -33,7 +40,10 @@ export function Stage3D({ poster, renderScene, className }: Stage3DProps) {
     <div ref={ref} className={className}>
       {poster}
       {enabled ? (
-        <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div
+          aria-hidden
+          className={`absolute inset-0 ${interactive ? "" : "pointer-events-none"}`}
+        >
           {renderScene(active)}
         </div>
       ) : null}
