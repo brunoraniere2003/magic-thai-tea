@@ -10,8 +10,9 @@ describe("design tokens — single source of truth", () => {
     expect(css).toMatch(/--color-cream:/i);
   });
 
-  it("defines an accent color for each of the three worlds", () => {
-    expect(css).toMatch(/--color-ember:/i); // magic
+  it("defines the brand and accent color tokens", () => {
+    expect(css).toMatch(/--color-ember:/i); // brand fire (the dragon)
+    expect(css).toMatch(/--color-gold:/i); // brand gold
     expect(css).toMatch(/--color-tea:/i); // tea
     expect(css).toMatch(/--color-mist:/i); // tai chi
   });

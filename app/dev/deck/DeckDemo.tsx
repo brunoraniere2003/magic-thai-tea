@@ -16,8 +16,8 @@ const FlippingCardsScene = dynamic(
 );
 
 const accentColor: Record<WorldKey, string> = {
-  magic: "#e0a040",
   tea: "#c99a4e",
+  yinyang: "#e0a040",
   taichi: "#afc4b4",
 };
 
@@ -38,9 +38,8 @@ const PRESETS = [
 export function DeckDemo() {
   const progressRef = useRef(0);
   const cards: DeckCard[] = HOME.worlds.map((w) => ({
-    image: w.image,
+    symbol: w.symbol,
     color: accentColor[w.key],
-    href: w.href,
     label: w.title,
   }));
 

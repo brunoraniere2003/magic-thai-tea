@@ -1,20 +1,22 @@
 "use client";
 
-import { useRef, Suspense } from "react";
+import { useRef } from "react";
 import type { RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useTexture } from "@react-three/drei";
 import { MathUtils, type BufferGeometry, type Group } from "three";
+import type { WorldSymbol } from "@/content/home";
 import { R3FCanvas } from "@/webgl/core/R3FCanvas";
 import { cardTransform, CARD_CHOREOGRAPHY } from "@/webgl/cards/cardChoreography";
 import { roundedPlaneGeometry } from "@/webgl/cards/roundedPlaneGeometry";
 import { getCardBackTexture } from "@/webgl/cards/makeCardBackTexture";
+import { getCardFaceTexture } from "@/webgl/cards/makeCardFaceTextures";
 
 export interface DeckCard {
-  image: string;
+  /** Drawn-icon front (tea / yinyang / taichi). */
+  symbol: WorldSymbol;
   /** Per-world accent — reserved for border/hover tinting (the back is shared). */
   color: string;
-  href: string;
+  /** Accessible label (the scene is aria-hidden; kept for parity). */
   label: string;
 }
 
@@ -38,7 +40,7 @@ interface FlipCardProps {
   index: number;
   count: number;
   progressRef: RefObject<number>;
-  onSelect: (href: string) => void;
+  onSelect: () => void;
 }
 
 /**
@@ -53,7 +55,6 @@ interface FlipCardProps {
  */
 function FlipCard({ card, index, count, progressRef, onSelect }: FlipCardProps) {
   const group = useRef<Group>(null);
-  const texture = useTexture(card.image);
 
   useFrame((_, delta) => {
     const g = group.current;
@@ -78,16 +79,20 @@ function FlipCard({ card, index, count, progressRef, onSelect }: FlipCardProps) 
       }}
       onClick={(e) => {
         e.stopPropagation();
-        onSelect(card.href);
+        onSelect();
       }}
     >
-      {/* Front — world image; pre-rotated 180° so it reads un-mirrored at π. */}
+      {/* Front — drawn world symbol; pre-rotated 180° so it reads un-mirrored at π. */}
       <mesh
         geometry={getCardGeometry()}
         position={[0, 0, FACE_OFFSET]}
         rotation={[0, Math.PI, 0]}
       >
-        <meshStandardMaterial map={texture} roughness={0.6} metalness={0.1} />
+        <meshStandardMaterial
+          map={getCardFaceTexture(card.symbol)}
+          roughness={0.6}
+          metalness={0.1}
+        />
       </mesh>
       {/* Back — the shared gold art-deco card back; visible at rest. */}
       <mesh geometry={getCardGeometry()} position={[0, 0, -FACE_OFFSET]}>
@@ -105,11 +110,11 @@ export interface FlippingCardsSceneProps {
   active: boolean;
   progressRef: RefObject<number>;
   cards: DeckCard[];
-  onSelect: (href: string) => void;
+  onSelect: () => void;
 }
 
 /**
- * The three worlds as a 3D card deck: stacked face-down → spread side by side →
+ * The three cards as a 3D deck: stacked face-down → spread side by side →
  * flipped one by one, all driven by scroll progress (Lusion "Area of Expertise").
  */
 export function FlippingCardsScene({
@@ -127,18 +132,16 @@ export function FlippingCardsScene({
           dark; the mid-flip grazing angle dims slightly, which reads as volume. */}
       <ambientLight intensity={0.9} />
       <directionalLight position={[0, 0, 5]} intensity={1.1} />
-      <Suspense fallback={null}>
-        {cards.map((card, i) => (
-          <FlipCard
-            key={card.href}
-            card={card}
-            index={i}
-            count={cards.length}
-            progressRef={progressRef}
-            onSelect={onSelect}
-          />
-        ))}
-      </Suspense>
+      {cards.map((card, i) => (
+        <FlipCard
+          key={card.symbol}
+          card={card}
+          index={i}
+          count={cards.length}
+          progressRef={progressRef}
+          onSelect={onSelect}
+        />
+      ))}
     </R3FCanvas>
   );
 }

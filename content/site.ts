@@ -1,7 +1,6 @@
 /**
- * Site-wide content and configuration.
+ * Site-wide content and configuration — The Red Flying Dragon (spec 028).
  * Single source of truth for copy that lives outside components.
- * Values marked "placeholder" are swapped before launch (see docs/blueprint.md §12).
  */
 
 export interface SiteNavItem {
@@ -10,22 +9,15 @@ export interface SiteNavItem {
 }
 
 export interface SiteContact {
-  /** Email that receives contact-form leads (placeholder until provided). */
+  /** Inbox that receives contact-form leads (via Resend — ADR 0010). */
   email: string;
-  /** Click-to-text number in E.164 format (placeholder — Google Voice TBD). */
+  /** Click-to-text number in E.164 format. */
   sms: string;
-  /** Formspree form endpoint for the contact form (placeholder — form id TBD). */
-  formspreeEndpoint: string;
-}
-
-export interface SiteSocial {
-  instagram: string;
 }
 
 export interface SiteSeo {
   title: string;
   description: string;
-  /** Canonical URL (placeholder until a domain is chosen). */
   url: string;
 }
 
@@ -34,32 +26,24 @@ export interface Site {
   tagline: string;
   nav: SiteNavItem[];
   contact: SiteContact;
-  social: SiteSocial;
   seo: SiteSeo;
 }
 
 export const SITE: Site = {
-  name: "Ethan Holtzman",
-  tagline: "Wonder, in three forms.",
+  name: "The Red Flying Dragon",
+  tagline: "The Chinese arts of tea and tai chi, by Ethan Holtzman.",
   nav: [
-    { label: "Magic", href: "/magic" },
-    { label: "Tea", href: "/tea" },
-    { label: "Tai Chi", href: "/tai-chi" },
-    { label: "About", href: "/about" },
-    { label: "Contact", href: "/contact" },
+    { label: "The practice", href: "#worlds" },
+    { label: "Talk to Ethan", href: "#contact" },
   ],
   contact: {
-    email: "hello@ethanholtzman.example", // placeholder
-    sms: "+10000000000", // placeholder
-    formspreeEndpoint: "", // placeholder — Formspree form id TBD
-  },
-  social: {
-    instagram: "https://instagram.com/", // placeholder
+    email: "flyingdragontea@gmail.com",
+    sms: "+14156991715",
   },
   seo: {
-    title: "Ethan Holtzman — Magic, Tea & Tai Chi",
+    title: "The Red Flying Dragon — Tea & Tai Chi by Ethan Holtzman",
     description:
-      "Close-up magic, the Chinese art of tea, and the stillness of Tai Chi — performed by Ethan Holtzman.",
-    url: "https://ethanholtzman.example", // placeholder
+      "The Chinese art of tea and the moving meditation of tai chi, performed and taught by Ethan Holtzman. A ceremony that slows the whole room down.",
+    url: "https://theredflyingdragon.com",
   },
 };
