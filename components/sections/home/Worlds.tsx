@@ -1,12 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
 import { SectionHeading } from "@/components/shared";
 import { Stage3D } from "@/webgl/core/Stage3D";
 import { useDriveProgress } from "@/webgl/core/useDriveProgress";
 import { DeckPoster } from "@/webgl/cards/DeckPoster";
 import type { DeckCard } from "@/webgl/cards/FlippingCardsScene";
+import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { HOME, type WorldKey } from "@/content/home";
 
 const FlippingCardsScene = dynamic(
@@ -18,19 +18,26 @@ const FlippingCardsScene = dynamic(
 );
 
 const accentColor: Record<WorldKey, string> = {
-  magic: "#e0a040",
   tea: "#c99a4e",
+  yinyang: "#e0a040",
   taichi: "#afc4b4",
 };
 
+/** Smoothly bring the contact form into view — the deck's single call to action. */
+function scrollToContact() {
+  document
+    .getElementById("contact")
+    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 /**
- * The three-worlds centerpiece. On a capable device the worlds are a 3D card
- * deck that stacks face-down, spreads, then flips one by one on scroll
- * (Stage3D + FlippingCardsScene). Otherwise — and for keyboard/SEO — the static
- * DeckPoster: three linked cards.
+ * The three-cards centerpiece. On a capable device the cards are a 3D deck that
+ * stacks face-down, spreads, then flips one by one on scroll (Stage3D +
+ * FlippingCardsScene). Otherwise — and for keyboard/SEO — the static DeckPoster.
+ * A card click brings the visitor to the contact form.
  */
 export function Worlds() {
-  const router = useRouter();
+  const isMobile = useIsMobile();
   const { triggerRef, progressRef } = useDriveProgress<HTMLDivElement>({
     // Map progress to the window where the deck is stuck centered on screen:
     // p=0 the instant it pins (stacked, face-down) — before that the scrub
@@ -41,9 +48,8 @@ export function Worlds() {
   });
 
   const cards: DeckCard[] = HOME.worlds.map((world) => ({
-    image: world.image,
+    symbol: world.symbol,
     color: accentColor[world.key],
-    href: world.href,
     label: world.title,
   }));
 
@@ -70,7 +76,8 @@ export function Worlds() {
                 active={active}
                 progressRef={progressRef}
                 cards={cards}
-                onSelect={(href) => router.push(href)}
+                onSelect={scrollToContact}
+                isMobile={isMobile}
               />
             )}
           />

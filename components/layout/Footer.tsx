@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { SITE } from "@/content/site";
+import { buildSmsHref } from "@/lib/contact/sms";
 
-/** Site footer: brand, navigation, social, legal, credit. */
+/** Site footer: brand, in-page nav, direct contact, legal credit. */
 export function Footer() {
+  const smsHref = buildSmsHref(SITE.contact.sms);
+
   return (
     <footer className="relative z-10 border-t border-stone/15 bg-stage">
       <div className="mx-auto flex max-w-7xl flex-col gap-10 px-6 py-16 sm:flex-row sm:justify-between">
@@ -27,25 +30,25 @@ export function Footer() {
 
         <div className="flex flex-col gap-2.5">
           <a
-            href={SITE.social.instagram}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={`mailto:${SITE.contact.email}`}
             className="font-sans text-sm text-stone transition-colors hover:text-cream"
           >
-            Instagram
+            {SITE.contact.email}
           </a>
-          <Link
-            href="/privacy"
-            className="font-sans text-sm text-stone transition-colors hover:text-cream"
-          >
-            Privacy
-          </Link>
+          {smsHref ? (
+            <a
+              href={smsHref}
+              className="font-sans text-sm text-stone transition-colors hover:text-cream"
+            >
+              Text Ethan
+            </a>
+          ) : null}
         </div>
       </div>
 
       <div className="border-t border-stone/10">
         <p className="mx-auto max-w-7xl px-6 py-6 font-sans text-xs text-stone/60">
-          © {SITE.name}. All rights reserved.
+          © {new Date().getFullYear()} {SITE.name}. All rights reserved.
         </p>
       </div>
     </footer>

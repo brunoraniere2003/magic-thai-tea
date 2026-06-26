@@ -4,6 +4,7 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { SITE } from "@/content/site";
 import { buttonClasses } from "@/components/ui/Button";
 import { buildSmsHref } from "@/lib/contact/sms";
+import { Turnstile } from "@/components/shared/Turnstile";
 import {
   validateContactForm,
   hasErrors,
@@ -11,8 +12,14 @@ import {
   type ContactErrors,
 } from "@/lib/contact/validateContactForm";
 
-const EMPTY: ContactValues = { name: "", email: "", message: "" };
-type Status = "idle" | "submitting" | "success" | "unavailable" | "error";
+const EMPTY: ContactValues = { name: "", email: "", phone: "" };
+type Status =
+  | "idle"
+  | "submitting"
+  | "success"
+  | "unavailable"
+  | "captcha"
+  | "error";
 
 const fieldClasses =
   "w-full rounded-xl border border-stone/25 bg-stage px-4 py-3 font-sans text-base text-cream outline-none transition-colors placeholder:text-stone/50 focus:border-cream/60";
@@ -44,17 +51,20 @@ function Field({
 }
 
 /**
- * Contact form. Placeholder until Formspree is connected: valid submits with no
- * endpoint guide the visitor to text instead. "Text Ethan" (SMS) is always
- * offered — Americans text, they do not use WhatsApp.
+ * Contact form (name / email / phone) → the `/api/contact` route, which sends
+ * the lead to Ethan via Resend (ADR 0010). Anti-spam: a hidden honeypot +
+ * Cloudflare Turnstile (constitution §10). "Text Ethan" (SMS) is always offered
+ * — Americans text. If the route is not wired yet, a valid submit guides the
+ * visitor to text instead.
  */
 export function ContactForm() {
   const [values, setValues] = useState<ContactValues>(EMPTY);
   const [errors, setErrors] = useState<ContactErrors>({});
   const [status, setStatus] = useState<Status>("idle");
+  const [honeypot, setHoneypot] = useState("");
+  const [token, setToken] = useState<string | null>(null);
 
   const smsHref = buildSmsHref(SITE.contact.sms);
-  const endpoint = SITE.contact.formspreeEndpoint;
 
   function update(field: keyof ContactValues, value: string) {
     setValues((prev) => ({ ...prev, [field]: value }));
@@ -66,24 +76,33 @@ export function ContactForm() {
     setErrors(nextErrors);
     if (hasErrors(nextErrors)) return;
 
-    if (!endpoint) {
-      setStatus("unavailable");
-      return;
-    }
-
     setStatus("submitting");
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch("/api/contact", {
         method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...values,
+          company: honeypot,
+          turnstileToken: token,
+        }),
       });
-      if (!response.ok) throw new Error("Request failed");
-      setValues(EMPTY);
-      setStatus("success");
+
+      if (response.ok) {
+        setValues(EMPTY);
+        setToken(null);
+        setStatus("success");
+        return;
+      }
+      if (response.status === 503) {
+        setStatus("unavailable");
+        return;
+      }
+      if (response.status === 403) {
+        setStatus("captcha");
+        return;
+      }
+      setStatus("error");
     } catch {
       setStatus("error");
     }
@@ -120,18 +139,36 @@ export function ContactForm() {
           />
         </Field>
 
-        <Field id="message" label="What do you have in mind?" error={errors.message}>
-          <textarea
-            id="message"
-            name="message"
-            rows={4}
+        <Field id="phone" label="Phone" error={errors.phone}>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            autoComplete="tel"
+            inputMode="tel"
             className={fieldClasses}
-            value={values.message}
-            onChange={(event) => update("message", event.target.value)}
-            aria-invalid={Boolean(errors.message)}
-            aria-describedby={errors.message ? "message-error" : undefined}
+            value={values.phone}
+            onChange={(event) => update("phone", event.target.value)}
+            aria-invalid={Boolean(errors.phone)}
+            aria-describedby={errors.phone ? "phone-error" : undefined}
           />
         </Field>
+
+        {/* Honeypot: off-screen, hidden from assistive tech and tab order. */}
+        <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+          <label htmlFor="company">Company</label>
+          <input
+            id="company"
+            name="company"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            value={honeypot}
+            onChange={(event) => setHoneypot(event.target.value)}
+          />
+        </div>
+
+        <Turnstile onToken={setToken} />
 
         <button
           type="submit"
@@ -148,6 +185,9 @@ export function ContactForm() {
           : null}
         {status === "unavailable"
           ? "The form is not live yet. The fastest way to reach Ethan is to text him below."
+          : null}
+        {status === "captcha"
+          ? "Please complete the anti-spam check and try again."
           : null}
         {status === "error"
           ? "Something went wrong. Please text Ethan instead."

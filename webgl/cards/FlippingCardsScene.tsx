@@ -1,20 +1,26 @@
 "use client";
 
-import { useRef, Suspense } from "react";
+import { useRef } from "react";
 import type { RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useTexture } from "@react-three/drei";
 import { MathUtils, type BufferGeometry, type Group } from "three";
+import type { WorldSymbol } from "@/content/home";
 import { R3FCanvas } from "@/webgl/core/R3FCanvas";
-import { cardTransform, CARD_CHOREOGRAPHY } from "@/webgl/cards/cardChoreography";
+import {
+  cardTransform,
+  cardTransformMobile,
+  CARD_CHOREOGRAPHY,
+} from "@/webgl/cards/cardChoreography";
 import { roundedPlaneGeometry } from "@/webgl/cards/roundedPlaneGeometry";
 import { getCardBackTexture } from "@/webgl/cards/makeCardBackTexture";
+import { getCardFaceTexture } from "@/webgl/cards/makeCardFaceTextures";
 
 export interface DeckCard {
-  image: string;
+  /** Drawn-icon front (tea / yinyang / taichi). */
+  symbol: WorldSymbol;
   /** Per-world accent — reserved for border/hover tinting (the back is shared). */
   color: string;
-  href: string;
+  /** Accessible label (the scene is aria-hidden; kept for parity). */
   label: string;
 }
 
@@ -38,7 +44,9 @@ interface FlipCardProps {
   index: number;
   count: number;
   progressRef: RefObject<number>;
-  onSelect: (href: string) => void;
+  onSelect: () => void;
+  /** Phone layout: cards stacked vertically and flipped on scroll (spec 029). */
+  isMobile: boolean;
 }
 
 /**
@@ -51,14 +59,22 @@ interface FlipCardProps {
  * (pre-rotated 180°, so it reads un-mirrored) takes over. Back-face culling
  * means exactly one face draws per state.
  */
-function FlipCard({ card, index, count, progressRef, onSelect }: FlipCardProps) {
+function FlipCard({
+  card,
+  index,
+  count,
+  progressRef,
+  onSelect,
+  isMobile,
+}: FlipCardProps) {
   const group = useRef<Group>(null);
-  const texture = useTexture(card.image);
 
   useFrame((_, delta) => {
     const g = group.current;
     if (!g) return;
-    const t = cardTransform(progressRef.current, index, count);
+    const t = isMobile
+      ? cardTransformMobile(progressRef.current, index, count)
+      : cardTransform(progressRef.current, index, count);
     const lambda = CARD_CHOREOGRAPHY.DAMP_LAMBDA;
     g.position.x = MathUtils.damp(g.position.x, t.x, lambda, delta);
     g.position.y = MathUtils.damp(g.position.y, t.y, lambda, delta);
@@ -78,16 +94,20 @@ function FlipCard({ card, index, count, progressRef, onSelect }: FlipCardProps) 
       }}
       onClick={(e) => {
         e.stopPropagation();
-        onSelect(card.href);
+        onSelect();
       }}
     >
-      {/* Front — world image; pre-rotated 180° so it reads un-mirrored at π. */}
+      {/* Front — drawn world symbol; pre-rotated 180° so it reads un-mirrored at π. */}
       <mesh
         geometry={getCardGeometry()}
         position={[0, 0, FACE_OFFSET]}
         rotation={[0, Math.PI, 0]}
       >
-        <meshStandardMaterial map={texture} roughness={0.6} metalness={0.1} />
+        <meshStandardMaterial
+          map={getCardFaceTexture(card.symbol)}
+          roughness={0.6}
+          metalness={0.1}
+        />
       </mesh>
       {/* Back — the shared gold art-deco card back; visible at rest. */}
       <mesh geometry={getCardGeometry()} position={[0, 0, -FACE_OFFSET]}>
@@ -105,11 +125,13 @@ export interface FlippingCardsSceneProps {
   active: boolean;
   progressRef: RefObject<number>;
   cards: DeckCard[];
-  onSelect: (href: string) => void;
+  onSelect: () => void;
+  /** Phone layout (spec 029): vertical deck, scaled to fit, flips on scroll. */
+  isMobile?: boolean;
 }
 
 /**
- * The three worlds as a 3D card deck: stacked face-down → spread side by side →
+ * The three cards as a 3D deck: stacked face-down → spread side by side →
  * flipped one by one, all driven by scroll progress (Lusion "Area of Expertise").
  */
 export function FlippingCardsScene({
@@ -117,6 +139,7 @@ export function FlippingCardsScene({
   progressRef,
   cards,
   onSelect,
+  isMobile = false,
 }: FlippingCardsSceneProps) {
   return (
     <R3FCanvas active={active}>
@@ -127,18 +150,21 @@ export function FlippingCardsScene({
           dark; the mid-flip grazing angle dims slightly, which reads as volume. */}
       <ambientLight intensity={0.9} />
       <directionalLight position={[0, 0, 5]} intensity={1.1} />
-      <Suspense fallback={null}>
+      {/* On phones the whole deck is scaled down so the 3 vertically-stacked
+          cards fit the frustum (the layout itself is in cardTransformMobile). */}
+      <group scale={isMobile ? CARD_CHOREOGRAPHY.MOBILE_SCALE : 1}>
         {cards.map((card, i) => (
           <FlipCard
-            key={card.href}
+            key={card.symbol}
             card={card}
             index={i}
             count={cards.length}
             progressRef={progressRef}
             onSelect={onSelect}
+            isMobile={isMobile}
           />
         ))}
-      </Suspense>
+      </group>
     </R3FCanvas>
   );
 }

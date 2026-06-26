@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   cardTransform,
+  cardTransformMobile,
   clamp01,
   easeInOutCubic,
   CARD_CHOREOGRAPHY,
@@ -142,5 +143,62 @@ describe("cardTransform — flips overlap (cards chain into each other)", () => 
     const pHalf = 0.74; // FLIP_START + FLIP_STAGGER + 0.5 * FLIP_DURATION
     expect(cardTransform(pHalf, 1, 3).rotationY).toBeCloseTo(Math.PI * 0.5, 2);
     expect(cardTransform(pHalf, 2, 3).rotationY).toBeGreaterThan(0);
+  });
+});
+
+describe("cardTransformMobile — vertical pre-separated stack (spec 029)", () => {
+  it("p=0: every card is face-down (rotationY≈0) and horizontally centered (x=0)", () => {
+    for (let i = 0; i < 3; i++) {
+      const t = cardTransformMobile(0, i, 3);
+      expect(t.rotationY).toBeCloseTo(0);
+      expect(t.x).toBe(0);
+    }
+  });
+
+  it("stacks the cards vertically, already separated (y decreases by index)", () => {
+    const y0 = cardTransformMobile(0, 0, 3).y;
+    const y1 = cardTransformMobile(0, 1, 3).y;
+    const y2 = cardTransformMobile(0, 2, 3).y;
+    expect(y0).toBeGreaterThan(y1);
+    expect(y1).toBeGreaterThan(y2);
+    expect(y1).toBeCloseTo(0); // middle card centred
+  });
+
+  it("never spreads horizontally (x stays 0) and keeps y fixed while flipping", () => {
+    for (const p of [0, 0.5, 1]) {
+      for (let i = 0; i < 3; i++) {
+        expect(cardTransformMobile(p, i, 3).x).toBe(0);
+      }
+    }
+    expect(cardTransformMobile(1, 0, 3).y).toBeCloseTo(
+      cardTransformMobile(0, 0, 3).y,
+    );
+  });
+
+  it("p=1: every card is flipped to the front (rotationY≈π)", () => {
+    for (let i = 0; i < 3; i++) {
+      expect(cardTransformMobile(1, i, 3).rotationY).toBeCloseTo(Math.PI);
+    }
+  });
+
+  it("flips in sequence (earlier cards lead); the last lands exactly at p=1", () => {
+    expect(cardTransformMobile(0.5, 0, 3).rotationY).toBeGreaterThan(
+      cardTransformMobile(0.5, 2, 3).rotationY,
+    );
+    expect(cardTransformMobile(0.9, 2, 3).rotationY).toBeLessThan(Math.PI);
+    expect(cardTransformMobile(1, 2, 3).rotationY).toBeCloseTo(Math.PI);
+  });
+
+  it("flip is monotonic per card and clamps progress outside [0,1]", () => {
+    for (let i = 0; i < 3; i++) {
+      let prev = -Infinity;
+      for (let p = 0; p <= 1.0001; p += 0.02) {
+        const r = cardTransformMobile(p, i, 3).rotationY;
+        expect(r).toBeGreaterThanOrEqual(prev - 1e-9);
+        prev = r;
+      }
+    }
+    expect(cardTransformMobile(-0.5, 1, 3)).toEqual(cardTransformMobile(0, 1, 3));
+    expect(cardTransformMobile(1.5, 1, 3)).toEqual(cardTransformMobile(1, 1, 3));
   });
 });

@@ -4,14 +4,16 @@
 > Mudar qualquer item exige um ADR (registro de decisão) — não se muda no impulso.
 
 ## 0. Produto
-Site de captação + agendamento para **Ethan Holtzman** (🔥 Magic · 🍵 Tea · ☯️ Tai Chi). Três objetivos: **encantar** (animação extraordinária), **converter** tráfego pago e **agendar**. Público: Estados Unidos.
+> Atualizado pelo **ADR 0009** (2026-06-26): pivô pra LP única, sem Magic.
+
+**Landing page única** de captação da marca **The Red Flying Dragon** (🍵 Tea · ☯️ Tai Chi — yin-yang como elo). Três seções: Hero → Cartas → Contato. Dois objetivos: **encantar** (animação extraordinária) e **converter** tráfego pago em **contato** (formulário + SMS). Público: Estados Unidos. *(Histórico: nasceu como site multi-página "Ethan Holtzman — Magic·Tea·Tai Chi"; Magic e as landings por mundo foram descopados.)*
 
 ## 1. Idioma
 - **Inglês:** código, conteúdo do site, variáveis, constantes, nomes de branch, mensagens de commit.
 - **Português:** documentação de processo (specs, changelog, ADRs) — é para leitura do dono.
 
 ## 2. Stack travada
-Next.js (App Router) + TypeScript + Tailwind · GSAP+ScrollTrigger, Lenis, Three.js/react-three-fiber, Framer Motion · shadcn/ui · Vercel · Cal.com · Formspree. **Trocar qualquer peça = ADR.**
+Next.js (App Router) + TypeScript + Tailwind · GSAP+ScrollTrigger, Lenis, Three.js/react-three-fiber, Framer Motion · shadcn/ui · Vercel · **Resend** (contato — ADR 0010, reverteu Formspree). **Trocar qualquer peça = ADR.** *(Cal.com/agendamento descopado pelo ADR 0009; contato é a conversão.)*
 
 ## 3. Orçamentos de performance (gates de CI — falham o build)
 - LCP < 2,5s · INP < 200ms · CLS < 0,1.

@@ -4,13 +4,17 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { SITE } from "@/content/site";
+import { buttonClasses } from "@/components/ui/Button";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
+
+const CONTACT_HREF = "#contact";
 
 /**
  * Fixed top header. Transparent over the Hero, then a blurred translucent
- * background once scrolled. On mobile, the menu is a full-screen overlay that
- * reveals (clip-path) with its links cascading in. Reduced motion → instant
- * toggle, no animation. Esc closes; body scroll locks while open.
+ * background once scrolled. In-page anchor links scroll smoothly. The "Talk to
+ * Ethan" item is a pill CTA → the contact form. On mobile the menu is a
+ * full-screen overlay that reveals (clip-path) with its links cascading in.
+ * Reduced motion → instant toggle. Esc closes; body scroll locks while open.
  */
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -19,6 +23,19 @@ export function Header() {
   const overlayRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<HTMLUListElement>(null);
   const hasOpened = useRef(false);
+
+  // Smoothly scroll to an in-page anchor; close the mobile menu.
+  const onAnchorClick = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) => {
+    if (!href.startsWith("#")) return;
+    event.preventDefault();
+    setOpen(false);
+    document
+      .getElementById(href.slice(1))
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   // Translucent background once the user scrolls past the top.
   useEffect(() => {
@@ -102,6 +119,8 @@ export function Header() {
     [],
   );
 
+  const links = SITE.nav.filter((item) => item.href !== CONTACT_HREF);
+
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-500 ${
@@ -122,19 +141,29 @@ export function Header() {
           {SITE.name}
         </Link>
 
-        <ul className="hidden gap-8 sm:flex">
-          {SITE.nav.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className="group relative font-sans text-sm tracking-wide text-stone transition-colors hover:text-cream"
-              >
-                {item.label}
-                <span className="absolute -bottom-1 left-0 h-px w-0 bg-cream transition-all duration-300 group-hover:w-full" />
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <div className="hidden items-center gap-8 sm:flex">
+          <ul className="flex gap-8">
+            {links.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  onClick={(event) => onAnchorClick(event, item.href)}
+                  className="group relative font-sans text-sm tracking-wide text-stone transition-colors hover:text-cream"
+                >
+                  {item.label}
+                  <span className="absolute -bottom-1 left-0 h-px w-0 bg-cream transition-all duration-300 group-hover:w-full" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <Link
+            href={CONTACT_HREF}
+            onClick={(event) => onAnchorClick(event, CONTACT_HREF)}
+            className={buttonClasses("primary", "px-5 py-2.5")}
+          >
+            Talk to Ethan
+          </Link>
+        </div>
 
         <button
           type="button"
@@ -158,7 +187,7 @@ export function Header() {
               <Link
                 href={item.href}
                 className="font-display text-4xl text-cream"
-                onClick={() => setOpen(false)}
+                onClick={(event) => onAnchorClick(event, item.href)}
               >
                 {item.label}
               </Link>

@@ -1,35 +1,34 @@
 import { test, expect } from "@playwright/test";
 
 // Under reduced motion every section is at its final (visible) state, so this
-// verifies the Home's content and conversion path independent of animation.
-test("home renders the three worlds and the conversion path", async ({
+// verifies the LP's content and conversion path independent of animation.
+test("home renders the three cards and the conversion path", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
 
-  // The triptych — three world headings.
-  await expect(
-    page.getByRole("heading", { name: "Magic", level: 3 }),
-  ).toBeVisible();
+  // The three cards (static poster under reduced motion).
   await expect(
     page.getByRole("heading", { name: "Tea", level: 3 }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Yin & Yang", level: 3 }),
   ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Tai Chi", level: 3 }),
   ).toBeVisible();
 
-  // Card content + social proof.
+  // Card essence copy.
   await expect(
-    page.getByText(/impossible things, inches from your eyes/i),
+    page.getByText(/slows the whole room down/i),
   ).toBeVisible();
-  await expect(page.getByText(/not one person looked away/i)).toBeVisible();
 
   // Conversion: contact form + the always-present text option.
   await expect(
     page.getByRole("button", { name: /send message/i }),
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { name: /text ethan/i }),
+    page.getByRole("link", { name: /text ethan/i }).first(),
   ).toBeVisible();
 });
