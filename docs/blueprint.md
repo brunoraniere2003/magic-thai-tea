@@ -9,16 +9,18 @@
 
 ## 1. Visão geral
 
-Site para **Ethan Holtzman**, artista de três disciplinas:
+> ⚠️ **Pivô (ADR 0009, 2026-06-26):** o produto virou **uma landing page** da marca **The Red Flying Dragon**, **sem Magic**. A visão multi-página abaixo é histórica; o que vale agora está nas specs **028/029**. Mantida pra contexto.
 
-- 🔥 **Magic** — performance de mágica close-up para eventos, jantares e encontros privados.
+Site (LP única) da marca **The Red Flying Dragon** — Ethan Holtzman, duas disciplinas + o elo:
+
 - 🍵 **Tea** — cerimônia/degustação de chá chinês (gongfu cha) performática.
 - ☯️ **Tai Chi** — aulas de Tai Chi Chuan (particular e pequenos grupos).
+- ☯ **Yin-Yang** — o equilíbrio que une chá e tai chi (carta do meio).
+- ~~🔥 Magic~~ — **descopado** (ADR 0009).
 
 **Objetivo do produto:**
 1. **Encantar** (experiência visual de altíssimo nível — "wow" real, sem cara de site genérico/IA).
-2. **Converter** tráfego pago em agendamento.
-3. **Gerar contato**.
+2. **Converter** tráfego pago em **contato** (formulário → Resend + botão de SMS).
 
 **Público:** Estados Unidos (somente). Conteúdo em inglês. Fuso horário tratado automaticamente.
 
@@ -32,11 +34,16 @@ Site para **Ethan Holtzman**, artista de três disciplinas:
 
 ## 2. Os três mundos — identidade sensorial
 
-| Mundo | Paleta de acento | Clima | Animação-assinatura |
+> Atualizado (ADR 0009): as 3 cartas agora são **chá / yin-yang / tai chi** (sem Magic). A paleta dourado/carmim do antigo "Magic" vira a **paleta da marca** (o dragão vermelho/dourado) — verso e frente das cartas em art-déco dourado.
+
+| Carta | Paleta de acento | Clima | Símbolo (frente, desenhada) |
 |---|---|---|---|
-| 🔥 Magic | Brasa `#FF5E1A` · Dourado `#E0A040` · Carmim `#3A0E08` | Tensão, calor, mistério | Cartas que se espalham + brasa/fagulhas reativas |
-| 🍵 Tea | Verde-chá `#6E8B6A` · Âmbar `#C99A4E` · Creme `#EDE3D0` | Calma, presença, ritual | Vapor/fluido (Pavel adaptado) seguindo o cursor/toque, splat baixo |
-| ☯️ Tai Chi | Névoa `#9DAAB2` · Tinta `#14110F` · Jade pálido `#AFC4B4` | Serenidade, vazio, fluidez | Tinta sumi-ê se espalhando com o gesto |
+| 🍵 Tea | Âmbar `#C99A4E` · Dourado `#E0A040` · Carmim `#3A0E08` | Calma, presença, ritual | Xícara + vapor |
+| ☯ Yin-Yang | Dourado `#E0A040` · Carmim `#3A0E08` | Equilíbrio, elo | Taijitu clássico |
+| ☯️ Tai Chi | Jade pálido `#AFC4B4` · Dourado `#E0A040` | Serenidade, fluidez | Silhueta de figura em movimento |
+
+> **Hero (marca):** desktop = fogo reativo ao toque (Pavel, paleta dourada). Mobile = caracteres **飛龍** ("flying dragon") feitos de fogo, menores, automáticos (spec 029).
+> ~~🔥 Magic~~ — descopado (ADR 0009).
 
 ---
 
@@ -47,8 +54,8 @@ Site para **Ethan Holtzman**, artista de três disciplinas:
 | 1 | Modelo | Captação + agendamento (lead-gen + booking) de 3 serviços |
 | 2 | Plataforma | Web responsiva (desktop + mobile); sem app |
 | 3 | Arquitetura | Site único organizado por "mundos"; sem over-engineering |
-| 4 | Stack | Next.js + TypeScript + Tailwind; GSAP+ScrollTrigger, Lenis, Three.js/react-three-fiber, Framer Motion; Vercel; Cal.com; Formspree |
-| 8 | Integrações | Sem API própria — Cal.com (agenda) + Formspree (contato) |
+| 4 | Stack | Next.js + TypeScript + Tailwind; GSAP+ScrollTrigger, Lenis, Three.js/react-three-fiber, Framer Motion; Vercel; **Resend** (ADR 0010). ~~Cal.com; Formspree~~ |
+| 8 | Integrações | Rota interna `/api/contact` → **Resend** (ADR 0010). ~~Cal.com + Formspree~~ (descopado, ADR 0009) |
 | 9 | Git | GitHub Flow; branch por tarefa (`contexto/atividade`); repo privado |
 | 15 | Segurança | Sem login/dados sensíveis; HTTPS; chaves em env; anti-spam (honeypot + Turnstile) |
 | 16 | Design System | Tokens por mundo; tipografia editorial; base shadcn/ui |
