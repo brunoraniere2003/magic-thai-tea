@@ -35,6 +35,10 @@ export const CARD_CHOREOGRAPHY = {
   STACK_DEPTH: 0.04,
   /** Damping speed for the scene's useFrame (frame-rate independent). */
   DAMP_LAMBDA: 7,
+  /** MOBILE: vertical distance between neighbouring cards (card-local units). */
+  MOBILE_GAP: 1.9,
+  /** MOBILE: uniform scale applied to the whole deck so 3 cards fit the phone. */
+  MOBILE_SCALE: 0.55,
 } as const;
 
 export function clamp01(x: number): number {
@@ -80,4 +84,34 @@ export function cardTransform(
   const rotationY = flip * Math.PI;
 
   return { x, y: 0, z, rotationY };
+}
+
+/**
+ * MOBILE choreography (spec 029): the deck is NOT spread horizontally. The cards
+ * start already separated **vertically** (one above another, card 0 on top) and
+ * each flips (back→front) over the full scroll in a staggered, overlapping
+ * window — the last card lands exactly at p=1. `x`/`z` stay 0; positions are in
+ * card-local units (the scene applies MOBILE_SCALE to the whole group so they
+ * fit the phone). Desktop `cardTransform` is untouched.
+ */
+export function cardTransformMobile(
+  p: number,
+  index: number,
+  count: number,
+): CardTarget {
+  const { FLIP_DURATION, FLIP_END, MOBILE_GAP } = CARD_CHOREOGRAPHY;
+
+  const progress = clamp01(p);
+  const center = (count - 1) / 2;
+  // Card 0 sits at the top (+y), the last at the bottom (−y); pre-separated.
+  const y = (center - index) * MOBILE_GAP;
+
+  // Spread the staggered flips across the whole [0,1] so the last ends at p=1.
+  const stagger = count > 1 ? (FLIP_END - FLIP_DURATION) / (count - 1) : 0;
+  const start = index * stagger;
+  const end = start + FLIP_DURATION;
+  const flip = easeInOutCubic(clamp01((progress - start) / (end - start)));
+  const rotationY = flip * Math.PI;
+
+  return { x: 0, y, z: 0, rotationY };
 }

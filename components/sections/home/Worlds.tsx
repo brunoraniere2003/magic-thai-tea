@@ -6,6 +6,7 @@ import { Stage3D } from "@/webgl/core/Stage3D";
 import { useDriveProgress } from "@/webgl/core/useDriveProgress";
 import { DeckPoster } from "@/webgl/cards/DeckPoster";
 import type { DeckCard } from "@/webgl/cards/FlippingCardsScene";
+import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { HOME, type WorldKey } from "@/content/home";
 
 const FlippingCardsScene = dynamic(
@@ -36,6 +37,7 @@ function scrollToContact() {
  * A card click brings the visitor to the contact form.
  */
 export function Worlds() {
+  const isMobile = useIsMobile();
   const { triggerRef, progressRef } = useDriveProgress<HTMLDivElement>({
     // Map progress to the window where the deck is stuck centered on screen:
     // p=0 the instant it pins (stacked, face-down) — before that the scrub
@@ -75,6 +77,7 @@ export function Worlds() {
                 progressRef={progressRef}
                 cards={cards}
                 onSelect={scrollToContact}
+                isMobile={isMobile}
               />
             )}
           />
