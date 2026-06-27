@@ -4,12 +4,12 @@ import { test, expect } from "@playwright/test";
 test("contact form submits a lead and confirms success", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 
-  // Stub the Resend-backed route so the test is hermetic (no real email).
-  await page.route("**/api/contact", (route) =>
+  // Stub FormSubmit so the test is hermetic (no real email).
+  await page.route("**/formsubmit.co/**", (route) =>
     route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify({ ok: true }),
+      body: JSON.stringify({ success: "true" }),
     }),
   );
 
