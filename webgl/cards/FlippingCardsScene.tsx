@@ -1,9 +1,16 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
-import { MathUtils, type BufferGeometry, type Group } from "three";
+import {
+  CanvasTexture,
+  LinearFilter,
+  MathUtils,
+  SRGBColorSpace,
+  type BufferGeometry,
+  type Group,
+} from "three";
 import type { WorldSymbol } from "@/content/home";
 import { R3FCanvas } from "@/webgl/core/R3FCanvas";
 import {
@@ -12,16 +19,16 @@ import {
   CARD_CHOREOGRAPHY,
 } from "@/webgl/cards/cardChoreography";
 import { roundedPlaneGeometry } from "@/webgl/cards/roundedPlaneGeometry";
-import { BUTTON_BAND } from "@/webgl/cards/cardArt";
+import { BUTTON_BAND, CARD_ART, drawDetailFace } from "@/webgl/cards/cardArt";
 import { getCardBackTexture } from "@/webgl/cards/makeCardBackTexture";
 import { getCardFaceTexture } from "@/webgl/cards/makeCardFaceTextures";
 
 export interface DeckCard {
   /** Drawn-icon front (tea / yinyang / taichi). */
   symbol: WorldSymbol;
-  /** Card title, drawn on the face and shown in the reveal overlay. */
+  /** Card title, drawn on the face. */
   title: string;
-  /** Short explanation shown in the reveal overlay. */
+  /** Invitation typed into the card when revealed (tap Book to plan). */
   blurb: string;
   /** Per-world accent (reserved for tinting). */
   color: string;
@@ -49,27 +56,59 @@ interface FlipCardProps {
   index: number;
   count: number;
   progressRef: RefObject<number>;
-  onReveal: (card: DeckCard) => void;
+  /** Scroll the page to the contact form (the card's "Book" action). */
+  onBook: () => void;
   /** Phone layout: focused carousel (spec 031). */
   isMobile: boolean;
+}
+
+/** Per-card mutable canvas + texture for the typed-in "revealed" face. */
+function makeDetailTexture(): { ctx: CanvasRenderingContext2D | null; texture: CanvasTexture } {
+  const canvas = document.createElement("canvas");
+  canvas.width = CARD_ART.W;
+  canvas.height = CARD_ART.H;
+  const ctx = canvas.getContext("2d");
+  const texture = new CanvasTexture(canvas);
+  texture.colorSpace = SRGBColorSpace;
+  texture.anisotropy = 4;
+  texture.minFilter = LinearFilter;
+  return { ctx, texture };
 }
 
 /**
  * One world card: a `<group>` holding two back-to-back planes. The choreography
  * (pure `cardTransform`) drives the group; `useFrame` only damps toward it.
- * Tapping the "Reveal" button band (read from the hit `uv`) opens the HTML
- * detail overlay, once the card is actually face-up.
+ *
+ * Reveal happens IN the card (no modal): tapping the "Reveal" band swaps the
+ * front to a typed-in invitation (word-by-word) with a "Book" button that fades
+ * in at the end. Tapping "Book" scrolls to contact; tapping the card body again
+ * flips back to the face. Only reacts once the card is actually face-up.
  */
 function FlipCard({
   card,
   index,
   count,
   progressRef,
-  onReveal,
+  onBook,
   isMobile,
 }: FlipCardProps) {
   const group = useRef<Group>(null);
   const faceUp = useRef(false);
+  const [revealed, setRevealed] = useState(false);
+  const revealAnim = useRef(0);
+
+  const words = useMemo(() => card.blurb.split(/\s+/), [card.blurb]);
+  const detail = useMemo(makeDetailTexture, []);
+  // Typing pace: ~0.085s per word after a short lead-in.
+  const duration = 0.45 + words.length * 0.085;
+
+  const paintDetail = (p: number) => {
+    if (!detail.ctx) return;
+    const shown = Math.floor(Math.min(p / 0.85, 1) * words.length);
+    const bookAlpha = Math.max(0, Math.min((p - 0.85) / 0.15, 1));
+    drawDetailFace(detail.ctx, words, shown, bookAlpha);
+    detail.texture.needsUpdate = true;
+  };
 
   useFrame((_, delta) => {
     const g = group.current;
@@ -85,6 +124,11 @@ function FlipCard({
     const s = MathUtils.damp(g.scale.x, t.scale, lambda, delta);
     g.scale.setScalar(s);
     faceUp.current = g.rotation.y > Math.PI * 0.6;
+
+    if (revealed && revealAnim.current < 1) {
+      revealAnim.current = Math.min(1, revealAnim.current + delta / duration);
+      paintDetail(revealAnim.current);
+    }
   });
 
   return (
@@ -99,19 +143,29 @@ function FlipCard({
       }}
       onClick={(e) => {
         e.stopPropagation();
-        // Only react once the card shows its face, and only on the button band.
-        if (!faceUp.current) return;
-        if ((e.uv?.y ?? 1) < BUTTON_BAND) onReveal(card);
+        if (!faceUp.current) return; // ignore until the face is showing
+        const onButton = (e.uv?.y ?? 1) < BUTTON_BAND;
+        if (revealed) {
+          if (onButton) onBook();
+          else {
+            setRevealed(false); // tap body → back to the face
+            revealAnim.current = 0;
+          }
+        } else if (onButton) {
+          revealAnim.current = 0;
+          paintDetail(0); // draw the empty framed face this tick (no flash)
+          setRevealed(true);
+        }
       }}
     >
-      {/* Front: drawn face; pre-rotated 180 so it reads un-mirrored at pi. */}
+      {/* Front: face by default; the typed-in invitation once revealed. */}
       <mesh
         geometry={getCardGeometry()}
         position={[0, 0, FACE_OFFSET]}
         rotation={[0, Math.PI, 0]}
       >
         <meshStandardMaterial
-          map={getCardFaceTexture(card.symbol, card.title)}
+          map={revealed ? detail.texture : getCardFaceTexture(card.symbol, card.title)}
           roughness={0.6}
           metalness={0.1}
         />
@@ -132,7 +186,8 @@ export interface FlippingCardsSceneProps {
   active: boolean;
   progressRef: RefObject<number>;
   cards: DeckCard[];
-  onReveal: (card: DeckCard) => void;
+  /** Scroll the page to the contact form when a card's "Book" is tapped. */
+  onBook: () => void;
   /** Phone layout (spec 031): focused carousel. */
   isMobile?: boolean;
 }
@@ -145,7 +200,7 @@ export function FlippingCardsScene({
   active,
   progressRef,
   cards,
-  onReveal,
+  onBook,
   isMobile = false,
 }: FlippingCardsSceneProps) {
   return (
@@ -163,7 +218,7 @@ export function FlippingCardsScene({
             index={i}
             count={cards.length}
             progressRef={progressRef}
-            onReveal={onReveal}
+            onBook={onBook}
             isMobile={isMobile}
           />
         ))}

@@ -3,66 +3,104 @@
 import { useEffect, useRef } from "react";
 import type { RefObject } from "react";
 import WebGLFluidEnhanced from "webgl-fluid-enhanced";
+import { FEI_MEDIANS, LONG_MEDIANS } from "@/webgl/core/dragonGlyphMedians";
 
-const TOP = "飛";
-const BOTTOM = "龍";
-const GLYPH_FONT = '700 168px "Hiragino Mincho ProN", "Noto Serif SC", serif';
-
-interface Point {
+interface FlamePoint {
   x: number;
   y: number;
+  vx: number;
+  vy: number;
 }
 
+// How small the name is (each char fits a cell this wide), how dense the trace
+// is, and how fast the flame flows along the stroke.
+const CELL_FRACTION = 0.26; // of viewport width
+const CELL_MAX = 120; // px ceiling, so it stays small on big phones
+const STEP_PX = 5; // splat spacing along a stroke (denser = smoother line)
+const FLOW = 22; // tangential flame speed
+const RISE = 10; // gentle upward bias (fire rises)
+
 /**
- * Sample the two stacked glyphs into an ordered list of points (top→bottom),
- * mapped to a small box centred in the container. The fluid splats these in
- * order as the scroll advances, so the fire "writes" 飛龍.
+ * Map one character's stroke medians into ordered flame points in CSS pixels,
+ * centred on (cx, cy) inside a square `cell`. Data y increases UPWARD, so we
+ * flip it. Points are interpolated ALONG each stroke (not across strokes: the
+ * pen lifts between strokes) and carry a velocity along the stroke tangent.
  */
-function computePoints(W: number, H: number): Point[] {
-  const offW = 180;
-  const offH = 360;
-  const canvas = document.createElement("canvas");
-  canvas.width = offW;
-  canvas.height = offH;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return [];
+function buildCharPoints(
+  strokes: number[][][],
+  cx: number,
+  cy: number,
+  cell: number,
+): FlamePoint[] {
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  for (const stroke of strokes) {
+    for (const [x, y] of stroke) {
+      const fy = -y; // flip to screen space
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (fy < minY) minY = fy;
+      if (fy > maxY) maxY = fy;
+    }
+  }
+  const w = maxX - minX || 1;
+  const h = maxY - minY || 1;
+  const scale = Math.min(cell / w, cell / h);
+  const ox = cx - (minX + w / 2) * scale;
+  const oy = cy - (minY + h / 2) * scale;
+  const map = (x: number, y: number) => ({ x: ox + x * scale, y: oy + -y * scale });
 
-  ctx.fillStyle = "#fff";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.font = GLYPH_FONT;
-  ctx.fillText(TOP, offW / 2, offH * 0.27);
-  ctx.fillText(BOTTOM, offW / 2, offH * 0.73);
-
-  const data = ctx.getImageData(0, 0, offW, offH).data;
-
-  // Small box: ~46% of the width, two chars stacked (≈ 2× tall). Centred.
-  const boxW = Math.min(W * 0.46, 230);
-  const boxH = boxW * 1.95;
-  const cx = W / 2;
-  const cy = H / 2;
-
-  const pts: Point[] = [];
-  const step = 5;
-  for (let oy = 0; oy < offH; oy += step) {
-    for (let ox = 0; ox < offW; ox += step) {
-      if (data[(oy * offW + ox) * 4 + 3] > 80) {
+  const pts: FlamePoint[] = [];
+  for (const stroke of strokes) {
+    const m = stroke.map(([x, y]) => map(x, y));
+    for (let i = 0; i < m.length - 1; i++) {
+      const a = m[i];
+      const b = m[i + 1];
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const len = Math.hypot(dx, dy) || 1;
+      const steps = Math.max(1, Math.round(len / STEP_PX));
+      const ux = dx / len;
+      const uy = dy / len;
+      for (let k = 0; k < steps; k++) {
+        const t = k / steps;
         pts.push({
-          x: cx + (ox / offW - 0.5) * boxW,
-          y: cy + (oy / offH - 0.5) * boxH,
+          x: a.x + dx * t,
+          y: a.y + dy * t,
+          vx: ux * FLOW,
+          vy: -uy * FLOW - RISE,
         });
       }
     }
+    const last = m[m.length - 1];
+    if (last) pts.push({ x: last.x, y: last.y, vx: 0, vy: -RISE });
   }
   return pts;
 }
 
 /**
- * Mobile hero (spec 030): the fire **writes** the characters 飛龍 (stacked
- * vertically, small) as the visitor scrolls - as if a finger drew them - driven
- * by `progressRef` from the pinned hero ScrollTrigger. No touch needed. Pauses
- * off-screen. Decorative → aria-hidden. (Desktop keeps the touch-reactive
- * HeroCanvas; reduced-motion/no-webgl shows the static poster.)
+ * Build the full ordered trace: 飛 stacked on top of 龍, both small and centred.
+ * The fire follows this list in order, so it "writes" the name along the lines.
+ */
+function computePoints(W: number, H: number): FlamePoint[] {
+  const cell = Math.min(W * CELL_FRACTION, CELL_MAX);
+  const gap = cell * 0.14;
+  const centerY = H * 0.46;
+  const cx = W / 2;
+  return [
+    ...buildCharPoints(FEI_MEDIANS, cx, centerY - (cell + gap) / 2, cell),
+    ...buildCharPoints(LONG_MEDIANS, cx, centerY + (cell + gap) / 2, cell),
+  ];
+}
+
+/**
+ * Mobile hero (spec 030/032): the fire **writes** 飛龍 by tracing the stroke
+ * CENTERLINES in writing order (not a top-to-bottom raster) as the visitor
+ * scrolls, driven by `progressRef` from the locked hero. Small and centred.
+ * Pauses off-screen. Decorative → aria-hidden. (Desktop keeps the touch-reactive
+ * HeroCanvas; reduced-motion / no-webgl shows the static poster.)
  */
 export function HeroDragonFire({
   progressRef,
@@ -79,12 +117,12 @@ export function HeroDragonFire({
     sim.setConfig({
       simResolution: 128,
       dyeResolution: 1024,
-      densityDissipation: 2.2,
-      velocityDissipation: 2.0,
+      densityDissipation: 1.3, // let the drawn strokes linger while writing
+      velocityDissipation: 2.2,
       pressure: 0.8,
-      curl: 8,
-      splatRadius: 0.012,
-      splatForce: 2200,
+      curl: 6,
+      splatRadius: 0.0045, // thin flame line (much smaller)
+      splatForce: 1800,
       shading: true,
       colorful: false,
       colorPalette: ["#ff6a1a", "#e0a040", "#c9762e", "#ffb347"],
@@ -92,7 +130,7 @@ export function HeroDragonFire({
       transparent: true,
       brightness: 0.4,
       bloom: true,
-      bloomIntensity: 0.5,
+      bloomIntensity: 0.45,
       sunrays: false,
     });
     sim.start();
@@ -116,18 +154,18 @@ export function HeroDragonFire({
         const target = Math.floor(clamp01(progressRef.current) * total);
         if (target < lastIdx) lastIdx = target; // scrubbed back
         let n = 0;
-        while (lastIdx < target && n < 12) {
-          const pt = points[lastIdx];
-          sim.splatAtLocation(pt.x * dpr(), pt.y, 0, -30);
+        while (lastIdx < target && n < 28) {
+          const p = points[lastIdx];
+          sim.splatAtLocation(p.x * dpr(), p.y, p.vx, p.vy);
           lastIdx++;
           n++;
         }
-        // Hold: once fully written, keep a gentle glow alive on the strokes.
+        // Hold: once fully written, keep a gentle glow alive along the strokes.
         if (lastIdx >= total) {
-          const base = Math.floor(performance.now() / 90);
+          const base = Math.floor(performance.now() / 110);
           for (let k = 0; k < 3; k++) {
-            const pt = points[(base + k * 41) % total];
-            sim.splatAtLocation(pt.x * dpr(), pt.y, 0, -12);
+            const p = points[(base + k * 37) % total];
+            sim.splatAtLocation(p.x * dpr(), p.y, 0, -8);
           }
         }
       }

@@ -24,7 +24,7 @@ export interface World {
   eyebrow: string;
   title: string;
   essence: string;
-  /** Short explanation shown when a card is "revealed". */
+  /** Invitation shown inside the card when "revealed" (tap Book to plan). */
   blurb: string;
   /** Drawn-icon identifier for the canvas card face. */
   symbol: WorldSymbol;
@@ -66,7 +66,7 @@ export const HOME: HomeContent = {
       title: "Tea",
       essence: "A ceremony that slows the whole room down.",
       blurb:
-        "A gongfu tea ceremony for your guests: fragrance, ritual, and stillness, poured one careful cup at a time.",
+        "Book a private tea tasting. A gongfu ceremony performed for you and your guests. Tap Book to choose a date.",
       symbol: "tea",
     },
     {
@@ -75,7 +75,7 @@ export const HOME: HomeContent = {
       title: "Yin & Yang",
       essence: "Where tea meets tai chi.",
       blurb:
-        "The balance between the two: the stillness of the tea ceremony and the motion of tai chi. Two halves of one practice, calm and movement, held together.",
+        "Book the full experience. Tea and tai chi together, stillness and motion in one evening. Tap Book to plan it.",
       symbol: "yinyang",
     },
     {
@@ -84,7 +84,7 @@ export const HOME: HomeContent = {
       title: "Tai Chi",
       essence: "Strength that moves like calm.",
       blurb:
-        "Tai chi's moving meditation: balance, breath, and a quiet kind of power, taught at your own pace.",
+        "Book a tai chi performance or class for your event. Breath, balance, a quiet power. Tap Book to plan a date.",
       symbol: "taichi",
     },
   ],
