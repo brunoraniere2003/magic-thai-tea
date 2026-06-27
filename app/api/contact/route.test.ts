@@ -37,12 +37,22 @@ describe("POST /api/contact", () => {
     expect(send).not.toHaveBeenCalled();
   });
 
-  it("falls back to mailto when Resend is not configured (no send)", async () => {
+  it("forwards via FormSubmit when Resend is not configured (returns ok)", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: "true" }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
     const res = await POST(req(valid));
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { fallback?: string };
-    expect(body.fallback).toBe("mailto");
+    const body = (await res.json()) as { ok?: boolean };
+    expect(body.ok).toBe(true);
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining("formsubmit.co"),
+      expect.anything(),
+    );
     expect(send).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
   });
 
   it("sends the lead via Resend when configured (turnstile off)", async () => {
