@@ -17,6 +17,9 @@ const glyphFont = (size: number) =>
  * it needs no touch. The gold glyphs are always painted as the legible base; the
  * flame is masked to their strokes on top. Pauses while scrolled off-screen.
  * Decorative → aria-hidden.
+ *
+ * The helpers are arrow consts (not hoisted `function`s) so TS keeps the
+ * non-null narrowing of `canvas`/`ctx`/`fctx` inside them.
  */
 export function HeroDragonCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -35,7 +38,9 @@ export function HeroDragonCanvas() {
     let width = 0;
     let height = 0;
 
-    function resize() {
+    const fontSize = () => Math.min(width * 0.36, height * 0.3, 220);
+
+    const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = canvas.clientWidth;
       height = canvas.clientHeight;
@@ -47,13 +52,11 @@ export function HeroDragonCanvas() {
       flame.height = dh;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       fctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
+    };
     resize();
     window.addEventListener("resize", resize);
 
-    const fontSize = () => Math.min(width * 0.36, height * 0.3, 220);
-
-    function paintFlame(t: number) {
+    const paintFlame = (t: number) => {
       const cx = width / 2;
       const cy = height / 2;
 
@@ -73,7 +76,8 @@ export function HeroDragonCanvas() {
         const phase = t * 0.0009 + i * 1.7;
         const bx = cx + Math.sin(phase) * width * 0.18;
         const by = cy + Math.cos(phase * 0.8) * height * 0.12;
-        const r = (0.18 + 0.06 * Math.sin(phase * 1.3)) * Math.min(width, height);
+        const r =
+          (0.18 + 0.06 * Math.sin(phase * 1.3)) * Math.min(width, height);
         const rg = fctx.createRadialGradient(bx, by, 0, bx, by, r);
         rg.addColorStop(0, "rgba(255,179,71,0.5)");
         rg.addColorStop(1, "rgba(255,179,71,0)");
@@ -91,13 +95,13 @@ export function HeroDragonCanvas() {
       fctx.textBaseline = "middle";
       fctx.fillText(TEXT, cx, cy);
       fctx.globalCompositeOperation = "source-over";
-    }
+    };
 
     let raf = 0;
     let running = true;
     let start = performance.now();
 
-    function draw(now: number) {
+    const draw = (now: number) => {
       if (!running) return;
       const t = now - start;
       const cx = width / 2;
@@ -128,7 +132,7 @@ export function HeroDragonCanvas() {
       ctx.strokeText(TEXT, cx, cy);
 
       raf = requestAnimationFrame(draw);
-    }
+    };
     raf = requestAnimationFrame(draw);
 
     // Pause while scrolled away.
