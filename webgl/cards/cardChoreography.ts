@@ -1,15 +1,12 @@
 /**
- * Pure scroll choreography for the worlds card deck — no three, no state.
+ * Pure scroll choreography for the worlds card deck (no three, no state).
  *
- * Given the global scroll progress (0→1), the card index and the deck size,
- * it returns the TARGET transform for that card. The r3f scene only reads this
- * and damps toward it, so the entire motion is unit-testable without WebGL.
+ * Given the global scroll progress (0..1), the card index and the deck size, it
+ * returns the TARGET transform for that card. The r3f scene only reads this and
+ * damps toward it, so the entire motion is unit-testable without WebGL.
  *
- * Two independent phases (Lusion "Area of Expertise"):
- *  - Spread (p ∈ [0, SPREAD_END]): cards go from a centered face-down stack to
- *    side by side; the stack depth collapses to a flat row.
- *  - Flip   (p ∈ [FLIP_START, 1]): each card rotates 0→π (back→front) inside a
- *    staggered, slightly overlapping window — one after another.
+ * Desktop: stacked face-down, then spread side by side, then flip one by one.
+ * Mobile: a focused carousel (one card centered, neighbours peeking).
  */
 
 export interface CardTarget {
@@ -18,6 +15,8 @@ export interface CardTarget {
   z: number;
   /** 0 = back (face-down), Math.PI = front (face-up). */
   rotationY: number;
+  /** Per-card scale (1 = full). Used by the mobile carousel to shrink neighbours. */
+  scale: number;
 }
 
 export const CARD_CHOREOGRAPHY = {
@@ -29,15 +28,15 @@ export const CARD_CHOREOGRAPHY = {
   CARD_GAP: 2.05,
   /** How long one card's flip lasts, in units of p. */
   FLIP_DURATION: 0.36,
-  /** Gap between the start of consecutive flips (< DURATION → they overlap). */
+  /** Gap between the start of consecutive flips (below DURATION so they overlap). */
   FLIP_STAGGER: 0.16,
   /** Depth between stacked cards before they spread (avoids z-fighting). */
   STACK_DEPTH: 0.04,
   /** Damping speed for the scene's useFrame (frame-rate independent). */
   DAMP_LAMBDA: 7,
-  /** MOBILE: y (card-local units) that parks a card fully off-screen. */
-  MOBILE_OFFSCREEN: 4.5,
-  /** MOBILE: uniform scale so ONE card fills the phone viewport at a time. */
+  /** MOBILE: vertical gap (card-local units) between the focused card and a peek. */
+  MOBILE_PEEK: 2.8,
+  /** MOBILE: uniform scale so the focused card fills the phone viewport. */
   MOBILE_SCALE: 0.8,
 } as const;
 
@@ -70,50 +69,51 @@ export function cardTransform(
   const progress = clamp01(p);
   const offset = index - (count - 1) / 2;
 
-  // Phase A — spread (x) and collapse the stack depth (z).
+  // Phase A: spread (x) and collapse the stack depth (z).
   const spread = easeInOutCubic(clamp01(progress / SPREAD_END));
   const x = offset * CARD_GAP * spread;
   const z = index * STACK_DEPTH * (1 - spread);
 
-  // Phase B — staggered, OVERLAPPING flip (rotationY 0→π): each card starts
+  // Phase B: staggered, overlapping flip (rotationY 0..pi). Each card starts
   // FLIP_STAGGER after the previous, so the next begins while the previous is
-  // still mid-turn (STAGGER < DURATION). The last card lands exactly at p=1.
+  // still mid-turn. The last card lands exactly at p=1.
   const start = FLIP_START + index * FLIP_STAGGER;
   const end = Math.min(start + FLIP_DURATION, FLIP_END);
   const flip = easeInOutCubic(clamp01((progress - start) / (end - start)));
   const rotationY = flip * Math.PI;
 
-  return { x, y: 0, z, rotationY };
+  return { x, y: 0, z, rotationY, scale: 1 };
 }
 
 /**
- * MOBILE choreography (spec 030): **one card per viewport**. The scroll [0,1] is
- * split into `count` equal bands. In card `index`'s band it sits centered (y=0)
- * and flips back→front; before its band it waits just below the viewport, and
- * after its band it has slid off above — so exactly one card shows at a time
- * (the scene's damping turns the snaps into smooth slides). The LAST card stays
- * centered at the end (the final state). `x`/`z` stay 0; the scene applies
- * MOBILE_SCALE. Desktop `cardTransform` is untouched.
+ * MOBILE choreography (spec 031): a focused carousel. As the scroll [0,1] runs,
+ * each card rises from below, flips face-up as it settles into the centre, then
+ * slides up and away while the next does the same. The card on either side of
+ * the focused one PEEKS in at the top/bottom edges (MOBILE_PEEK), close but not
+ * overlapping. The focused card is full size, neighbours a touch smaller. The
+ * first card holds centred at p=0 and the last at p=1. Desktop is untouched.
  */
 export function cardTransformMobile(
   p: number,
   index: number,
   count: number,
 ): CardTarget {
-  const { MOBILE_OFFSCREEN } = CARD_CHOREOGRAPHY;
+  const { MOBILE_PEEK } = CARD_CHOREOGRAPHY;
 
-  const progress = clamp01(p);
-  const band = 1 / count;
-  const local = clamp01((progress - index * band) / band);
-  const rotationY = easeInOutCubic(local) * Math.PI;
+  const pos = clamp01(p) * count; // 0..count, the deck's read head
+  // Clamp the centre so the first and last cards hold centred at the ends.
+  const centre = Math.min(Math.max(pos, 0.5), count - 0.5);
+  const cardCentre = index + 0.5;
 
-  const isLast = index === count - 1;
-  let y = 0;
-  if (progress < index * band) {
-    y = -MOBILE_OFFSCREEN; // waiting just below the viewport
-  } else if (!isLast && progress >= (index + 1) * band) {
-    y = MOBILE_OFFSCREEN; // slid off above (a later card is active)
-  }
+  const y = (centre - cardCentre) * MOBILE_PEEK;
 
-  return { x: 0, y, z: 0, rotationY };
+  // Flip 0..pi over the first half of the card's band, so it is face-up exactly
+  // when it reaches the centre (uses the raw pos, not the clamped centre).
+  const rotationY = easeInOutCubic(clamp01((pos - index) / 0.5)) * Math.PI;
+
+  // Focused card full size, neighbours shrink a little (emphasis on focus).
+  const dist = Math.min(Math.abs(centre - cardCentre), 1);
+  const scale = 1 - 0.12 * dist;
+
+  return { x: 0, y, z: 0, rotationY, scale };
 }

@@ -22,7 +22,7 @@ export interface RevealProps extends HTMLAttributes<HTMLElement> {
 
 /**
  * Reveals its content (fade + gentle rise) as it scrolls into view. Use BELOW
- * the fold — the initial "hidden" state happens off-screen, so there is no
+ * the fold - the initial "hidden" state happens off-screen, so there is no
  * visible flash. Without motion it renders at the final state (visible, in place).
  */
 export function Reveal({
@@ -40,7 +40,7 @@ export function Reveal({
     ({ element, gsap, ScrollTrigger }) => {
       gsap.set(element, { autoAlpha: 0, y });
       // onEnter fires immediately if the trigger is already in view at build
-      // time (anchor jump / scrolled reload) — content never stays hidden.
+      // time (anchor jump / scrolled reload) - content never stays hidden.
       ScrollTrigger.create({
         trigger: element,
         start,

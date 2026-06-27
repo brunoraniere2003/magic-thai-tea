@@ -28,7 +28,7 @@ function getSnapshot(): boolean {
 
 /**
  * Returns true when the user has asked the OS for reduced motion.
- * Uses useSyncExternalStore — SSR-safe (server snapshot is `false`) and
+ * Uses useSyncExternalStore - SSR-safe (server snapshot is `false`) and
  * reacts to live preference changes without a setState-in-effect.
  */
 export function useReducedMotion(): boolean {

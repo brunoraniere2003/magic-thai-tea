@@ -8,7 +8,7 @@ export interface FaqProps {
 }
 
 /**
- * Frequently asked questions, built on native `<details>` — accessible by
+ * Frequently asked questions, built on native `<details>` - accessible by
  * keyboard, works without JS, and indexable by search engines.
  */
 export function Faq({ items }: FaqProps) {

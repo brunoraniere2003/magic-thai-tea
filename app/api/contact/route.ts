@@ -15,7 +15,7 @@ const SITE_ORIGIN = "https://theredflyingdragon.com";
 const FORMSUBMIT_URL = `https://formsubmit.co/ajax/${TO}`;
 
 interface ContactPayload extends ContactValues {
-  /** Honeypot — humans leave this empty; bots fill it. */
+  /** Honeypot - humans leave this empty; bots fill it. */
   company?: string;
   /** Cloudflare Turnstile token. */
   turnstileToken?: string;
@@ -23,7 +23,7 @@ interface ContactPayload extends ContactValues {
 
 /**
  * Verify the Turnstile token server-side (constitution §10). If the secret is
- * not configured yet (dev / pre-launch), we don't block — the honeypot still
+ * not configured yet (dev / pre-launch), we don't block - the honeypot still
  * applies and the gate activates the moment the keys are set in the env.
  */
 async function passesTurnstile(

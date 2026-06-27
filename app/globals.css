@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 /* ============================================================
-   Design tokens — single source of truth (see docs/blueprint.md §1)
+   Design tokens - single source of truth (see docs/blueprint.md §1)
    ============================================================ */
 @theme {
   /* Stage (base) */
-  --color-stage: #0b0a09; /* deep warm black — the stage */
+  --color-stage: #0b0a09; /* deep warm black - the stage */
   --color-cream: #f4efe6; /* primary text */
   --color-stone: #a39b8e; /* secondary text */
 
-  /* Brand fire (the red flying dragon — gold/crimson) */
+  /* Brand fire (the red flying dragon - gold/crimson) */
   --color-ember: #ff5e1a;
   --color-gold: #e0a040;
   --color-crimson: #3a0e08;
@@ -40,7 +40,7 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
-/* Film grain — cheap, CSS-only cinematic texture (applied via .grain) */
+/* Film grain - cheap, CSS-only cinematic texture (applied via .grain) */
 .grain::after {
   content: "";
   position: fixed;
@@ -49,6 +49,34 @@ body {
   pointer-events: none;
   opacity: 0.035;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Card reveal overlay: fade in, then words appear one by one (spec 031) */
+@keyframes overlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes wordIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.overlay-in {
+  animation: overlayIn 260ms ease both;
+}
+.word-in {
+  display: inline-block;
+  opacity: 0;
+  animation: wordIn 360ms ease forwards;
 }
 
 /* Respect users who ask for less motion (WCAG / constitution §4) */

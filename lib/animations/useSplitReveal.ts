@@ -10,7 +10,7 @@ import { shouldRevealOnScroll } from "./scrollAnimationMode";
 import { useIsomorphicLayoutEffect } from "./useIsomorphicLayoutEffect";
 
 /**
- * Reveals a heading line by line, each line rising from behind a mask — the
+ * Reveals a heading line by line, each line rising from behind a mask - the
  * "kinetic type" used by award-winning sites. Uses GSAP SplitText (free in
  * 3.15). On reduced motion it does nothing (text stays as-is, visible). The
  * split is reverted on cleanup so the DOM text stays clean for a11y/SEO; the
@@ -35,7 +35,7 @@ export function useSplitReveal<
         const split = new SplitText(element, { type: "lines", mask: "lines" });
         gsap.set(split.lines, { yPercent: 115, opacity: 0 });
         // ScrollTrigger.create fires onEnter immediately if the section is
-        // already in view at build time (refresh / scrolled reload) — so the
+        // already in view at build time (refresh / scrolled reload) - so the
         // text never gets stuck hidden.
         ScrollTrigger.create({
           trigger: element,

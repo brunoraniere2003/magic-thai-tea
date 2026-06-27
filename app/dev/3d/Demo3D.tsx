@@ -31,7 +31,7 @@ export function Demo3D() {
             )}
           />
           <p className="pointer-events-none relative z-10 font-sans text-xs uppercase tracking-[0.3em] text-cream/70 mix-blend-difference">
-            3D runtime — scroll to spin
+            3D runtime - scroll to spin
           </p>
         </div>
       </div>

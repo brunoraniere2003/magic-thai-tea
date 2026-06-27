@@ -7,7 +7,7 @@ import { useWebGLSupported } from "@/lib/hooks/useWebGLSupported";
 import { shouldRender3D } from "@/lib/animations/scrollAnimationMode";
 
 export interface Stage3DProps {
-  /** Static fallback — ALWAYS rendered first (shell before WebGL, SSR-safe). */
+  /** Static fallback - ALWAYS rendered first (shell before WebGL, SSR-safe). */
   poster: ReactNode;
   /** Returns the (dynamically-imported) r3f scene. Only called when gated on. */
   renderScene: (active: boolean) => ReactNode;
@@ -37,7 +37,7 @@ export function Stage3D({
   return (
     <div className={className}>
       {/* Poster paints when the 3D layer is OFF (no-WebGL / reduced-motion /
-          low-tier). When the 3D is on we hide the poster — otherwise its full-
+          low-tier). When the 3D is on we hide the poster - otherwise its full-
           bleed cards bleed past the smaller 3D deck. */}
       {!enabled ? poster : null}
       {/* The scene mounts from the start on every capable device and stays

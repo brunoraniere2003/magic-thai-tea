@@ -59,7 +59,7 @@ function computePoints(W: number, H: number): Point[] {
 
 /**
  * Mobile hero (spec 030): the fire **writes** the characters 飛龍 (stacked
- * vertically, small) as the visitor scrolls — as if a finger drew them — driven
+ * vertically, small) as the visitor scrolls - as if a finger drew them - driven
  * by `progressRef` from the pinned hero ScrollTrigger. No touch needed. Pauses
  * off-screen. Decorative → aria-hidden. (Desktop keeps the touch-reactive
  * HeroCanvas; reduced-motion/no-webgl shows the static poster.)

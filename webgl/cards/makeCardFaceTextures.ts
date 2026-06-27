@@ -9,7 +9,7 @@ import {
 } from "./cardArt";
 
 /**
- * The three card FRONTS — drawn in the gold art-deco style (no photos). Each is
+ * The three card FRONTS - drawn in the gold art-deco style (no photos). Each is
  * `drawDecoFrame` + a title (top) + a centred gold line-art symbol + a "Reveal"
  * button bar (bottom). Cached one texture per symbol (title is fixed per symbol).
  */
@@ -122,31 +122,31 @@ function drawTaiChi(ctx: CanvasRenderingContext2D, cx: number, cy: number): void
   const hipY = cy + 78;
   const shoulderY = neckY + 14;
 
-  // Spine (slight forward lean).
+  // Upright, grounded torso.
   ctx.beginPath();
   ctx.moveTo(cx, neckY);
-  ctx.quadraticCurveTo(cx + 10, cy, cx - 6, hipY);
+  ctx.lineTo(cx, hipY);
   ctx.stroke();
 
-  // Right arm — "ward off": forearm rounded forward at chest height.
+  // Arms spread wide (the photo pose): left arm raised and out, right arm
+  // extended out near shoulder height, each with a soft elbow.
   ctx.beginPath();
   ctx.moveTo(cx, shoulderY);
-  ctx.quadraticCurveTo(cx + 72, shoulderY + 6, cx + 98, shoulderY + 60);
+  ctx.quadraticCurveTo(cx - 74, shoulderY - 14, cx - 144, shoulderY - 38);
   ctx.stroke();
-  // Left arm — lower, supporting toward the hip.
   ctx.beginPath();
-  ctx.moveTo(cx, shoulderY + 12);
-  ctx.quadraticCurveTo(cx - 80, shoulderY + 40, cx - 50, hipY - 18);
+  ctx.moveTo(cx, shoulderY + 6);
+  ctx.quadraticCurveTo(cx + 74, shoulderY + 16, cx + 146, shoulderY);
   ctx.stroke();
 
-  // Legs — a rooted bow stance, weight to the front.
+  // Wide, rooted stance (horse / bow), knees bent out.
   ctx.beginPath();
-  ctx.moveTo(cx - 6, hipY);
-  ctx.quadraticCurveTo(cx + 38, hipY + 64, cx + 86, cy + 198);
+  ctx.moveTo(cx, hipY);
+  ctx.quadraticCurveTo(cx - 76, hipY + 54, cx - 122, cy + 188);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(cx - 6, hipY);
-  ctx.quadraticCurveTo(cx - 58, hipY + 72, cx - 94, cy + 198);
+  ctx.moveTo(cx, hipY);
+  ctx.quadraticCurveTo(cx + 76, hipY + 54, cx + 122, cy + 188);
   ctx.stroke();
 }
 
@@ -170,7 +170,7 @@ function drawFace(symbol: WorldSymbol, title: string) {
 
 const cache: Partial<Record<WorldSymbol, CanvasTexture>> = {};
 
-/** The drawn front for a card symbol — built once per symbol, reused. */
+/** The drawn front for a card symbol - built once per symbol, reused. */
 export function getCardFaceTexture(
   symbol: WorldSymbol,
   title: string,

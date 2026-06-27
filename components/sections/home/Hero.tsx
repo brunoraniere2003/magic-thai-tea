@@ -21,10 +21,14 @@ const HeroDragonFire = dynamic(
 );
 
 /**
- * Hero orchestrator. Content + poster are server-rendered (instant). On a
- * capable device we layer an animation: the reactive fluid on desktop, or — on
- * phones (spec 030) — the fire that *writes* 飛龍 as you scroll. In write mode
- * the hero is pinned, so the page holds until the characters finish.
+ * Hero orchestrator. Content and poster are server-rendered (instant). On a
+ * capable device we layer an animation: the reactive fluid on desktop, or, on
+ * phones (spec 031), the fire that WRITES the characters 飛龍 as you scroll.
+ *
+ * In write mode the section is taller than the viewport and its inner layer is
+ * `sticky`, so the hero stays locked on screen while the scroll drives the
+ * writing (this sticky trick works with Lenis, unlike a ScrollTrigger pin). The
+ * page only moves on past the hero once 飛龍 is finished.
  */
 export function Hero() {
   const reducedMotion = useReducedMotion();
@@ -35,11 +39,9 @@ export function Hero() {
   const animate = shouldAnimateHero({ tier, reducedMotion, webglSupported });
   const writeMode = animate && isMobile;
 
-  // Pinned scrub only in write mode (mobile): holds the hero while 飛龍 writes.
   const { triggerRef, progressRef } = useDriveProgress<HTMLElement>({
     start: "top top",
     end: "+=80%",
-    pin: writeMode,
   });
 
   const animation = isMobile ? (
@@ -51,11 +53,13 @@ export function Hero() {
   return (
     <section
       ref={triggerRef}
-      className="relative flex min-h-screen flex-col overflow-hidden"
+      className={`relative ${writeMode ? "h-[180vh]" : "min-h-screen"}`}
     >
-      <HeroPoster />
-      {animate ? animation : null}
-      <HeroContent />
+      <div className="sticky top-0 flex h-screen flex-col overflow-hidden">
+        <HeroPoster />
+        {animate ? animation : null}
+        <HeroContent />
+      </div>
     </section>
   );
 }

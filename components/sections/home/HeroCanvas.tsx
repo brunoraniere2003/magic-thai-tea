@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import WebGLFluidEnhanced from "webgl-fluid-enhanced";
 
 /**
- * The reactive fluid layer — Pavel Dobryakov's WebGL fluid (MIT), via
+ * The reactive fluid layer - Pavel Dobryakov's WebGL fluid (MIT), via
  * webgl-fluid-enhanced. GPU-bound; gated to capable devices by <Hero> and
  * paused when scrolled out of view. Decorative only → aria-hidden.
  *
@@ -68,7 +68,7 @@ export function HeroCanvas() {
     const onPointerMove = (event: PointerEvent) => {
       const point = toCanvas(event);
       if (!point) {
-        seeded = false; // pointer left the Hero — restart tracking on return
+        seeded = false; // pointer left the Hero - restart tracking on return
         return;
       }
       if (seeded) {

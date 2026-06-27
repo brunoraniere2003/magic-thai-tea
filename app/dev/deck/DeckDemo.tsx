@@ -32,7 +32,7 @@ const PRESETS = [
 
 /**
  * Dev-only: drive the flipping-cards choreography by hand (presets + slider)
- * to inspect/screenshot each phase. Writes straight to the progress ref — no
+ * to inspect/screenshot each phase. Writes straight to the progress ref - no
  * React state, same pattern the scroll uses.
  */
 export function DeckDemo() {
@@ -57,7 +57,7 @@ export function DeckDemo() {
               active={active}
               progressRef={progressRef}
               cards={cards}
-              onSelect={() => {}}
+              onReveal={() => {}}
             />
           )}
         />

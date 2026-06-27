@@ -31,7 +31,7 @@ describe("easeInOutCubic", () => {
   });
 });
 
-describe("cardTransform — p=0 (stacked, face-down)", () => {
+describe("cardTransform - p=0 (stacked, face-down)", () => {
   it("keeps every card centered (x≈0) and on the back face (rotationY≈0)", () => {
     for (let i = 0; i < 3; i++) {
       const t = cardTransform(0, i, 3);
@@ -45,7 +45,7 @@ describe("cardTransform — p=0 (stacked, face-down)", () => {
   });
 });
 
-describe("cardTransform — p=1 (spread + every card flipped to front)", () => {
+describe("cardTransform - p=1 (spread + every card flipped to front)", () => {
   it("spreads the cards side by side", () => {
     expect(cardTransform(1, 0, 3).x).toBeCloseTo(-CARD_GAP);
     expect(cardTransform(1, 1, 3).x).toBeCloseTo(0);
@@ -63,7 +63,7 @@ describe("cardTransform — p=1 (spread + every card flipped to front)", () => {
   });
 });
 
-describe("cardTransform — mid-spread (p=0.2, before any flip)", () => {
+describe("cardTransform - mid-spread (p=0.2, before any flip)", () => {
   it("has not started flipping (rotationY≈0 for all)", () => {
     for (let i = 0; i < 3; i++) {
       expect(cardTransform(0.2, i, 3).rotationY).toBeCloseTo(0);
@@ -80,7 +80,7 @@ describe("cardTransform — mid-spread (p=0.2, before any flip)", () => {
   });
 });
 
-describe("cardTransform — mid-flip (p=0.65): card 0 flipped, card 2 still face-down", () => {
+describe("cardTransform - mid-flip (p=0.65): card 0 flipped, card 2 still face-down", () => {
   it("card 0 is mostly/fully to the front", () => {
     expect(cardTransform(0.65, 0, 3).rotationY).toBeGreaterThan(Math.PI * 0.8);
   });
@@ -97,7 +97,7 @@ describe("cardTransform — mid-flip (p=0.65): card 0 flipped, card 2 still face
   });
 });
 
-describe("cardTransform — flip is monotonic per card", () => {
+describe("cardTransform - flip is monotonic per card", () => {
   it("never un-flips a card as progress grows", () => {
     for (let i = 0; i < 3; i++) {
       let prev = -Infinity;
@@ -110,7 +110,7 @@ describe("cardTransform — flip is monotonic per card", () => {
   });
 });
 
-describe("cardTransform — robustness", () => {
+describe("cardTransform - robustness", () => {
   it("clamps progress outside [0,1]", () => {
     expect(cardTransform(-0.5, 2, 3)).toEqual(cardTransform(0, 2, 3));
     expect(cardTransform(1.5, 2, 3)).toEqual(cardTransform(1, 2, 3));
@@ -130,7 +130,7 @@ describe("cardTransform — robustness", () => {
   });
 });
 
-describe("cardTransform — flips overlap (cards chain into each other)", () => {
+describe("cardTransform - flips overlap (cards chain into each other)", () => {
   // The next card must start flipping while the previous is mid-turn, not after
   // it finishes. Assert strictly > 0 (the value is tiny right at the overlap
   // point), never toBeCloseTo(0).
@@ -146,47 +146,45 @@ describe("cardTransform — flips overlap (cards chain into each other)", () => 
   });
 });
 
-describe("cardTransformMobile — one card per viewport (spec 030)", () => {
-  const OFF = CARD_CHOREOGRAPHY.MOBILE_OFFSCREEN;
-  const centered = (t: { y: number }) => Math.abs(t.y) < 0.001;
+describe("cardTransformMobile - focused carousel (spec 031)", () => {
+  const PEEK = CARD_CHOREOGRAPHY.MOBILE_PEEK;
 
-  it("p=0: card 0 is centered & face-down; the rest wait off-screen below", () => {
+  it("p=0: card 0 centered, face-down, full size; later cards stack below", () => {
     expect(cardTransformMobile(0, 0, 3).y).toBeCloseTo(0);
     expect(cardTransformMobile(0, 0, 3).rotationY).toBeCloseTo(0);
-    expect(cardTransformMobile(0, 1, 3).y).toBeCloseTo(-OFF);
-    expect(cardTransformMobile(0, 2, 3).y).toBeCloseTo(-OFF);
+    expect(cardTransformMobile(0, 0, 3).scale).toBeCloseTo(1);
+    expect(cardTransformMobile(0, 1, 3).y).toBeLessThan(0);
+    expect(cardTransformMobile(0, 2, 3).y).toBeLessThan(
+      cardTransformMobile(0, 1, 3).y,
+    );
   });
 
-  it("shows exactly ONE card centered at any progress (x always 0)", () => {
-    for (const p of [0, 0.16, 0.34, 0.5, 0.66, 0.84, 1]) {
-      const centeredCount = [0, 1, 2].filter((i) =>
-        centered(cardTransformMobile(p, i, 3)),
-      ).length;
-      expect(centeredCount).toBe(1);
-      for (let i = 0; i < 3; i++) expect(cardTransformMobile(p, i, 3).x).toBe(0);
-    }
-  });
-
-  it("mid-band (p=0.5): card 1 is centered & flipping; 0 above, 2 below", () => {
-    expect(cardTransformMobile(0.5, 1, 3).y).toBeCloseTo(0);
-    const r = cardTransformMobile(0.5, 1, 3).rotationY;
-    expect(r).toBeGreaterThan(0);
-    expect(r).toBeLessThan(Math.PI);
-    expect(cardTransformMobile(0.5, 0, 3).y).toBeCloseTo(OFF); // gone above
-    expect(cardTransformMobile(0.5, 2, 3).y).toBeCloseTo(-OFF); // waiting below
-  });
-
-  it("p=1: the last card stays centered & face-up; earlier cards are off above", () => {
+  it("p=1: last card centered & face-up; earlier cards stack above", () => {
     expect(cardTransformMobile(1, 2, 3).y).toBeCloseTo(0);
     expect(cardTransformMobile(1, 2, 3).rotationY).toBeCloseTo(Math.PI);
-    expect(cardTransformMobile(1, 0, 3).y).toBeCloseTo(OFF);
-    expect(cardTransformMobile(1, 1, 3).y).toBeCloseTo(OFF);
+    expect(cardTransformMobile(1, 1, 3).y).toBeGreaterThan(0);
+    expect(cardTransformMobile(1, 0, 3).y).toBeGreaterThan(
+      cardTransformMobile(1, 1, 3).y,
+    );
   });
 
-  it("each card flips within its own band and clamps outside [0,1]", () => {
-    // Card i is fully face-up by the end of its band.
-    expect(cardTransformMobile(1 / 3, 0, 3).rotationY).toBeCloseTo(Math.PI);
-    expect(cardTransformMobile(2 / 3, 1, 3).rotationY).toBeCloseTo(Math.PI);
+  it("the focused card is full size; its neighbours are a touch smaller", () => {
+    expect(cardTransformMobile(0, 0, 3).scale).toBeCloseTo(1);
+    expect(cardTransformMobile(0, 1, 3).scale).toBeLessThan(1);
+    expect(cardTransformMobile(0.5, 1, 3).scale).toBeCloseTo(1);
+  });
+
+  it("a card is face-up by the time it reaches the centre; neighbours peek", () => {
+    expect(cardTransformMobile(0.5, 1, 3).y).toBeCloseTo(0);
+    expect(cardTransformMobile(0.5, 1, 3).rotationY).toBeCloseTo(Math.PI);
+    expect(cardTransformMobile(0.5, 0, 3).y).toBeCloseTo(PEEK);
+    expect(cardTransformMobile(0.5, 2, 3).y).toBeCloseTo(-PEEK);
+  });
+
+  it("x stays 0 and progress clamps outside [0,1]", () => {
+    for (const p of [0, 0.5, 1]) {
+      for (let i = 0; i < 3; i++) expect(cardTransformMobile(p, i, 3).x).toBe(0);
+    }
     expect(cardTransformMobile(-0.5, 1, 3)).toEqual(cardTransformMobile(0, 1, 3));
     expect(cardTransformMobile(1.5, 1, 3)).toEqual(cardTransformMobile(1, 1, 3));
   });

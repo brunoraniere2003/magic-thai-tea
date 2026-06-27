@@ -2,7 +2,7 @@ import { Reveal } from "@/components/motion";
 import { SectionHeading, ContactForm } from "@/components/shared";
 import { HOME } from "@/content/home";
 
-/** Contact section — form + "Text Ethan". `#contact` target for bookings. */
+/** Contact section - form + "Text Ethan". `#contact` target for bookings. */
 export function Contact() {
   return (
     <section

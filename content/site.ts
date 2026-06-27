@@ -1,5 +1,5 @@
 /**
- * Site-wide content and configuration — The Red Flying Dragon (spec 028).
+ * Site-wide content and configuration for The Red Flying Dragon.
  * Single source of truth for copy that lives outside components.
  */
 
@@ -9,7 +9,7 @@ export interface SiteNavItem {
 }
 
 export interface SiteContact {
-  /** Inbox that receives contact-form leads (via Resend — ADR 0010). */
+  /** Inbox that receives contact-form leads. */
   email: string;
   /** Click-to-text number in E.164 format. */
   sms: string;
@@ -41,7 +41,7 @@ export const SITE: Site = {
     sms: "+14156991715",
   },
   seo: {
-    title: "The Red Flying Dragon — Tea & Tai Chi by Ethan Holtzman",
+    title: "The Red Flying Dragon: Tea & Tai Chi by Ethan Holtzman",
     description:
       "The Chinese art of tea and the moving meditation of tai chi, performed and taught by Ethan Holtzman. A ceremony that slows the whole room down.",
     url: "https://theredflyingdragon.com",
