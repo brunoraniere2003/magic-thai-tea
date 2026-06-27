@@ -24,3 +24,6 @@ No **mobile capaz** (high-tier + WebGL + sem reduced-motion):
 ## Consequências
 - A frase do ADR 0005 ("premium mobile fica adiado / mobile usa fallback") é **substituída** por "premium mobile com budgets explícitos".
 - Implementado na spec **029-premium-mobile**.
+
+## Atualização (spec 030, 2026-06-26)
+O dono reprovou o 1º render do hero mobile (glifo 飛龍 dourado parado com máscara fraca). O conceito 飛龍 **fica**, mas a execução muda: o **fogo (fluido) "escreve" os 2 caracteres conforme o scroll** (como um dedo desenhando), com a **rolagem pinada até a escrita terminar**, bem menor, caracteres **empilhados na vertical**. Cartas no mobile passam a ser **1 por tela** (a pilha vertical da 029 bugou). Detalhes na spec **030-lp-polish**.

@@ -23,3 +23,6 @@ Trocar **Formspree** por **Resend** para o envio do contato:
 - §2 (Formspree) → Resend. `SITE.contact.formspreeEndpoint` sai; entra a rota interna.
 - Contato é "fluxo que dá dinheiro" → coberto por **E2E** (constitution §7).
 - Setup do dono: criar conta Resend (email = flyingdragontea@gmail.com) + chaves Turnstile.
+
+## Atualização (spec 030, 2026-06-26)
+Pra **não depender do Ethan** por enquanto, o destinatário passa a ser a caixa do **dono (brunoraniere2003@gmail.com)**, com a conta Resend no nome dele, e **todo email marcado "[TEMPORARY]"** com aviso pra repassar ao Ethan. Quando o Ethan entrar (conta/domínio verificado), volta a entregar direto em flyingdragontea@gmail.com.

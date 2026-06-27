@@ -74,3 +74,72 @@ export function textureFromDraw(
   texture.minFilter = LinearFilter;
   return texture;
 }
+
+/** Bottom fraction of a card that is the button hit-zone (matches drawButtonBar). */
+export const BUTTON_BAND = 0.16;
+
+/** Card title, centered near the top inside the inner frame. */
+export function drawTitle(ctx: CanvasRenderingContext2D, text: string): void {
+  const { W, GOLD_HI } = CARD_ART;
+  ctx.fillStyle = GOLD_HI;
+  ctx.font = `600 50px Georgia, "Times New Roman", serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(text, W / 2, INNER_MARGIN + 56);
+}
+
+/** A rounded-rectangle path (arcTo — widely supported, unlike roundRect). */
+function roundedRectPath(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+): void {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+/** Gold pill button along the bottom band (the BUTTON_BAND hit-zone). */
+export function drawButtonBar(ctx: CanvasRenderingContext2D, label: string): void {
+  const { W, H, GOLD, BG } = CARD_ART;
+  const barH = 64;
+  const barY = H - (H * BUTTON_BAND) / 2 - barH / 2;
+  const pad = INNER_MARGIN + 18;
+  roundedRectPath(ctx, pad, barY, W - 2 * pad, barH, 32);
+  ctx.fillStyle = GOLD;
+  ctx.fill();
+  ctx.fillStyle = BG;
+  ctx.font = `600 28px Georgia, serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(label.toUpperCase(), W / 2, barY + barH / 2 + 1);
+}
+
+/** Greedy word-wrap into lines that fit `maxWidth` under the current ctx.font. */
+export function wrapText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number,
+): string[] {
+  const words = text.split(/\s+/);
+  const lines: string[] = [];
+  let line = "";
+  for (const word of words) {
+    const next = line ? `${line} ${word}` : word;
+    if (ctx.measureText(next).width > maxWidth && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = next;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
+}

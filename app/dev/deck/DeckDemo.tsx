@@ -39,6 +39,8 @@ export function DeckDemo() {
   const progressRef = useRef(0);
   const cards: DeckCard[] = HOME.worlds.map((w) => ({
     symbol: w.symbol,
+    title: w.title,
+    blurb: w.blurb,
     color: accentColor[w.key],
     label: w.title,
   }));

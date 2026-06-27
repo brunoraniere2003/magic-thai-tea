@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import type { RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
 import { MathUtils, type BufferGeometry, type Group } from "three";
@@ -12,12 +12,18 @@ import {
   CARD_CHOREOGRAPHY,
 } from "@/webgl/cards/cardChoreography";
 import { roundedPlaneGeometry } from "@/webgl/cards/roundedPlaneGeometry";
+import { BUTTON_BAND } from "@/webgl/cards/cardArt";
 import { getCardBackTexture } from "@/webgl/cards/makeCardBackTexture";
 import { getCardFaceTexture } from "@/webgl/cards/makeCardFaceTextures";
+import { getCardDetailTexture } from "@/webgl/cards/makeCardDetailTextures";
 
 export interface DeckCard {
   /** Drawn-icon front (tea / yinyang / taichi). */
   symbol: WorldSymbol;
+  /** Card title, drawn on the face + detail. */
+  title: string;
+  /** Short explanation shown on the revealed (detail) face. */
+  blurb: string;
   /** Per-world accent — reserved for border/hover tinting (the back is shared). */
   color: string;
   /** Accessible label (the scene is aria-hidden; kept for parity). */
@@ -68,6 +74,10 @@ function FlipCard({
   isMobile,
 }: FlipCardProps) {
   const group = useRef<Group>(null);
+  // True once the card has flipped enough to show its face (gates clicks so the
+  // back/mid-flip doesn't toggle the reveal). Updated in useFrame (no re-render).
+  const faceUp = useRef(false);
+  const [detail, setDetail] = useState(false);
 
   useFrame((_, delta) => {
     const g = group.current;
@@ -80,7 +90,12 @@ function FlipCard({
     g.position.y = MathUtils.damp(g.position.y, t.y, lambda, delta);
     g.position.z = MathUtils.damp(g.position.z, t.z, lambda, delta);
     g.rotation.y = MathUtils.damp(g.rotation.y, t.rotationY, lambda, delta);
+    faceUp.current = g.rotation.y > Math.PI * 0.6;
   });
+
+  const frontTexture = detail
+    ? getCardDetailTexture(card.symbol, card.title, card.blurb)
+    : getCardFaceTexture(card.symbol, card.title);
 
   return (
     <group
@@ -94,17 +109,25 @@ function FlipCard({
       }}
       onClick={(e) => {
         e.stopPropagation();
-        onSelect();
+        // Only interact once the card actually shows its face.
+        if (!faceUp.current) return;
+        const onBar = (e.uv?.y ?? 1) < BUTTON_BAND; // bottom button band
+        if (detail) {
+          if (onBar) onSelect(); // "Book" → contact
+          else setDetail(false); // tap the body → back to the symbol
+        } else if (onBar) {
+          setDetail(true); // "Reveal" → the detail face
+        }
       }}
     >
-      {/* Front — drawn world symbol; pre-rotated 180° so it reads un-mirrored at π. */}
+      {/* Front — drawn face or detail; pre-rotated 180° so it reads un-mirrored at π. */}
       <mesh
         geometry={getCardGeometry()}
         position={[0, 0, FACE_OFFSET]}
         rotation={[0, Math.PI, 0]}
       >
         <meshStandardMaterial
-          map={getCardFaceTexture(card.symbol)}
+          map={frontTexture}
           roughness={0.6}
           metalness={0.1}
         />

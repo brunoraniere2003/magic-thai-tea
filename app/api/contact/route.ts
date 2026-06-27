@@ -6,9 +6,10 @@ import {
 } from "@/lib/contact/validateContactForm";
 import { buildContactEmail } from "@/lib/contact/buildContactEmail";
 
-// Lead inbox + sender. Until the domain is verified in Resend, `onboarding@
-// resend.dev` delivers to the account's own address (flyingdragontea@gmail.com).
-const TO = "flyingdragontea@gmail.com";
+// TEMPORARY setup (spec 030): the Resend account is the owner's, so leads land
+// in the owner's own inbox (free tier delivers to the account address without
+// domain verification). Every email is marked [TEMPORARY] to forward to Ethan.
+const TO = "brunoraniere2003@gmail.com";
 const FROM = "The Red Flying Dragon <onboarding@resend.dev>";
 
 interface ContactPayload extends ContactValues {
