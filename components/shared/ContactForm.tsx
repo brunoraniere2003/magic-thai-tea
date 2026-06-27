@@ -13,16 +13,7 @@ import {
 } from "@/lib/contact/validateContactForm";
 
 const EMPTY: ContactValues = { name: "", email: "", phone: "" };
-// TEMPORARY lead inbox (spec 030) — matches the /api/contact route's recipient.
-// Used by the account-free mailto fallback until a Resend key is set.
-const LEAD_EMAIL = "brunoraniere2003@gmail.com";
-type Status =
-  | "idle"
-  | "submitting"
-  | "success"
-  | "mailto"
-  | "captcha"
-  | "error";
+type Status = "idle" | "submitting" | "success" | "captcha" | "error";
 
 const fieldClasses =
   "w-full rounded-xl border border-stone/25 bg-stage px-4 py-3 font-sans text-base text-cream outline-none transition-colors placeholder:text-stone/50 focus:border-cream/60";
@@ -54,11 +45,10 @@ function Field({
 }
 
 /**
- * Contact form (name / email / phone) → the `/api/contact` route, which sends
- * the lead to Ethan via Resend (ADR 0010). Anti-spam: a hidden honeypot +
- * Cloudflare Turnstile (constitution §10). "Text Ethan" (SMS) is always offered
- * — Americans text. If the route is not wired yet, a valid submit guides the
- * visitor to text instead.
+ * Contact form (name, email, phone). Posts to `/api/contact`, which sends the
+ * lead to the owner's inbox server-side (FormSubmit, or Resend if a key is set).
+ * Anti-spam: a hidden honeypot plus Cloudflare Turnstile (constitution §10).
+ * "Text Ethan" (SMS) is always offered too.
  */
 export function ContactForm() {
   const [values, setValues] = useState<ContactValues>(EMPTY);
@@ -71,16 +61,6 @@ export function ContactForm() {
 
   function update(field: keyof ContactValues, value: string) {
     setValues((prev) => ({ ...prev, [field]: value }));
-  }
-
-  // Account-free delivery: open the visitor's email app, pre-filled with the
-  // lead, addressed to the lead inbox. No server, no key, no account needed.
-  function openMailto() {
-    const subject = encodeURIComponent(`New enquiry from ${values.name.trim()}`);
-    const body = encodeURIComponent(
-      `Name: ${values.name.trim()}\nEmail: ${values.email.trim()}\nPhone: ${values.phone.trim()}`,
-    );
-    window.location.href = `mailto:${LEAD_EMAIL}?subject=${subject}&body=${body}`;
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -108,20 +88,12 @@ export function ContactForm() {
 
       const data = (await response.json().catch(() => ({}))) as {
         ok?: boolean;
-        fallback?: string;
       };
 
       if (data.ok) {
-        // Silent server send (Resend key is set).
         setValues(EMPTY);
         setToken(null);
         setStatus("success");
-        return;
-      }
-      if (data.fallback === "mailto") {
-        // No server email yet → deliver the lead via the visitor's email app.
-        openMailto();
-        setStatus("mailto");
         return;
       }
       setStatus("error");
@@ -203,10 +175,7 @@ export function ContactForm() {
 
       <p aria-live="polite" className="min-h-5 text-center font-sans text-sm text-stone">
         {status === "success"
-          ? "Thank you — Ethan will be in touch soon."
-          : null}
-        {status === "mailto"
-          ? "Opening your email — just press send and your message reaches Ethan. Prefer to text? Use the button below."
+          ? "Thank you. Ethan will be in touch soon."
           : null}
         {status === "captcha"
           ? "Please complete the anti-spam check and try again."

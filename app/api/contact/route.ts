@@ -6,11 +6,13 @@ import {
 } from "@/lib/contact/validateContactForm";
 import { buildContactEmail } from "@/lib/contact/buildContactEmail";
 
-// TEMPORARY setup (spec 030): the Resend account is the owner's, so leads land
-// in the owner's own inbox (free tier delivers to the account address without
-// domain verification). Every email is marked [TEMPORARY] to forward to Ethan.
+// TEMPORARY setup: leads land in the owner's inbox. With no Resend key, the
+// route forwards server-side through FormSubmit (account-free real email); the
+// recipient stays server-only (never exposed to the browser).
 const TO = "brunoraniere2003@gmail.com";
 const FROM = "The Red Flying Dragon <onboarding@resend.dev>";
+const SITE_ORIGIN = "https://theredflyingdragon.com";
+const FORMSUBMIT_URL = `https://formsubmit.co/ajax/${TO}`;
 
 interface ContactPayload extends ContactValues {
   /** Honeypot — humans leave this empty; bots fill it. */
@@ -77,10 +79,36 @@ export async function POST(request: Request) {
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    // No server email account yet → tell the client to deliver the lead via a
-    // pre-filled email (account-free fallback). Auto-upgrades to a silent send
-    // the moment RESEND_API_KEY is set. Returns 200 so the browser logs no error.
-    return Response.json({ ok: false, fallback: "mailto" });
+    // No Resend key: send server-side through FormSubmit (account-free real
+    // email). The Origin/Referer headers are required by FormSubmit. The
+    // visitor's email goes in the `email` field so the owner can reply.
+    try {
+      const res = await fetch(FORMSUBMIT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Origin: SITE_ORIGIN,
+          Referer: `${SITE_ORIGIN}/`,
+        },
+        body: JSON.stringify({
+          "⚠️ TEMPORARY":
+            "Temporary inbox. Please forward to Ethan (flyingdragontea@gmail.com).",
+          Name: values.name.trim(),
+          Email: values.email.trim(),
+          Phone: values.phone.trim(),
+          _subject: `[TEMPORARY] New enquiry from ${values.name.trim()}`,
+          _template: "table",
+          _captcha: "false",
+        }),
+      });
+      if (res.ok) return Response.json({ ok: true });
+      console.error("contact: formsubmit non-ok status"); // no PII
+      return Response.json({ ok: false, error: "send_failed" }, { status: 502 });
+    } catch {
+      console.error("contact: formsubmit request failed"); // no PII
+      return Response.json({ ok: false, error: "send_failed" }, { status: 502 });
+    }
   }
 
   const email = buildContactEmail(values);
