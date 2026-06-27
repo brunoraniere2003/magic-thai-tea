@@ -13,11 +13,14 @@ import {
 } from "@/lib/contact/validateContactForm";
 
 const EMPTY: ContactValues = { name: "", email: "", phone: "" };
+// TEMPORARY lead inbox (spec 030) — matches the /api/contact route's recipient.
+// Used by the account-free mailto fallback until a Resend key is set.
+const LEAD_EMAIL = "brunoraniere2003@gmail.com";
 type Status =
   | "idle"
   | "submitting"
   | "success"
-  | "unavailable"
+  | "mailto"
   | "captcha"
   | "error";
 
@@ -70,6 +73,16 @@ export function ContactForm() {
     setValues((prev) => ({ ...prev, [field]: value }));
   }
 
+  // Account-free delivery: open the visitor's email app, pre-filled with the
+  // lead, addressed to the lead inbox. No server, no key, no account needed.
+  function openMailto() {
+    const subject = encodeURIComponent(`New enquiry from ${values.name.trim()}`);
+    const body = encodeURIComponent(
+      `Name: ${values.name.trim()}\nEmail: ${values.email.trim()}\nPhone: ${values.phone.trim()}`,
+    );
+    window.location.href = `mailto:${LEAD_EMAIL}?subject=${subject}&body=${body}`;
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextErrors = validateContactForm(values);
@@ -88,18 +101,27 @@ export function ContactForm() {
         }),
       });
 
-      if (response.ok) {
+      if (response.status === 403) {
+        setStatus("captcha");
+        return;
+      }
+
+      const data = (await response.json().catch(() => ({}))) as {
+        ok?: boolean;
+        fallback?: string;
+      };
+
+      if (data.ok) {
+        // Silent server send (Resend key is set).
         setValues(EMPTY);
         setToken(null);
         setStatus("success");
         return;
       }
-      if (response.status === 503) {
-        setStatus("unavailable");
-        return;
-      }
-      if (response.status === 403) {
-        setStatus("captcha");
+      if (data.fallback === "mailto") {
+        // No server email yet → deliver the lead via the visitor's email app.
+        openMailto();
+        setStatus("mailto");
         return;
       }
       setStatus("error");
@@ -183,8 +205,8 @@ export function ContactForm() {
         {status === "success"
           ? "Thank you — Ethan will be in touch soon."
           : null}
-        {status === "unavailable"
-          ? "The form is not live yet. The fastest way to reach Ethan is to text him below."
+        {status === "mailto"
+          ? "Opening your email — just press send and your message reaches Ethan. Prefer to text? Use the button below."
           : null}
         {status === "captcha"
           ? "Please complete the anti-spam check and try again."
