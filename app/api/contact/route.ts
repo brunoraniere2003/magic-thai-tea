@@ -77,8 +77,10 @@ export async function POST(request: Request) {
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    // Not wired yet: report unavailable so the UI guides the visitor to text.
-    return Response.json({ ok: false, error: "unconfigured" }, { status: 503 });
+    // No server email account yet → tell the client to deliver the lead via a
+    // pre-filled email (account-free fallback). Auto-upgrades to a silent send
+    // the moment RESEND_API_KEY is set. Returns 200 so the browser logs no error.
+    return Response.json({ ok: false, fallback: "mailto" });
   }
 
   const email = buildContactEmail(values);

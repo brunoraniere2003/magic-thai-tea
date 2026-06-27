@@ -37,9 +37,11 @@ describe("POST /api/contact", () => {
     expect(send).not.toHaveBeenCalled();
   });
 
-  it("returns 503 when Resend is not configured", async () => {
+  it("falls back to mailto when Resend is not configured (no send)", async () => {
     const res = await POST(req(valid));
-    expect(res.status).toBe(503);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { fallback?: string };
+    expect(body.fallback).toBe("mailto");
     expect(send).not.toHaveBeenCalled();
   });
 
