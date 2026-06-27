@@ -4,7 +4,6 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { SITE } from "@/content/site";
 import { buttonClasses } from "@/components/ui/Button";
 import { buildSmsHref } from "@/lib/contact/sms";
-import { Turnstile } from "@/components/shared/Turnstile";
 import {
   validateContactForm,
   hasErrors,
@@ -13,7 +12,11 @@ import {
 } from "@/lib/contact/validateContactForm";
 
 const EMPTY: ContactValues = { name: "", email: "", phone: "" };
-type Status = "idle" | "submitting" | "success" | "captcha" | "error";
+type Status = "idle" | "submitting" | "success" | "error";
+
+// TEMPORARY: leads go to the owner's inbox via FormSubmit, sent straight from
+// the browser (their server-side endpoint blocks datacenter IPs). Account-free.
+const FORMSUBMIT_URL = "https://formsubmit.co/ajax/brunoraniere2003@gmail.com";
 
 const fieldClasses =
   "w-full rounded-xl border border-stone/25 bg-stage px-4 py-3 font-sans text-base text-cream outline-none transition-colors placeholder:text-stone/50 focus:border-cream/60";
@@ -45,17 +48,15 @@ function Field({
 }
 
 /**
- * Contact form (name, email, phone). Posts to `/api/contact`, which sends the
- * lead to the owner's inbox server-side (FormSubmit, or Resend if a key is set).
- * Anti-spam: a hidden honeypot plus Cloudflare Turnstile (constitution §10).
- * "Text Ethan" (SMS) is always offered too.
+ * Contact form (name, email, phone). Sends the lead to the owner's inbox via
+ * FormSubmit (account-free, from the browser). A hidden honeypot (`_honey`)
+ * blocks bots. "Text Ethan" (SMS) is always offered too.
  */
 export function ContactForm() {
   const [values, setValues] = useState<ContactValues>(EMPTY);
   const [errors, setErrors] = useState<ContactErrors>({});
   const [status, setStatus] = useState<Status>("idle");
   const [honeypot, setHoneypot] = useState("");
-  const [token, setToken] = useState<string | null>(null);
 
   const smsHref = buildSmsHref(SITE.contact.sms);
 
@@ -71,28 +72,28 @@ export function ContactForm() {
 
     setStatus("submitting");
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch(FORMSUBMIT_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify({
-          ...values,
-          company: honeypot,
-          turnstileToken: token,
+          Name: values.name.trim(),
+          Email: values.email.trim(),
+          Phone: values.phone.trim(),
+          _replyto: values.email.trim(),
+          _subject: `[TEMPORARY] New enquiry from ${values.name.trim()}`,
+          _template: "table",
+          _captcha: "false",
+          _honey: honeypot,
         }),
       });
-
-      if (response.status === 403) {
-        setStatus("captcha");
-        return;
-      }
-
       const data = (await response.json().catch(() => ({}))) as {
-        ok?: boolean;
+        success?: string;
       };
-
-      if (data.ok) {
+      if (response.ok && data.success === "true") {
         setValues(EMPTY);
-        setToken(null);
         setStatus("success");
         return;
       }
@@ -162,23 +163,18 @@ export function ContactForm() {
           />
         </div>
 
-        <Turnstile onToken={setToken} />
-
         <button
           type="submit"
           className={buttonClasses("primary")}
           disabled={status === "submitting"}
         >
-          {status === "submitting" ? "Sending…" : "Send message"}
+          {status === "submitting" ? "Sending..." : "Send message"}
         </button>
       </form>
 
       <p aria-live="polite" className="min-h-5 text-center font-sans text-sm text-stone">
         {status === "success"
           ? "Thank you. Ethan will be in touch soon."
-          : null}
-        {status === "captcha"
-          ? "Please complete the anti-spam check and try again."
           : null}
         {status === "error"
           ? "Something went wrong. Please text Ethan instead."
