@@ -17,7 +17,7 @@ const symbolGlyph: Record<WorldKey, string> = {
 /**
  * Static fallback / accessible layer for the cards deck: three gold-framed cards
  * in the same crimson + gold art-deco style as the 3D deck (no photos). Each is
- * a native `<details>` disclosure — the summary is the card face, opening it
+ * a native `<details>` disclosure - the summary is the card face, opening it
  * reveals the blurb + a "Book" link to the contact form (mirrors the 3D
  * reveal→detail→Book flow, accessibly). The shell under reduced-motion /
  * low-tier / no-WebGL.

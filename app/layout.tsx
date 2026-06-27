@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     siteName: SITE.name,
     title: SITE.seo.title,
     description: SITE.seo.description,
-    // /og.png — 1200×630 social image (provided by the owner).
+    // /og.png - 1200×630 social image (provided by the owner).
     images: [{ url: "/og.png", width: 1200, height: 630, alt: SITE.name }],
   },
   twitter: {

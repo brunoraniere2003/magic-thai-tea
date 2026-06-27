@@ -41,7 +41,7 @@ export function Stagger({
       if (targets.length === 0) return;
       gsap.set(targets, { autoAlpha: 0, y });
       // onEnter fires immediately if already in view at build time (anchor
-      // jump / scrolled reload) — the cascade never stays hidden.
+      // jump / scrolled reload) - the cascade never stays hidden.
       ScrollTrigger.create({
         trigger: element,
         start,

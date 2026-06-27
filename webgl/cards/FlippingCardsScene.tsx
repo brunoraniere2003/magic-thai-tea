@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import type { RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
 import { MathUtils, type BufferGeometry, type Group } from "three";
@@ -15,16 +15,15 @@ import { roundedPlaneGeometry } from "@/webgl/cards/roundedPlaneGeometry";
 import { BUTTON_BAND } from "@/webgl/cards/cardArt";
 import { getCardBackTexture } from "@/webgl/cards/makeCardBackTexture";
 import { getCardFaceTexture } from "@/webgl/cards/makeCardFaceTextures";
-import { getCardDetailTexture } from "@/webgl/cards/makeCardDetailTextures";
 
 export interface DeckCard {
   /** Drawn-icon front (tea / yinyang / taichi). */
   symbol: WorldSymbol;
-  /** Card title, drawn on the face + detail. */
+  /** Card title, drawn on the face and shown in the reveal overlay. */
   title: string;
-  /** Short explanation shown on the revealed (detail) face. */
+  /** Short explanation shown in the reveal overlay. */
   blurb: string;
-  /** Per-world accent — reserved for border/hover tinting (the back is shared). */
+  /** Per-world accent (reserved for tinting). */
   color: string;
   /** Accessible label (the scene is aria-hidden; kept for parity). */
   label: string;
@@ -34,7 +33,7 @@ const CARD_W = 1.8;
 const CARD_H = 2.52;
 /** Each face sits this far from the group's mid-plane: kills z-fighting. */
 const FACE_OFFSET = 0.012;
-/** Corner radius ≈ 9% of the width — soft "playing card" corners. */
+/** Corner radius about 9% of the width: soft "playing card" corners. */
 const CARD_RADIUS = CARD_W * 0.09;
 
 // One shared rounded-card geometry for every face of every card (built lazily,
@@ -50,34 +49,27 @@ interface FlipCardProps {
   index: number;
   count: number;
   progressRef: RefObject<number>;
-  onSelect: () => void;
-  /** Phone layout: cards stacked vertically and flipped on scroll (spec 029). */
+  onReveal: (card: DeckCard) => void;
+  /** Phone layout: focused carousel (spec 031). */
   isMobile: boolean;
 }
 
 /**
  * One world card: a `<group>` holding two back-to-back planes. The choreography
  * (pure `cardTransform`) drives the group; `useFrame` only damps toward it.
- *
- * Both planes use the default `FrontSide`, so each is visible only when its
- * normal faces the camera (+Z). At rest (group.rotationY = 0) the BACK plane
- * (unrotated) faces the camera; once the group rotates to π the FRONT plane
- * (pre-rotated 180°, so it reads un-mirrored) takes over. Back-face culling
- * means exactly one face draws per state.
+ * Tapping the "Reveal" button band (read from the hit `uv`) opens the HTML
+ * detail overlay, once the card is actually face-up.
  */
 function FlipCard({
   card,
   index,
   count,
   progressRef,
-  onSelect,
+  onReveal,
   isMobile,
 }: FlipCardProps) {
   const group = useRef<Group>(null);
-  // True once the card has flipped enough to show its face (gates clicks so the
-  // back/mid-flip doesn't toggle the reveal). Updated in useFrame (no re-render).
   const faceUp = useRef(false);
-  const [detail, setDetail] = useState(false);
 
   useFrame((_, delta) => {
     const g = group.current;
@@ -90,12 +82,10 @@ function FlipCard({
     g.position.y = MathUtils.damp(g.position.y, t.y, lambda, delta);
     g.position.z = MathUtils.damp(g.position.z, t.z, lambda, delta);
     g.rotation.y = MathUtils.damp(g.rotation.y, t.rotationY, lambda, delta);
+    const s = MathUtils.damp(g.scale.x, t.scale, lambda, delta);
+    g.scale.setScalar(s);
     faceUp.current = g.rotation.y > Math.PI * 0.6;
   });
-
-  const frontTexture = detail
-    ? getCardDetailTexture(card.symbol, card.title, card.blurb)
-    : getCardFaceTexture(card.symbol, card.title);
 
   return (
     <group
@@ -109,30 +99,24 @@ function FlipCard({
       }}
       onClick={(e) => {
         e.stopPropagation();
-        // Only interact once the card actually shows its face.
+        // Only react once the card shows its face, and only on the button band.
         if (!faceUp.current) return;
-        const onBar = (e.uv?.y ?? 1) < BUTTON_BAND; // bottom button band
-        if (detail) {
-          if (onBar) onSelect(); // "Book" → contact
-          else setDetail(false); // tap the body → back to the symbol
-        } else if (onBar) {
-          setDetail(true); // "Reveal" → the detail face
-        }
+        if ((e.uv?.y ?? 1) < BUTTON_BAND) onReveal(card);
       }}
     >
-      {/* Front — drawn face or detail; pre-rotated 180° so it reads un-mirrored at π. */}
+      {/* Front: drawn face; pre-rotated 180 so it reads un-mirrored at pi. */}
       <mesh
         geometry={getCardGeometry()}
         position={[0, 0, FACE_OFFSET]}
         rotation={[0, Math.PI, 0]}
       >
         <meshStandardMaterial
-          map={frontTexture}
+          map={getCardFaceTexture(card.symbol, card.title)}
           roughness={0.6}
           metalness={0.1}
         />
       </mesh>
-      {/* Back — the shared gold art-deco card back; visible at rest. */}
+      {/* Back: the shared gold art-deco card back; visible at rest. */}
       <mesh geometry={getCardGeometry()} position={[0, 0, -FACE_OFFSET]}>
         <meshStandardMaterial
           map={getCardBackTexture()}
@@ -148,33 +132,29 @@ export interface FlippingCardsSceneProps {
   active: boolean;
   progressRef: RefObject<number>;
   cards: DeckCard[];
-  onSelect: () => void;
-  /** Phone layout (spec 029): vertical deck, scaled to fit, flips on scroll. */
+  onReveal: (card: DeckCard) => void;
+  /** Phone layout (spec 031): focused carousel. */
   isMobile?: boolean;
 }
 
 /**
- * The three cards as a 3D deck: stacked face-down → spread side by side →
- * flipped one by one, all driven by scroll progress (Lusion "Area of Expertise").
+ * The three cards as a 3D deck driven by scroll progress (Lusion "Area of
+ * Expertise"). Desktop: stacked, spread, flip. Mobile: a focused carousel.
  */
 export function FlippingCardsScene({
   active,
   progressRef,
   cards,
-  onSelect,
+  onReveal,
   isMobile = false,
 }: FlippingCardsSceneProps) {
   return (
     <R3FCanvas active={active}>
-      {/* Opaque dark stage so the fallback poster (painted behind the canvas as
-          the shell) doesn't bleed through the transparent WebGL layer. */}
+      {/* Opaque dark stage so the fallback poster does not bleed through. */}
       <color attach="background" args={["#0b0a09"]} />
-      {/* Strong ambient + a light from the camera so the visible face is never
-          dark; the mid-flip grazing angle dims slightly, which reads as volume. */}
       <ambientLight intensity={0.9} />
       <directionalLight position={[0, 0, 5]} intensity={1.1} />
-      {/* On phones the whole deck is scaled down so the 3 vertically-stacked
-          cards fit the frustum (the layout itself is in cardTransformMobile). */}
+      {/* On phones the deck is scaled down so the focused card fits the frustum. */}
       <group scale={isMobile ? CARD_CHOREOGRAPHY.MOBILE_SCALE : 1}>
         {cards.map((card, i) => (
           <FlipCard
@@ -183,7 +163,7 @@ export function FlippingCardsScene({
             index={i}
             count={cards.length}
             progressRef={progressRef}
-            onSelect={onSelect}
+            onReveal={onReveal}
             isMobile={isMobile}
           />
         ))}

@@ -1,10 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useState } from "react";
 import { SectionHeading } from "@/components/shared";
 import { Stage3D } from "@/webgl/core/Stage3D";
 import { useDriveProgress } from "@/webgl/core/useDriveProgress";
 import { DeckPoster } from "@/webgl/cards/DeckPoster";
+import { CardDetailOverlay } from "@/components/sections/home/CardDetailOverlay";
 import type { DeckCard } from "@/webgl/cards/FlippingCardsScene";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { HOME, type WorldKey } from "@/content/home";
@@ -23,7 +25,7 @@ const accentColor: Record<WorldKey, string> = {
   taichi: "#afc4b4",
 };
 
-/** Smoothly bring the contact form into view — the deck's single call to action. */
+/** Smoothly bring the contact form into view (the deck's call to action). */
 function scrollToContact() {
   document
     .getElementById("contact")
@@ -32,17 +34,13 @@ function scrollToContact() {
 
 /**
  * The three-cards centerpiece. On a capable device the cards are a 3D deck that
- * stacks face-down, spreads, then flips one by one on scroll (Stage3D +
- * FlippingCardsScene). Otherwise — and for keyboard/SEO — the static DeckPoster.
- * A card click brings the visitor to the contact form.
+ * flips on scroll; otherwise (and for keyboard / SEO) the static DeckPoster.
+ * Tapping a card's "Reveal" opens an HTML overlay with the blurb and a Book CTA.
  */
 export function Worlds() {
   const isMobile = useIsMobile();
+  const [revealed, setRevealed] = useState<DeckCard | null>(null);
   const { triggerRef, progressRef } = useDriveProgress<HTMLDivElement>({
-    // Map progress to the window where the deck is stuck centered on screen:
-    // p=0 the instant it pins (stacked, face-down) — before that the scrub
-    // clamps to 0, so the deck waits stacked. p reaches 1 with ~30vh of travel
-    // still pinned, so the three flipped cards hold a beat before releasing.
     start: "top top",
     end: "+=170%",
   });
@@ -66,7 +64,7 @@ export function Worlds() {
         />
       </div>
 
-      {/* 300vh of travel: enough scroll for the spread + three flips to breathe. */}
+      {/* 300vh of travel: enough scroll for the spread plus the flips to breathe. */}
       <div ref={triggerRef} className="relative h-[300vh]">
         <div className="sticky top-0 flex h-screen items-start justify-center overflow-hidden pt-24 sm:pt-28">
           <Stage3D
@@ -78,10 +76,18 @@ export function Worlds() {
                 active={active}
                 progressRef={progressRef}
                 cards={cards}
-                onSelect={scrollToContact}
+                onReveal={setRevealed}
                 isMobile={isMobile}
               />
             )}
+          />
+          <CardDetailOverlay
+            card={revealed}
+            onClose={() => setRevealed(null)}
+            onBook={() => {
+              setRevealed(null);
+              scrollToContact();
+            }}
           />
         </div>
       </div>

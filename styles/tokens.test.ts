@@ -4,7 +4,7 @@ import { join } from "node:path";
 
 const css = readFileSync(join(process.cwd(), "app/globals.css"), "utf8");
 
-describe("design tokens — single source of truth", () => {
+describe("design tokens - single source of truth", () => {
   it("defines the stage (base) colors", () => {
     expect(css).toMatch(/--color-stage:\s*#0b0a09/i);
     expect(css).toMatch(/--color-cream:/i);

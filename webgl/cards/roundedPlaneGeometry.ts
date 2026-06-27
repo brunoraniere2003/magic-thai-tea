@@ -10,7 +10,7 @@ import {
  * UVs RE-MAPPED to the 0..1 range over the bounding box.
  *
  * ShapeGeometry emits UVs in world coordinates (e.g. -0.75..0.75), which breaks
- * a mapped texture — the image would tile/clamp instead of filling the card. We
+ * a mapped texture - the image would tile/clamp instead of filling the card. We
  * overwrite the UVs so an image maps cleanly, exactly like a plain
  * planeGeometry: since the shape is centered, (pos + half) / size is identical
  * to the bounding-box form, and it stays monotonic in x, so the texture is not

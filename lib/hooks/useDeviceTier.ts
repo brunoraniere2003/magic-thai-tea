@@ -18,7 +18,7 @@ const MIN_MEMORY_GB = 4;
 
 /**
  * Pure, deterministic tier classification.
- * Safe default is "high" — only downgrade on a clear negative signal.
+ * Safe default is "high" - only downgrade on a clear negative signal.
  */
 export function classifyDeviceTier(signals: DeviceSignals): DeviceTier {
   const {

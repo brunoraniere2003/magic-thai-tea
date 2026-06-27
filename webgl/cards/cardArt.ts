@@ -1,7 +1,7 @@
 import { CanvasTexture, SRGBColorSpace, LinearFilter } from "three";
 
 /**
- * Shared art-deco card art — palette, the gold frame, and the texture factory.
+ * Shared art-deco card art - palette, the gold frame, and the texture factory.
  * The card BACK (makeCardBackTexture) and the three FRONTS
  * (makeCardFaceTextures) both draw on top of `drawDecoFrame`, so both faces of
  * the deck read as one designed object (no photos). On-brand: warm dark ground
@@ -88,7 +88,7 @@ export function drawTitle(ctx: CanvasRenderingContext2D, text: string): void {
   ctx.fillText(text, W / 2, INNER_MARGIN + 56);
 }
 
-/** A rounded-rectangle path (arcTo — widely supported, unlike roundRect). */
+/** A rounded-rectangle path (arcTo - widely supported, unlike roundRect). */
 function roundedRectPath(
   ctx: CanvasRenderingContext2D,
   x: number,

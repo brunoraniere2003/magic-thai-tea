@@ -10,7 +10,7 @@ export interface DriveModeInput {
 }
 
 /**
- * Discrete reveals (fade / rise once on enter) are cheap — they run on EVERY
+ * Discrete reveals (fade / rise once on enter) are cheap - they run on EVERY
  * device and are disabled ONLY by a reduced-motion request. This honors the
  * product goal of great motion on mobile too.
  */
@@ -21,7 +21,7 @@ export function shouldRevealOnScroll({
 }
 
 /**
- * Continuous scroll-driven effects (parallax scrub, pin) are heavier — they run
+ * Continuous scroll-driven effects (parallax scrub, pin) are heavier - they run
  * ONLY on a capable device with no reduced-motion request. Otherwise the static
  * base (which is already the final state) is shown. Mirrors smooth-scroll gating.
  */
@@ -40,7 +40,7 @@ export interface Render3DInput {
 
 /**
  * Heavy 3D (Three.js) runs ONLY on a capable device WITH WebGL and no
- * reduced-motion request — otherwise the static poster (the default) is shown.
+ * reduced-motion request - otherwise the static poster (the default) is shown.
  * Mirrors `shouldAnimateHero`; this is the gate for the whole 3D runtime.
  */
 export function shouldRender3D({

@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 
-// Tailwind's `md` breakpoint — below it is the phone layout (vertical cards,
+// Tailwind's `md` breakpoint - below it is the phone layout (vertical cards,
 // 飛龍 fire hero). Mirrors useReducedMotion (SSR-safe via useSyncExternalStore).
 const QUERY = "(max-width: 768px)";
 

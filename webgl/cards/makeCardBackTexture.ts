@@ -45,7 +45,7 @@ function drawCardBack(ctx: CanvasRenderingContext2D): void {
 
 let cached: CanvasTexture | null = null;
 
-/** The shared card-back texture — built once, reused by every card (one deck). */
+/** The shared card-back texture - built once, reused by every card (one deck). */
 export function getCardBackTexture(): CanvasTexture {
   return (cached ??= textureFromDraw(drawCardBack));
 }

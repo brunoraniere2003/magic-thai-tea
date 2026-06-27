@@ -1,7 +1,7 @@
 import type { DeviceTier } from "@/lib/hooks/useDeviceTier";
 
 /**
- * Shared performance budget — see docs/constitution.md §3 and blueprint §9.
+ * Shared performance budget - see docs/constitution.md §3 and blueprint §9.
  * These are hard targets; the CI perf gate fails the build when exceeded.
  */
 export const PERF_BUDGET = {

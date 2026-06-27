@@ -11,7 +11,7 @@ import { shouldEnableSmoothScroll } from "./motionMode";
 /**
  * Global motion provider: smooth scroll (Lenis) + GSAP ScrollTrigger, driven by
  * a SINGLE gsap ticker (no competing rAF). Gated off for reduced-motion /
- * low-tier devices (native scroll, zero animation). Touches scroll ONLY — never
+ * low-tier devices (native scroll, zero animation). Touches scroll ONLY - never
  * the Hero's own pointer / IntersectionObserver handlers.
  */
 export function MotionProvider({ children }: { children: React.ReactNode }) {
@@ -23,7 +23,7 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
     if (!enabled) return;
 
     // Scroll-driven scenes (the card deck, etc.) must always play from their
-    // start. Don't let the browser restore a mid-page scroll on reload — that
+    // start. Don't let the browser restore a mid-page scroll on reload - that
     // would resume with the deck already spread/flipped. Pin to the top before
     // Lenis reads the initial scroll position.
     if ("scrollRestoration" in history) {
