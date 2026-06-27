@@ -49,7 +49,7 @@ describe("POST /api/contact", () => {
     expect(res.status).toBe(200);
     expect(send).toHaveBeenCalledOnce();
     const arg = send.mock.calls[0][0] as { to: string; subject: string };
-    expect(arg.to).toBe("flyingdragontea@gmail.com");
+    expect(arg.to).toBe("brunoraniere2003@gmail.com");
     expect(arg.subject).toContain("Jane");
   });
 

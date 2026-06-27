@@ -36,4 +36,11 @@ describe("buildContactEmail", () => {
     });
     expect(text).toContain("Name: Jane\n");
   });
+
+  it("marks the email as temporary (owner-inbox setup, spec 030)", () => {
+    const { subject, text, html } = buildContactEmail(values);
+    expect(subject).toContain("[TEMPORARY]");
+    expect(text).toContain("forward to Ethan");
+    expect(html).toContain("Temporary inbox");
+  });
 });

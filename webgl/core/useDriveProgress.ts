@@ -12,6 +12,8 @@ export interface DriveProgressOptions {
   start?: string;
   /** ScrollTrigger end (default "bottom top"). */
   end?: string;
+  /** Pin the trigger element while it scrubs (holds the section on screen). */
+  pin?: boolean;
 }
 
 /**
@@ -25,6 +27,7 @@ export interface DriveProgressOptions {
 export function useDriveProgress<T extends HTMLElement = HTMLElement>({
   start = "top bottom",
   end = "bottom top",
+  pin = false,
 }: DriveProgressOptions = {}): {
   triggerRef: RefObject<T | null>;
   progressRef: RefObject<number>;
@@ -40,6 +43,10 @@ export function useDriveProgress<T extends HTMLElement = HTMLElement>({
         start,
         end,
         scrub: true,
+        // Pin holds the section on screen while it scrubs — used by the mobile
+        // hero so the page doesn't scroll past until 飛龍 finishes writing.
+        pin: pin ? element : false,
+        anticipatePin: pin ? 1 : 0,
         onUpdate: (self) => {
           progressRef.current = self.progress;
         },

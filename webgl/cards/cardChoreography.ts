@@ -35,10 +35,10 @@ export const CARD_CHOREOGRAPHY = {
   STACK_DEPTH: 0.04,
   /** Damping speed for the scene's useFrame (frame-rate independent). */
   DAMP_LAMBDA: 7,
-  /** MOBILE: vertical distance between neighbouring cards (card-local units). */
-  MOBILE_GAP: 1.9,
-  /** MOBILE: uniform scale applied to the whole deck so 3 cards fit the phone. */
-  MOBILE_SCALE: 0.55,
+  /** MOBILE: y (card-local units) that parks a card fully off-screen. */
+  MOBILE_OFFSCREEN: 4.5,
+  /** MOBILE: uniform scale so ONE card fills the phone viewport at a time. */
+  MOBILE_SCALE: 0.8,
 } as const;
 
 export function clamp01(x: number): number {
@@ -87,31 +87,33 @@ export function cardTransform(
 }
 
 /**
- * MOBILE choreography (spec 029): the deck is NOT spread horizontally. The cards
- * start already separated **vertically** (one above another, card 0 on top) and
- * each flips (back→front) over the full scroll in a staggered, overlapping
- * window — the last card lands exactly at p=1. `x`/`z` stay 0; positions are in
- * card-local units (the scene applies MOBILE_SCALE to the whole group so they
- * fit the phone). Desktop `cardTransform` is untouched.
+ * MOBILE choreography (spec 030): **one card per viewport**. The scroll [0,1] is
+ * split into `count` equal bands. In card `index`'s band it sits centered (y=0)
+ * and flips back→front; before its band it waits just below the viewport, and
+ * after its band it has slid off above — so exactly one card shows at a time
+ * (the scene's damping turns the snaps into smooth slides). The LAST card stays
+ * centered at the end (the final state). `x`/`z` stay 0; the scene applies
+ * MOBILE_SCALE. Desktop `cardTransform` is untouched.
  */
 export function cardTransformMobile(
   p: number,
   index: number,
   count: number,
 ): CardTarget {
-  const { FLIP_DURATION, FLIP_END, MOBILE_GAP } = CARD_CHOREOGRAPHY;
+  const { MOBILE_OFFSCREEN } = CARD_CHOREOGRAPHY;
 
   const progress = clamp01(p);
-  const center = (count - 1) / 2;
-  // Card 0 sits at the top (+y), the last at the bottom (−y); pre-separated.
-  const y = (center - index) * MOBILE_GAP;
+  const band = 1 / count;
+  const local = clamp01((progress - index * band) / band);
+  const rotationY = easeInOutCubic(local) * Math.PI;
 
-  // Spread the staggered flips across the whole [0,1] so the last ends at p=1.
-  const stagger = count > 1 ? (FLIP_END - FLIP_DURATION) / (count - 1) : 0;
-  const start = index * stagger;
-  const end = start + FLIP_DURATION;
-  const flip = easeInOutCubic(clamp01((progress - start) / (end - start)));
-  const rotationY = flip * Math.PI;
+  const isLast = index === count - 1;
+  let y = 0;
+  if (progress < index * band) {
+    y = -MOBILE_OFFSCREEN; // waiting just below the viewport
+  } else if (!isLast && progress >= (index + 1) * band) {
+    y = MOBILE_OFFSCREEN; // slid off above (a later card is active)
+  }
 
   return { x: 0, y, z: 0, rotationY };
 }

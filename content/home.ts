@@ -24,6 +24,8 @@ export interface World {
   eyebrow: string;
   title: string;
   essence: string;
+  /** Short explanation shown when a card is "revealed" (spec 030). */
+  blurb: string;
   /** Drawn-icon identifier for the canvas card face. */
   symbol: WorldSymbol;
 }
@@ -63,6 +65,8 @@ export const HOME: HomeContent = {
       eyebrow: "The Chinese art of tea",
       title: "Tea",
       essence: "A ceremony that slows the whole room down.",
+      blurb:
+        "A gongfu tea ceremony for your guests — fragrance, ritual, and stillness, poured one careful cup at a time.",
       symbol: "tea",
     },
     {
@@ -70,6 +74,8 @@ export const HOME: HomeContent = {
       eyebrow: "Balance",
       title: "Yin & Yang",
       essence: "The still point where tea meets motion.",
+      blurb:
+        "The balance at the heart of it all — motion and rest, fullness and empty, the quiet between two breaths.",
       symbol: "yinyang",
     },
     {
@@ -77,6 +83,8 @@ export const HOME: HomeContent = {
       eyebrow: "Tai chi chuan",
       title: "Tai Chi",
       essence: "Strength that moves like calm.",
+      blurb:
+        "Tai chi's moving meditation — balance, breath, and a quiet kind of power, taught at your own pace.",
       symbol: "taichi",
     },
   ],

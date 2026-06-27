@@ -49,6 +49,8 @@ export function Worlds() {
 
   const cards: DeckCard[] = HOME.worlds.map((world) => ({
     symbol: world.symbol,
+    title: world.title,
+    blurb: world.blurb,
     color: accentColor[world.key],
     label: world.title,
   }));
