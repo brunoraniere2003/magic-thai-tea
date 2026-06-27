@@ -57,7 +57,7 @@ export function DeckDemo() {
               active={active}
               progressRef={progressRef}
               cards={cards}
-              onReveal={() => {}}
+              onBook={() => {}}
             />
           )}
         />

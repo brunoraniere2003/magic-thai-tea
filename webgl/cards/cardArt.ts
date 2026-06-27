@@ -122,6 +122,41 @@ export function drawButtonBar(ctx: CanvasRenderingContext2D, label: string): voi
   ctx.fillText(label.toUpperCase(), W / 2, barY + barH / 2 + 1);
 }
 
+/**
+ * The "revealed" face drawn IN the card (no modal): the invitation typed in
+ * word-by-word (`shownCount` words visible) and a "Book" button that fades in
+ * (`bookAlpha`) once the text finishes. Redrawn each frame onto a CanvasTexture.
+ */
+export function drawDetailFace(
+  ctx: CanvasRenderingContext2D,
+  words: string[],
+  shownCount: number,
+  bookAlpha: number,
+): void {
+  const { W, H, GOLD_HI } = CARD_ART;
+  drawDecoFrame(ctx);
+
+  ctx.fillStyle = GOLD_HI;
+  ctx.font = `500 34px Georgia, "Times New Roman", serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  const shown = words.slice(0, Math.max(0, shownCount)).join(" ");
+  if (shown) {
+    const maxW = W - 2 * (INNER_MARGIN + 10);
+    const lines = wrapText(ctx, shown, maxW);
+    const lineH = 46;
+    const top = H * 0.44 - ((lines.length - 1) * lineH) / 2;
+    lines.forEach((line, i) => ctx.fillText(line, W / 2, top + i * lineH));
+  }
+
+  if (bookAlpha > 0) {
+    ctx.globalAlpha = bookAlpha;
+    drawButtonBar(ctx, "Book");
+    ctx.globalAlpha = 1;
+  }
+}
+
 /** Greedy word-wrap into lines that fit `maxWidth` under the current ctx.font. */
 export function wrapText(
   ctx: CanvasRenderingContext2D,

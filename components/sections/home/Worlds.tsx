@@ -1,12 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
 import { SectionHeading } from "@/components/shared";
 import { Stage3D } from "@/webgl/core/Stage3D";
 import { useDriveProgress } from "@/webgl/core/useDriveProgress";
 import { DeckPoster } from "@/webgl/cards/DeckPoster";
-import { CardDetailOverlay } from "@/components/sections/home/CardDetailOverlay";
 import type { DeckCard } from "@/webgl/cards/FlippingCardsScene";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { HOME, type WorldKey } from "@/content/home";
@@ -35,11 +33,11 @@ function scrollToContact() {
 /**
  * The three-cards centerpiece. On a capable device the cards are a 3D deck that
  * flips on scroll; otherwise (and for keyboard / SEO) the static DeckPoster.
- * Tapping a card's "Reveal" opens an HTML overlay with the blurb and a Book CTA.
+ * Tapping a card's "Reveal" types an invitation into the card itself (no modal),
+ * ending in a "Book" button that scrolls to the contact form.
  */
 export function Worlds() {
   const isMobile = useIsMobile();
-  const [revealed, setRevealed] = useState<DeckCard | null>(null);
   const { triggerRef, progressRef } = useDriveProgress<HTMLDivElement>({
     start: "top top",
     end: "+=170%",
@@ -76,18 +74,10 @@ export function Worlds() {
                 active={active}
                 progressRef={progressRef}
                 cards={cards}
-                onReveal={setRevealed}
+                onBook={scrollToContact}
                 isMobile={isMobile}
               />
             )}
-          />
-          <CardDetailOverlay
-            card={revealed}
-            onClose={() => setRevealed(null)}
-            onBook={() => {
-              setRevealed(null);
-              scrollToContact();
-            }}
           />
         </div>
       </div>
