@@ -39,13 +39,13 @@ function scrollToContact() {
  */
 export function Worlds() {
   const isMobile = useIsMobile();
-  // Progress completes over 110vh of scroll. Pin heights below: mobile 220vh
-  // (room for the lock-flip-descend carousel), desktop 210vh (flip + a SHORT
-  // hold before releasing to contact). Pure-CSS responsive height = one
-  // ScrollTrigger, no hydration re-init (spec 043).
+  // Progress 0→1 is aligned to the pin: it starts when the section's top hits
+  // the viewport top and ends EXACTLY when the section's bottom passes the
+  // viewport bottom (= the sticky child unsticks). So the last card's flip
+  // always finishes inside the locked area (spec 052).
   const { triggerRef, progressRef } = useDriveProgress<HTMLDivElement>({
     start: "top top",
-    end: "+=110%",
+    end: "bottom bottom",
   });
   const headingRef = useRef<HTMLDivElement>(null);
 
