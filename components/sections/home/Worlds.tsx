@@ -38,9 +38,13 @@ function scrollToContact() {
  */
 export function Worlds() {
   const isMobile = useIsMobile();
+  // The choreography (stack→spread→flip ALL) finishes by ~61% of this travel;
+  // the rest is a held "all face-up" state. With the 320vh pin below, that hold
+  // lasts ~1 screen of scroll before the section releases, so the page never
+  // scrolls on to contact mid-flip (spec 033).
   const { triggerRef, progressRef } = useDriveProgress<HTMLDivElement>({
     start: "top top",
-    end: "+=170%",
+    end: "+=165%",
   });
 
   const cards: DeckCard[] = HOME.worlds.map((world) => ({
@@ -62,9 +66,10 @@ export function Worlds() {
         />
       </div>
 
-      {/* 300vh of travel: enough scroll for the spread plus the flips to breathe. */}
-      <div ref={triggerRef} className="relative h-[300vh]">
-        <div className="sticky top-0 flex h-screen items-start justify-center overflow-hidden pt-24 sm:pt-28">
+      {/* 320vh of travel: spread + all flips finish early, then a long locked
+          hold of the full face-up deck before the section releases to contact. */}
+      <div ref={triggerRef} className="relative h-[320vh]">
+        <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
           <Stage3D
             className="absolute inset-0"
             interactive

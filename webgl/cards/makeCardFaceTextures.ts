@@ -95,59 +95,153 @@ function drawYinYang(ctx: CanvasRenderingContext2D, cx: number, cy: number): voi
   ctx.stroke();
 }
 
-/** A figure in a tai-chi stance, wearing a conical Chinese hat (douli). */
+/**
+ * A tai-chi master in a true horse stance (ma bu): conical hat (douli), a
+ * settled torso with a waist sash, arms spread wide into a rounded "ward-off"
+ * embrace, and deeply bent knees that bow out WIDER than the planted feet so the
+ * legs read as a sunk, rooted arch (not an open jumping-jack V). Spec 033, chosen
+ * from four parallel candidates and verified by render.
+ */
 function drawTaiChi(ctx: CanvasRenderingContext2D, cx: number, cy: number): void {
-  strokeStyle(ctx, 9);
+  ctx.save();
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.strokeStyle = GOLD;
+  ctx.fillStyle = GOLD;
+  ctx.lineWidth = 8.5;
 
-  const headR = 26;
-  const headY = cy - 120;
-
-  // Conical hat: brim ellipse + cone.
-  const brimY = headY - headR - 4;
+  // Conical hat (douli): brim ellipse + cone.
+  const hatBrimY = cy - 116;
+  const apexY = cy - 152;
   ctx.beginPath();
-  ctx.ellipse(cx, brimY, 82, 16, 0, 0, Math.PI * 2);
+  ctx.ellipse(cx, hatBrimY, 48, 12, 0, 0, Math.PI * 2);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(cx - 72, brimY - 4);
-  ctx.lineTo(cx, brimY - 60);
-  ctx.lineTo(cx + 72, brimY - 4);
+  ctx.moveTo(cx - 44, hatBrimY - 2);
+  ctx.quadraticCurveTo(cx - 14, apexY + 6, cx, apexY);
+  ctx.quadraticCurveTo(cx + 14, apexY + 6, cx + 44, hatBrimY - 2);
   ctx.stroke();
 
   // Head.
+  const headY = cy - 92;
   ctx.beginPath();
-  ctx.arc(cx, headY, headR, 0, Math.PI * 2);
+  ctx.arc(cx, headY, 17, 0, Math.PI * 2);
   ctx.stroke();
 
-  const neckY = headY + headR;
-  const hipY = cy + 78;
-  const shoulderY = neckY + 14;
+  // Neck + settled torso (side lines + waist sash).
+  const shoulderY = cy - 58;
+  const hipY = cy + 24;
+  ctx.beginPath();
+  ctx.moveTo(cx, headY + 17);
+  ctx.lineTo(cx, shoulderY - 4);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx - 30, shoulderY + 2);
+  ctx.quadraticCurveTo(cx, shoulderY - 8, cx + 30, shoulderY + 2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx - 24, shoulderY + 4);
+  ctx.quadraticCurveTo(cx - 16, cy - 18, cx - 20, hipY);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx + 24, shoulderY + 4);
+  ctx.quadraticCurveTo(cx + 16, cy - 18, cx + 20, hipY);
+  ctx.stroke();
+  ctx.lineWidth = 6;
+  ctx.beginPath();
+  ctx.moveTo(cx - 21, cy - 6);
+  ctx.quadraticCurveTo(cx, cy + 2, cx + 21, cy - 6);
+  ctx.stroke();
+  ctx.lineWidth = 8.5;
 
-  // Upright, grounded torso.
+  // Arms spread wide into a rounded ward-off embrace, hands softly curling.
   ctx.beginPath();
-  ctx.moveTo(cx, neckY);
-  ctx.lineTo(cx, hipY);
+  ctx.moveTo(cx + 28, shoulderY + 4);
+  ctx.quadraticCurveTo(cx + 96, cy - 64, cx + 132, cy - 50);
+  ctx.bezierCurveTo(cx + 152, cy - 40, cx + 154, cy - 22, cx + 140, cy - 6);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx + 140, cy - 6);
+  ctx.quadraticCurveTo(cx + 124, cy - 2, cx + 116, cy - 12);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx + 140, cy - 6);
+  ctx.quadraticCurveTo(cx + 134, cy + 10, cx + 122, cy + 10);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx - 28, shoulderY + 4);
+  ctx.quadraticCurveTo(cx - 96, cy - 64, cx - 132, cy - 50);
+  ctx.bezierCurveTo(cx - 152, cy - 40, cx - 154, cy - 22, cx - 140, cy - 6);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx - 140, cy - 6);
+  ctx.quadraticCurveTo(cx - 124, cy - 2, cx - 116, cy - 12);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx - 140, cy - 6);
+  ctx.quadraticCurveTo(cx - 134, cy + 10, cx - 122, cy + 10);
   ctx.stroke();
 
-  // Arms spread wide (the photo pose): left arm raised and out, right arm
-  // extended out near shoulder height, each with a soft elbow.
+  // Legs: TRUE ma bu. Knees bow out wider than the feet; shins angle back in to
+  // planted feet, so each knee shows a clear bend and the pair reads as a sunk
+  // rooted arch.
+  const hipL = cx - 18;
+  const hipR = cx + 18;
+  const thighEndY = cy + 78;
+  const kneeX = 112;
+  const footY = cy + 190;
+  const footX = 64;
+
   ctx.beginPath();
-  ctx.moveTo(cx, shoulderY);
-  ctx.quadraticCurveTo(cx - 74, shoulderY - 14, cx - 144, shoulderY - 38);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(cx, shoulderY + 6);
-  ctx.quadraticCurveTo(cx + 74, shoulderY + 16, cx + 146, shoulderY);
+  ctx.moveTo(hipL - 4, hipY + 2);
+  ctx.quadraticCurveTo(cx, hipY + 12, hipR + 4, hipY + 2);
   ctx.stroke();
 
-  // Wide, rooted stance (horse / bow), knees bent out.
   ctx.beginPath();
-  ctx.moveTo(cx, hipY);
-  ctx.quadraticCurveTo(cx - 76, hipY + 54, cx - 122, cy + 188);
+  ctx.moveTo(hipR, hipY + 4);
+  ctx.quadraticCurveTo(cx + 78, cy + 40, cx + kneeX, thighEndY);
+  ctx.quadraticCurveTo(cx + kneeX - 2, cy + 132, cx + footX, footY);
+  ctx.stroke();
+  ctx.lineWidth = 7;
+  ctx.beginPath();
+  ctx.moveTo(cx + footX - 20, footY + 2);
+  ctx.quadraticCurveTo(cx + footX + 6, footY + 9, cx + footX + 28, footY - 2);
+  ctx.stroke();
+  ctx.lineWidth = 8.5;
+
+  ctx.beginPath();
+  ctx.moveTo(hipL, hipY + 4);
+  ctx.quadraticCurveTo(cx - 78, cy + 40, cx - kneeX, thighEndY);
+  ctx.quadraticCurveTo(cx - kneeX + 2, cy + 132, cx - footX, footY);
+  ctx.stroke();
+  ctx.lineWidth = 7;
+  ctx.beginPath();
+  ctx.moveTo(cx - footX + 20, footY + 2);
+  ctx.quadraticCurveTo(cx - footX - 6, footY + 9, cx - footX - 28, footY - 2);
+  ctx.stroke();
+  ctx.lineWidth = 8.5;
+
+  // Knee accents (emphasise the bend).
+  ctx.beginPath();
+  ctx.arc(cx + kneeX, thighEndY, 3.5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(cx - kneeX, thighEndY, 3.5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Highlights.
+  ctx.strokeStyle = GOLD_HI;
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(cx - 24, hatBrimY - 6);
+  ctx.quadraticCurveTo(cx - 8, apexY + 6, cx, apexY);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(cx, hipY);
-  ctx.quadraticCurveTo(cx + 76, hipY + 54, cx + 122, cy + 188);
+  ctx.moveTo(cx - 14, cy - 5);
+  ctx.quadraticCurveTo(cx, cy + 1, cx + 14, cy - 5);
   ctx.stroke();
+
+  ctx.restore();
 }
 
 const ICONS: Record<
