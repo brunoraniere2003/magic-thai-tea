@@ -93,6 +93,6 @@ export const HOME: HomeContent = {
     eyebrow: "Get in touch",
     title: "Talk to Ethan.",
     intro:
-      "Tell Ethan about your event or class. He reads every message himself. Prefer to text? Reach him directly below.",
+      "Tell Ethan what you have in mind, a tea tasting, a tai chi session, or both, and he will reply to you personally.",
   },
 };

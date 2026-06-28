@@ -1,12 +1,25 @@
+"use client";
+
 import { HOME } from "@/content/home";
+import { scrollToAnchor } from "@/lib/smoothScroll";
 
 /**
- * The Hero's foreground content. Server-rendered so the headline + CTAs
- * paint instantly (LCP), before any animation layer.
+ * The Hero's foreground content. Server-rendered HTML (instant LCP), then
+ * hydrated so the CTAs glide to their section (same smooth scroll as the header)
+ * instead of jumping instantly.
  */
 export function HeroContent() {
   const { eyebrow, title, subtitle, primaryCta, secondaryCta, scrollCue } =
     HOME.hero;
+
+  const onCtaClick = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) => {
+    if (!href.startsWith("#")) return;
+    event.preventDefault();
+    scrollToAnchor(href);
+  };
 
   return (
     <div className="relative z-10 flex min-h-screen flex-col items-center justify-center gap-5 px-6 py-12 text-center">
@@ -35,6 +48,7 @@ export function HeroContent() {
         <a
           href={primaryCta.href}
           data-fire-line
+          onClick={(event) => onCtaClick(event, primaryCta.href)}
           className="inline-flex items-center justify-center rounded-full bg-cream px-7 py-3 font-sans text-sm font-medium text-stage transition-colors hover:bg-white"
         >
           {primaryCta.label}
@@ -42,6 +56,7 @@ export function HeroContent() {
         <a
           href={secondaryCta.href}
           data-fire-line
+          onClick={(event) => onCtaClick(event, secondaryCta.href)}
           className="inline-flex items-center justify-center rounded-full border border-stone/40 px-7 py-3 font-sans text-sm font-medium text-cream transition-colors hover:border-cream/70 hover:bg-cream/5"
         >
           {secondaryCta.label}

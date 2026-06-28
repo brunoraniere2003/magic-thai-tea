@@ -13,7 +13,7 @@ import {
   type ContactErrors,
 } from "@/lib/contact/validateContactForm";
 
-const EMPTY: ContactValues = { name: "", email: "", phone: "" };
+const EMPTY: ContactValues = { name: "", email: "", phone: "", message: "" };
 type Status = "idle" | "submitting" | "success" | "error";
 
 // Leads go straight to Ethan's Flying Dragon Tea inbox via FormSubmit, sent from
@@ -85,6 +85,7 @@ export function ContactForm() {
           Name: values.name.trim(),
           Email: values.email.trim(),
           Phone: values.phone.trim(),
+          Message: values.message.trim(),
           _replyto: values.email.trim(),
           _subject: `New enquiry from ${values.name.trim()} (The Red Flying Dragon)`,
           _template: "table",
@@ -154,6 +155,21 @@ export function ContactForm() {
               "aria-invalid": Boolean(errors.phone),
               "aria-describedby": errors.phone ? "phone-error" : undefined,
             }}
+          />
+        </Field>
+
+        <Field id="message" label="Message" error={errors.message}>
+          <textarea
+            id="message"
+            name="message"
+            rows={4}
+            autoComplete="off"
+            placeholder="What are you planning? A tasting, a class, a private event..."
+            className={`${fieldClasses} min-h-28 resize-y`}
+            value={values.message}
+            onChange={(event) => update("message", event.target.value)}
+            aria-invalid={Boolean(errors.message)}
+            aria-describedby={errors.message ? "message-error" : undefined}
           />
         </Field>
 

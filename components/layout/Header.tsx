@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { SITE } from "@/content/site";
 import { buttonClasses } from "@/components/ui/Button";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
+import { scrollToAnchor, scrollToTop } from "@/lib/smoothScroll";
 
 const CONTACT_HREF = "#contact";
 
@@ -32,9 +33,14 @@ export function Header() {
     if (!href.startsWith("#")) return;
     event.preventDefault();
     setOpen(false);
-    document
-      .getElementById(href.slice(1))
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    scrollToAnchor(href);
+  };
+
+  // The brand glides the page back to the top instead of reloading "/".
+  const onBrandClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    setOpen(false);
+    scrollToTop();
   };
 
   // Translucent background once the user scrolls past the top.
@@ -136,7 +142,7 @@ export function Header() {
         <Link
           href="/"
           className="relative z-50 font-display text-lg text-cream"
-          onClick={() => setOpen(false)}
+          onClick={onBrandClick}
         >
           {SITE.name}
         </Link>
