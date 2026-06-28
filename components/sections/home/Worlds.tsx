@@ -38,14 +38,14 @@ function scrollToContact() {
  */
 export function Worlds() {
   const isMobile = useIsMobile();
-  // Shared by desktop and mobile so the ScrollTrigger is built once (no
-  // hydration re-init). end≈195% leaves progress finishing close to the pin
-  // release: desktop keeps a long "all face-up" hold (flips finish by ~61%);
-  // mobile's rising carousel lands its LAST card at p=1, right before release,
-  // so there is no long end-lock (spec 033/035).
+  // end=120% (viewport units, so identical mobile/desktop -> one ScrollTrigger,
+  // no hydration re-init). It finishes the choreography by the MOBILE pin release
+  // (220vh - 100vh), keeping contact close to the last card on phones; on desktop
+  // (taller 320vh pin) progress reaches 1 well before release, leaving a long
+  // "all face-up" hold so fast scrolls never pass mid-flip (spec 039).
   const { triggerRef, progressRef } = useDriveProgress<HTMLDivElement>({
     start: "top top",
-    end: "+=195%",
+    end: "+=120%",
   });
 
   const cards: DeckCard[] = HOME.worlds.map((world) => ({
@@ -58,10 +58,11 @@ export function Worlds() {
 
   return (
     <section id="worlds" className="scroll-mt-24">
-      {/* 320vh of travel: the heading + deck pin together from the first frame
-          (no empty lead-in gap); spread + all flips finish early, then a long
-          locked hold of the full face-up deck before releasing to contact. */}
-      <div ref={triggerRef} className="relative h-[320vh]">
+      {/* Heading + deck pin together from the first frame (no empty lead-in gap).
+          Shorter pin on phones (220vh) so contact sits close to the last card;
+          taller on desktop (320vh) for a long all-face-up hold. Responsive height
+          is pure CSS, so the single ScrollTrigger never re-inits. */}
+      <div ref={triggerRef} className="relative h-[220vh] md:h-[320vh]">
         <div className="sticky top-0 h-screen overflow-hidden">
           <Stage3D
             className="absolute inset-0"
