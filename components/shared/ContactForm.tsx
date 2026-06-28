@@ -14,9 +14,10 @@ import {
 const EMPTY: ContactValues = { name: "", email: "", phone: "" };
 type Status = "idle" | "submitting" | "success" | "error";
 
-// TEMPORARY: leads go to the owner's inbox via FormSubmit, sent straight from
+// Leads go straight to Ethan's Flying Dragon Tea inbox via FormSubmit, sent from
 // the browser (their server-side endpoint blocks datacenter IPs). Account-free.
-const FORMSUBMIT_URL = "https://formsubmit.co/ajax/brunoraniere2003@gmail.com";
+// Recipient is the single source of truth in SITE.contact.email.
+const FORMSUBMIT_URL = `https://formsubmit.co/ajax/${SITE.contact.email}`;
 
 const fieldClasses =
   "w-full rounded-xl border border-stone/25 bg-stage px-4 py-3 font-sans text-base text-cream outline-none transition-colors placeholder:text-stone/50 focus:border-cream/60";
@@ -83,7 +84,7 @@ export function ContactForm() {
           Email: values.email.trim(),
           Phone: values.phone.trim(),
           _replyto: values.email.trim(),
-          _subject: `[TEMPORARY] New enquiry from ${values.name.trim()}`,
+          _subject: `New enquiry from ${values.name.trim()} (The Red Flying Dragon)`,
           _template: "table",
           _captcha: "false",
           _honey: honeypot,

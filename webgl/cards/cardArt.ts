@@ -75,8 +75,12 @@ export function textureFromDraw(
   return texture;
 }
 
-/** Bottom fraction of a card that is the button hit-zone (matches drawButtonBar). */
-export const BUTTON_BAND = 0.16;
+/**
+ * Bottom fraction of a card that counts as the button hit-zone (uv.y below this).
+ * Matches drawButtonBar, which now sits the pill INSIDE the inner frame, so this
+ * covers the button plus the thin margin beneath it.
+ */
+export const BUTTON_BAND = 0.18;
 
 /** Card title, centered near the top inside the inner frame. */
 export function drawTitle(ctx: CanvasRenderingContext2D, text: string): void {
@@ -106,13 +110,15 @@ function roundedRectPath(
   ctx.closePath();
 }
 
-/** Gold pill button along the bottom band (the BUTTON_BAND hit-zone). */
+/** Gold pill button, seated INSIDE the inner frame near the bottom edge. */
 export function drawButtonBar(ctx: CanvasRenderingContext2D, label: string): void {
   const { W, H, GOLD, BG } = CARD_ART;
-  const barH = 64;
-  const barY = H - (H * BUTTON_BAND) / 2 - barH / 2;
+  const barH = 60;
+  // Bottom of the pill sits a margin ABOVE the inner frame, so it reads as part
+  // of the framed card instead of hanging off the bottom edge.
+  const barY = H - INNER_MARGIN - 22 - barH;
   const pad = INNER_MARGIN + 18;
-  roundedRectPath(ctx, pad, barY, W - 2 * pad, barH, 32);
+  roundedRectPath(ctx, pad, barY, W - 2 * pad, barH, 30);
   ctx.fillStyle = GOLD;
   ctx.fill();
   ctx.fillStyle = BG;
