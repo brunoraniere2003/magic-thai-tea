@@ -43,6 +43,9 @@ export const CARD_CHOREOGRAPHY = {
   /** MOBILE: uniform scale. Below 0.72 so a card clears the fixed header and a
    *  neighbour can peek from the bottom edge (spec 035). */
   MOBILE_SCALE: 0.7,
+  /** MOBILE: push the whole deck DOWN (world units) so the focused card sits
+   *  clearly below the pinned heading (spec 041). */
+  MOBILE_Y: -0.34,
 } as const;
 
 export function clamp01(x: number): number {

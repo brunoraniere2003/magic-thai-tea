@@ -209,8 +209,12 @@ export function FlippingCardsScene({
       <color attach="background" args={["#0b0a09"]} />
       <ambientLight intensity={0.9} />
       <directionalLight position={[0, 0, 5]} intensity={1.1} />
-      {/* On phones the deck is scaled down so the focused card fits the frustum. */}
-      <group scale={isMobile ? CARD_CHOREOGRAPHY.MOBILE_SCALE : 1}>
+      {/* On phones the deck is scaled down (fits the frustum) and nudged DOWN so
+          the focused card sits clearly below the pinned heading. */}
+      <group
+        scale={isMobile ? CARD_CHOREOGRAPHY.MOBILE_SCALE : 1}
+        position={isMobile ? [0, CARD_CHOREOGRAPHY.MOBILE_Y, 0] : [0, 0, 0]}
+      >
         {cards.map((card, i) => (
           <FlipCard
             key={card.symbol}
