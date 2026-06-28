@@ -35,6 +35,9 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
 
     const lenis = new Lenis();
     lenis.on("scroll", ScrollTrigger.update);
+    // Expose lenis on window so client components can lock/unlock scroll
+    // (e.g. the mobile flip cards pause page scrolling while a card flips).
+    (window as unknown as { lenis?: Lenis }).lenis = lenis;
 
     const tick = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(tick);
@@ -50,6 +53,7 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
       gsap.ticker.remove(tick);
       window.removeEventListener("resize", refresh);
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      delete (window as unknown as { lenis?: Lenis }).lenis;
       lenis.destroy();
     };
   }, [enabled]);

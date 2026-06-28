@@ -1,39 +1,40 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SectionHeading } from "@/components/shared";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
-import { useIsomorphicLayoutEffect } from "@/lib/animations/useIsomorphicLayoutEffect";
+import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 import { cardFaceDataURL } from "@/webgl/cards/makeCardFaceTextures";
 import { cardBackDataURL } from "@/webgl/cards/makeCardBackTexture";
 import { cardDetailDataURL } from "@/webgl/cards/cardArt";
 import { HOME, type World } from "@/content/home";
 
+/** Flip animation duration, ms. */
+const FLIP_MS = 600;
+/** How close to centre (px) the card centre must be to fire the flip. */
+const CENTRE_TOLERANCE = 80;
+
 /**
- * One mobile card. Stays put in the page flow; when its centre reaches the
- * viewport centre, ScrollTrigger PINS the page (scroll locks), the card flips
- * from its back to its front over a fixed scroll distance, and the page unpins
- * when the flip ends and the visitor can keep scrolling to the next card.
- * Once flipped, tapping toggles the detail face (invitation) and the "Book"
- * band scrolls to contact.
+ * One mobile card. Sits at a FIXED position in the page; nothing moves it ever.
+ * As the page scrolls past, when this card's centre reaches the viewport
+ * centre, the page scroll is locked (Lenis stopped + native wheel/touch
+ * prevented), the card flips 180° via CSS, and once the flip finishes the page
+ * is unlocked and the visitor keeps scrolling to the next card. Tapping a
+ * flipped card reveals the invitation; the bottom band acts as the Book button.
  */
 function MobileFlipCard({
   world,
-  isFirst,
   onBook,
   reducedMotion,
 }: {
   world: World;
-  isFirst: boolean;
   onBook: () => void;
   reducedMotion: boolean;
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
-  const flipperRef = useRef<HTMLDivElement>(null);
-  const [revealed, setRevealed] = useState(false);
   const [flipped, setFlipped] = useState(reducedMotion);
+  const [animating, setAnimating] = useState(false);
+  const [revealed, setRevealed] = useState(false);
 
   const face = useMemo(
     () => cardFaceDataURL(world.symbol, world.title),
@@ -42,45 +43,44 @@ function MobileFlipCard({
   const back = useMemo(() => cardBackDataURL(), []);
   const detail = useMemo(() => cardDetailDataURL(world.blurb), [world.blurb]);
 
-  useIsomorphicLayoutEffect(() => {
-    if (reducedMotion) return;
-    const wrap = wrapRef.current;
-    const flipper = flipperRef.current;
-    if (!wrap || !flipper) return;
+  // Scroll listener: when the card's centre crosses the viewport centre AND the
+  // card has not flipped yet, lock scroll → flip → unlock after FLIP_MS.
+  useEffect(() => {
+    if (reducedMotion || flipped) return;
+    const el = wrapRef.current;
+    if (!el) return;
 
-    gsap.registerPlugin(ScrollTrigger);
-    // Card starts face DOWN; rotate from 0° to 180° as we scroll the pin.
-    gsap.set(flipper, { rotateY: 0 });
-
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: wrap,
-        // Center of the card hits center of the viewport -> pin starts.
-        start: "center center",
-        // Pin for a short, constant distance (the flip's "lock" time).
-        end: "+=60%",
-        pin: true,
-        pinSpacing: true,
-        anticipatePin: 1,
-        scrub: 0.4,
-        onUpdate: (st) => {
-          gsap.to(flipper, {
-            rotateY: st.progress * 180,
-            duration: 0.1,
-            overwrite: true,
-          });
-          // Mark "flipped" once we are past halfway, so taps reveal the detail.
-          if (st.progress > 0.5 && !flipped) setFlipped(true);
-          if (st.progress < 0.5 && flipped) setFlipped(false);
-        },
-      });
-    }, wrap);
-
-    return () => ctx.revert();
-  }, [reducedMotion]);
+    let raf = 0;
+    const check = () => {
+      raf = 0;
+      const rect = el.getBoundingClientRect();
+      const cardCentre = rect.top + rect.height / 2;
+      const viewCentre = window.innerHeight / 2;
+      if (Math.abs(cardCentre - viewCentre) < CENTRE_TOLERANCE) {
+        setAnimating(true);
+        lockScroll();
+        window.setTimeout(() => {
+          setFlipped(true);
+          setAnimating(false);
+          unlockScroll();
+        }, FLIP_MS);
+      }
+    };
+    const onScroll = () => {
+      if (raf || animating) return;
+      raf = requestAnimationFrame(check);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    // Also run once on mount in case the card already sits at centre.
+    onScroll();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [reducedMotion, flipped, animating]);
 
   const onCardClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!flipped) return; // ignore taps until the card has been flipped face-up
+    if (!flipped) return;
     const rect = event.currentTarget.getBoundingClientRect();
     const yFrac = (event.clientY - rect.top) / rect.height;
     if (revealed) {
@@ -94,11 +94,10 @@ function MobileFlipCard({
   return (
     <div
       ref={wrapRef}
-      className={`mx-auto w-full max-w-[18rem] ${isFirst ? "mt-2" : "mt-8"}`}
+      className="mx-auto w-full max-w-[18rem]"
       style={{ perspective: "1200px" }}
     >
       <div
-        ref={flipperRef}
         role="button"
         tabIndex={0}
         aria-label={
@@ -110,13 +109,17 @@ function MobileFlipCard({
         }
         onClick={onCardClick}
         onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") {
+          if ((event.key === "Enter" || event.key === " ") && flipped) {
             event.preventDefault();
-            if (flipped) setRevealed((value) => !value);
+            setRevealed((value) => !value);
           }
         }}
-        className="relative aspect-[10/14] w-full cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-gold"
-        style={{ transformStyle: "preserve-3d" }}
+        className="card-flip relative aspect-[10/14] w-full cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-gold"
+        data-flipped={flipped || animating ? "true" : "false"}
+        style={{
+          transformStyle: "preserve-3d",
+          transitionDuration: `${FLIP_MS}ms`,
+        }}
       >
         {/* Back of the card (visible at 0°). */}
         <img
@@ -144,36 +147,32 @@ function MobileFlipCard({
 }
 
 /**
- * MOBILE worlds (spec 047): cards live in normal page flow with a fixed gap; the
- * page scrolls past them, and EACH card individually pins+flips when its centre
- * reaches the viewport centre. No long shared pin, no cards moving around.
+ * MOBILE worlds (spec 048): title + 3 cards stacked with FIXED CSS spacing. The
+ * cards never move. As the page scrolls, each card individually pauses the page
+ * scroll when it reaches the viewport centre, plays its CSS flip, and releases
+ * the scroll when the flip ends.
  */
 export function MobileFlipDeck({ onBook }: { onBook: () => void }) {
   const reducedMotion = useReducedMotion();
-  // Refresh ScrollTrigger after the canvas-drawn card images finish loading, so
-  // each card's pin starts at its true height (avoids early/late triggers).
-  useEffect(() => {
-    const t = setTimeout(() => ScrollTrigger.refresh(), 400);
-    return () => clearTimeout(t);
-  }, []);
 
   return (
-    <div className="px-6 pb-6 pt-24">
+    <div className="px-6 pb-10 pt-24">
       <SectionHeading
         eyebrow={HOME.worldsHeading.eyebrow}
         title={HOME.worldsHeading.title}
         align="center"
-        className="mx-auto mb-6 max-w-2xl"
+        className="mx-auto mb-12 max-w-2xl"
       />
-      {HOME.worlds.map((world, i) => (
-        <MobileFlipCard
-          key={world.symbol}
-          world={world}
-          isFirst={i === 0}
-          onBook={onBook}
-          reducedMotion={reducedMotion}
-        />
-      ))}
+      <div className="mx-auto flex max-w-[18rem] flex-col gap-12">
+        {HOME.worlds.map((world) => (
+          <MobileFlipCard
+            key={world.symbol}
+            world={world}
+            onBook={onBook}
+            reducedMotion={reducedMotion}
+          />
+        ))}
+      </div>
     </div>
   );
 }
