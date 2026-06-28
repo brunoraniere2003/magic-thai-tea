@@ -46,6 +46,9 @@ export const CARD_CHOREOGRAPHY = {
   /** MOBILE: push the whole deck DOWN (world units) so the focused card sits
    *  clearly below the pinned heading (spec 041). */
   MOBILE_Y: -0.34,
+  /** DESKTOP: a small downward nudge so there is breathing room under the title
+   *  at the start (the title then fades out as the cards take over). */
+  DESKTOP_Y: -0.22,
 } as const;
 
 export function clamp01(x: number): number {
