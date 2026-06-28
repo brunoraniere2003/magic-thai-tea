@@ -21,19 +21,23 @@ export interface CardTarget {
 
 export const CARD_CHOREOGRAPHY = {
   /** Spread finishes (and the first flip starts) at this progress. */
-  SPREAD_END: 0.4,
-  FLIP_START: 0.4,
+  SPREAD_END: 0.24,
+  FLIP_START: 0.26,
   FLIP_END: 1,
   /** Horizontal distance between neighbouring cards once spread. */
   CARD_GAP: 2.05,
-  /** How long one card's flip lasts, in units of p. */
-  FLIP_DURATION: 0.36,
+  /**
+   * How long one card's flip lasts (units of p). Tuned with FLIP_STAGGER so the
+   * LAST card lands by p≈0.61, leaving p 0.61→1 as a long "all face-up" hold so
+   * the scroll-locked section never scrolls away mid-flip (spec 033).
+   */
+  FLIP_DURATION: 0.17,
   /** Gap between the start of consecutive flips (below DURATION so they overlap). */
-  FLIP_STAGGER: 0.16,
+  FLIP_STAGGER: 0.09,
   /** Depth between stacked cards before they spread (avoids z-fighting). */
   STACK_DEPTH: 0.04,
-  /** Damping speed for the scene's useFrame (frame-rate independent). */
-  DAMP_LAMBDA: 7,
+  /** Damping speed for the scene's useFrame: high so flips track fast scrolls. */
+  DAMP_LAMBDA: 10,
   /** MOBILE: vertical gap (card-local units) between the focused card and a peek. */
   MOBILE_PEEK: 2.8,
   /** MOBILE: uniform scale so the focused card fills the phone viewport. */

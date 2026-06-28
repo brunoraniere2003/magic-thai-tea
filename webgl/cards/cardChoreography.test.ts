@@ -80,20 +80,47 @@ describe("cardTransform - mid-spread (p=0.2, before any flip)", () => {
   });
 });
 
-describe("cardTransform - mid-flip (p=0.65): card 0 flipped, card 2 still face-down", () => {
-  it("card 0 is mostly/fully to the front", () => {
-    expect(cardTransform(0.65, 0, 3).rotationY).toBeGreaterThan(Math.PI * 0.8);
+describe("cardTransform - staggered cascade (lead card always ahead)", () => {
+  const { FLIP_START, FLIP_STAGGER, FLIP_DURATION } = CARD_CHOREOGRAPHY;
+  it("during the flip phase, card 0 ≥ card 1 ≥ card 2 (rotationY)", () => {
+    for (const p of [
+      FLIP_START + FLIP_DURATION * 0.4,
+      FLIP_START + FLIP_STAGGER + FLIP_DURATION * 0.4,
+    ]) {
+      const r0 = cardTransform(p, 0, 3).rotationY;
+      const r1 = cardTransform(p, 1, 3).rotationY;
+      const r2 = cardTransform(p, 2, 3).rotationY;
+      expect(r0).toBeGreaterThanOrEqual(r1 - 1e-9);
+      expect(r1).toBeGreaterThanOrEqual(r2 - 1e-9);
+    }
   });
-  it("card 2 has not started flipping", () => {
-    expect(cardTransform(0.65, 2, 3).rotationY).toBeCloseTo(0);
+  it("the next card starts before the previous finishes (overlap)", () => {
+    const pMid0 = FLIP_START + FLIP_DURATION * 0.6;
+    expect(cardTransform(pMid0, 0, 3).rotationY).toBeLessThan(Math.PI);
+    expect(cardTransform(pMid0, 1, 3).rotationY).toBeGreaterThan(0);
   });
-  it("card 1 is mid-flip (0 < rotationY < π)", () => {
-    const r = cardTransform(0.65, 1, 3).rotationY;
-    expect(r).toBeGreaterThan(0);
-    expect(r).toBeLessThan(Math.PI);
+  it("all cards are already spread before any flip lands", () => {
+    expect(cardTransform(FLIP_START, 2, 3).x).toBeCloseTo(CARD_GAP);
   });
-  it("all cards are already spread by mid-flip", () => {
-    expect(cardTransform(0.65, 2, 3).x).toBeCloseTo(CARD_GAP);
+});
+
+describe("cardTransform - all cards flip early, then HOLD face-up (scroll-lock)", () => {
+  const { FLIP_START, FLIP_STAGGER, FLIP_DURATION } = CARD_CHOREOGRAPHY;
+  const lastEnd = FLIP_START + 2 * FLIP_STAGGER + FLIP_DURATION; // card 2's flip end
+  it("the last flip lands well before the end, leaving a long hold", () => {
+    expect(lastEnd).toBeLessThan(0.75);
+  });
+  it("every card is face-up by the last flip's end", () => {
+    for (let i = 0; i < 3; i++) {
+      expect(cardTransform(lastEnd + 0.001, i, 3).rotationY).toBeCloseTo(Math.PI);
+    }
+  });
+  it("holds every card face-up from there through p=1 (no mid-flip scroll-away)", () => {
+    for (let p = lastEnd; p <= 1.0001; p += 0.05) {
+      for (let i = 0; i < 3; i++) {
+        expect(cardTransform(p, i, 3).rotationY).toBeCloseTo(Math.PI);
+      }
+    }
   });
 });
 
@@ -131,18 +158,17 @@ describe("cardTransform - robustness", () => {
 });
 
 describe("cardTransform - flips overlap (cards chain into each other)", () => {
-  // The next card must start flipping while the previous is mid-turn, not after
-  // it finishes. Assert strictly > 0 (the value is tiny right at the overlap
-  // point), never toBeCloseTo(0).
-  it("when card 0 reaches ~0.5π, card 1 has already started", () => {
-    const pHalf = 0.58; // FLIP_START + 0.5 * FLIP_DURATION = 0.40 + 0.18
-    expect(cardTransform(pHalf, 0, 3).rotationY).toBeCloseTo(Math.PI * 0.5, 2);
-    expect(cardTransform(pHalf, 1, 3).rotationY).toBeGreaterThan(0);
+  // The next card must begin its flip before the previous one finishes, so the
+  // turns chain instead of going one-fully-then-the-next. Derived from constants.
+  const { FLIP_START, FLIP_STAGGER, FLIP_DURATION } = CARD_CHOREOGRAPHY;
+  it("each flip starts strictly before the previous flip ends", () => {
+    expect(FLIP_STAGGER).toBeLessThan(FLIP_DURATION);
   });
-  it("when card 1 reaches ~0.5π, card 2 has already started", () => {
-    const pHalf = 0.74; // FLIP_START + FLIP_STAGGER + 0.5 * FLIP_DURATION
-    expect(cardTransform(pHalf, 1, 3).rotationY).toBeCloseTo(Math.PI * 0.5, 2);
-    expect(cardTransform(pHalf, 2, 3).rotationY).toBeGreaterThan(0);
+  it("just after card 1 begins, card 0 is still turning (both in motion)", () => {
+    const p = FLIP_START + FLIP_STAGGER + 0.001;
+    expect(cardTransform(p, 0, 3).rotationY).toBeLessThan(Math.PI);
+    expect(cardTransform(p, 0, 3).rotationY).toBeGreaterThan(0);
+    expect(cardTransform(p, 1, 3).rotationY).toBeGreaterThan(0);
   });
 });
 
