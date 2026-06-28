@@ -96,7 +96,7 @@ export function Worlds() {
               collides and is hidden while the deck is flipping. */}
           <div
             ref={headingRef}
-            className="pointer-events-none absolute inset-x-0 top-0 z-10 px-6 pb-24 pt-16 sm:pt-20"
+            className="pointer-events-none absolute inset-x-0 top-0 z-10 px-6 pb-12 pt-24 sm:pt-28"
           >
             <SectionHeading
               eyebrow={HOME.worldsHeading.eyebrow}

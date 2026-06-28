@@ -47,9 +47,9 @@ export const CARD_CHOREOGRAPHY = {
    *  longer needs a big offset to clear it). Keeps the first card close to the
    *  title (spec 044). */
   MOBILE_Y: -0.05,
-  /** DESKTOP: a small downward nudge so there is breathing room under the title
-   *  at the start (the title then fades out as the cards take over). */
-  DESKTOP_Y: -0.22,
+  /** DESKTOP: a tiny downward nudge. Kept small (close to 0) so the cards sit
+   *  near the title; the title fades out as the cards take over (spec 045). */
+  DESKTOP_Y: -0.05,
 } as const;
 
 export function clamp01(x: number): number {
