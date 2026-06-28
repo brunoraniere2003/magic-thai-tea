@@ -10,13 +10,12 @@ import { useWebGLSupported } from "@/lib/hooks/useWebGLSupported";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { useDriveProgress } from "@/webgl/core/useDriveProgress";
 
-// The animated layers never render on the server (browser-only APIs).
+// The animated layer never renders on the server (browser-only APIs). The
+// mobile fire (HeroDragonFire) is intentionally NOT imported here while the
+// mobile-perf test (spec 053) is in flight; restore it from git history when
+// re-enabling the mobile hero animation.
 const HeroCanvas = dynamic(
   () => import("./HeroCanvas").then((m) => m.HeroCanvas),
-  { ssr: false },
-);
-const HeroDragonFire = dynamic(
-  () => import("./HeroDragonFire").then((m) => m.HeroDragonFire),
   { ssr: false },
 );
 
@@ -38,27 +37,21 @@ export function Hero() {
   const isMobile = useIsMobile();
 
   const animate = shouldAnimateHero({ tier, reducedMotion, webglSupported });
-  const writeMode = animate && isMobile;
+  // Mobile hero is STATIC for the perf test (spec 053): no fire animation, no
+  // scroll lock, just the poster + content. Desktop keeps the reactive fluid.
+  const animateDesktop = animate && !isMobile;
 
   const { triggerRef, progressRef } = useDriveProgress<HTMLElement>({
     start: "top top",
     end: "+=80%",
   });
-
-  const animation = isMobile ? (
-    <HeroDragonFire progressRef={progressRef} />
-  ) : (
-    <HeroCanvas />
-  );
+  void progressRef; // hero fire (which read it) is disabled on mobile for now
 
   return (
-    <section
-      ref={triggerRef}
-      className={`relative ${writeMode ? "h-[180vh]" : "min-h-screen"}`}
-    >
+    <section ref={triggerRef} className="relative min-h-screen">
       <div className="sticky top-0 flex h-screen flex-col overflow-hidden">
         <HeroPoster />
-        {animate ? animation : null}
+        {animateDesktop ? <HeroCanvas /> : null}
         <HeroContent />
       </div>
     </section>
