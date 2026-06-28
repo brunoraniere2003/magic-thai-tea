@@ -91,13 +91,13 @@ export function cardTransform(
 }
 
 /**
- * MOBILE choreography (spec 035): a rising carousel. A "read head" rises through
- * the deck as scroll [0,1] runs; card i is centred exactly when pos === index+1,
- * so each card RISES from below and flips face-up as it ARRIVES at the centre
- * (not early/in place), and the LAST card lands centred at p=1 (no long end-lock).
- * Cards that have passed continue up and off the top (cleanly hidden behind the
- * opaque header). Neighbours peek one MOBILE_PEEK away, close but not overlapping;
- * the focused card is full size, neighbours a touch smaller. Desktop is untouched.
+ * MOBILE choreography (spec 037): a carousel with NO empty lead-in. The FIRST
+ * card is centred and face-up at p=0 (so the section opens on a card, no giant
+ * gap), and card i is centred when pos === index across pos 0..count-1, so the
+ * LAST card lands centred exactly at p=1 (no long end-lock). The remaining cards
+ * rise from below and flip face-up as they ARRIVE at the centre; cards that pass
+ * continue up and off the top (hidden behind the opaque header). Neighbours peek
+ * one MOBILE_PEEK away. Desktop is untouched.
  */
 export function cardTransformMobile(
   p: number,
@@ -106,13 +106,17 @@ export function cardTransformMobile(
 ): CardTarget {
   const { MOBILE_PEEK } = CARD_CHOREOGRAPHY;
 
-  const pos = clamp01(p) * count; // read head, 0..count
-  const cardCentre = index + 1; // card i is centred when pos === index + 1
-  const rel = pos - cardCentre; // 0 at centre; <0 waiting below; >0 risen above
+  const span = Math.max(1, count - 1);
+  const pos = clamp01(p) * span; // 0..count-1; card i is centred when pos === index
+  const rel = pos - index; // 0 at centre; >0 risen above; <0 waiting below
   const y = rel * MOBILE_PEEK; // +y up, -y down (three.js group y)
 
-  // Flip up over the last 0.7 of the rise; face-up exactly at centre, stays up.
-  const rotationY = easeInOutCubic(clamp01((pos - (cardCentre - 0.7)) / 0.7)) * Math.PI;
+  // The first card shows face-up immediately (no in-place flip, no gap); later
+  // cards flip up as they arrive at centre and stay up after passing.
+  const rotationY =
+    index === 0
+      ? Math.PI
+      : easeInOutCubic(clamp01((pos - (index - 0.7)) / 0.7)) * Math.PI;
 
   const scale = 1 - 0.12 * Math.min(Math.abs(rel), 1);
 
