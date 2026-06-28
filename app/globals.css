@@ -62,3 +62,34 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* International phone input (react-phone-number-input) themed for the dark UI:
+   the wrapper is the field box, the flag dropdown sits inside it. */
+.phone-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--color-stone) 25%, transparent);
+  background: var(--color-stage);
+  padding: 0.75rem 1rem;
+  transition: border-color 150ms;
+}
+.phone-field:focus-within {
+  border-color: color-mix(in srgb, var(--color-cream) 60%, transparent);
+}
+.phone-field .PhoneInputInput {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-cream);
+}
+.phone-field .PhoneInputCountrySelectArrow {
+  color: var(--color-cream);
+  opacity: 0.55;
+}
+/* The native option list is OS-drawn; keep its text readable on either theme. */
+.phone-field .PhoneInputCountrySelect option {
+  color: var(--color-ink);
+}

@@ -23,12 +23,13 @@ const HeroDragonFire = dynamic(
 /**
  * Hero orchestrator. Content and poster are server-rendered (instant). On a
  * capable device we layer an animation: the reactive fluid on desktop, or, on
- * phones (spec 031), the fire that WRITES the characters 飛龍 as you scroll.
+ * phones (spec 037), the fire that SWEEPS in lines toward each line of hero copy
+ * as you scroll.
  *
  * In write mode the section is taller than the viewport and its inner layer is
- * `sticky`, so the hero stays locked on screen while the scroll drives the
- * writing (this sticky trick works with Lenis, unlike a ScrollTrigger pin). The
- * page only moves on past the hero once 飛龍 is finished.
+ * `sticky`, so the hero stays LOCKED on screen while the scroll drives the
+ * sweep (this sticky trick works with Lenis, unlike a ScrollTrigger pin). The
+ * page only moves on past the hero once the sweep is finished.
  */
 export function Hero() {
   const reducedMotion = useReducedMotion();
