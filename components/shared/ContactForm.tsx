@@ -11,8 +11,29 @@ import {
   type ContactErrors,
 } from "@/lib/contact/validateContactForm";
 
-const EMPTY: ContactValues = { name: "", email: "", phone: "" };
+// Phone starts with the US code pre-filled; the visitor can change it.
+const DEFAULT_DIAL = "+1 ";
+const EMPTY: ContactValues = { name: "", email: "", phone: DEFAULT_DIAL };
 type Status = "idle" | "submitting" | "success" | "error";
+
+/**
+ * Light phone mask. Defaults to "+1" and formats a US number as
+ * "+1 (415) 699-1715"; if the visitor changes the country code it keeps "+" plus
+ * their digits so any international number still works.
+ */
+function formatPhone(input: string): string {
+  let v = input.replace(/[^\d+]/g, "");
+  v = "+" + v.replace(/\+/g, ""); // exactly one leading "+"
+  if (v.startsWith("+1")) {
+    const d = v.slice(2).replace(/\D/g, "").slice(0, 10);
+    let out = "+1";
+    if (d.length) out += " (" + d.slice(0, 3);
+    if (d.length >= 3) out += ") " + d.slice(3, 6);
+    if (d.length >= 6) out += "-" + d.slice(6, 10);
+    return out;
+  }
+  return "+" + v.slice(1).replace(/\D/g, "").slice(0, 15);
+}
 
 // Leads go straight to Ethan's Flying Dragon Tea inbox via FormSubmit, sent from
 // the browser (their server-side endpoint blocks datacenter IPs). Account-free.
@@ -142,9 +163,10 @@ export function ContactForm() {
             type="tel"
             autoComplete="tel"
             inputMode="tel"
+            placeholder="+1 (415) 699-1715"
             className={fieldClasses}
             value={values.phone}
-            onChange={(event) => update("phone", event.target.value)}
+            onChange={(event) => update("phone", formatPhone(event.target.value))}
             aria-invalid={Boolean(errors.phone)}
             aria-describedby={errors.phone ? "phone-error" : undefined}
           />
