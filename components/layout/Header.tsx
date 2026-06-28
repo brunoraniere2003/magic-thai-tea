@@ -83,6 +83,9 @@ export function Header() {
             duration: 0.5,
             stagger: 0.07,
             ease: "power3.out",
+            // Don't pre-hide the links: if the timeline never reaches this tween,
+            // they stay visible instead of getting stuck at opacity 0.
+            immediateRender: false,
           },
           "-=0.25",
         );
