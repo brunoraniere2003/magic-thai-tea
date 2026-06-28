@@ -98,13 +98,14 @@ export function cardTransform(
 }
 
 /**
- * MOBILE choreography (spec 039): a flip-through carousel with NO empty lead-in
- * and NO end-lock. The first card sits CENTRED and face-DOWN at p=0, then flips
- * in place (a reveal, no gap) over the first fifth; each card is centred when the
- * read head reaches index+0.5, and the read head spans 0..count-0.5 so the LAST
- * card lands centred & face-up exactly at p=1. Cards flip face-up as they reach
- * the centre and leave upward after (hidden behind the opaque header). Neighbours
- * peek one MOBILE_PEEK away. Desktop is untouched.
+ * MOBILE choreography (spec 051): every card LOCKS at centre while it flips.
+ *
+ * Progress p ∈ [0,1] is split into 2N-1 equal segments for N cards (5 for the
+ * standard deck of 3): FLIP, TRANSIT, FLIP, TRANSIT, FLIP. During a FLIP segment
+ * the active card sits motionless at centre and rotates 0→π; during a TRANSIT
+ * segment, every card slides one MOBILE_PEEK upward so the next card arrives at
+ * centre face-down. Result: each card has its own "scroll-locked, flip in place"
+ * moment, not just the first one. Desktop is untouched.
  */
 export function cardTransformMobile(
   p: number,
@@ -112,18 +113,36 @@ export function cardTransformMobile(
   count: number,
 ): CardTarget {
   const { MOBILE_PEEK } = CARD_CHOREOGRAPHY;
+  const segments = 2 * count - 1;
+  const t = clamp01(p) * segments; // 0..segments. Each integer step is one segment.
 
-  const last = count - 0.5;
-  const head = clamp01(p) * last; // 0..count-0.5; card i is centred at head = index+0.5
-  const centre = Math.min(Math.max(head, 0.5), last); // hold the ends centred
-  const cardCentre = index + 0.5;
-  const y = (centre - cardCentre) * MOBILE_PEEK; // +y up, -y down
+  // How many cards have ALREADY left the centre (gone upward) by progress t.
+  // A card "passes" the centre at the end of its flip segment (the even
+  // segments: 0, 2, 4, ...). Between segments the deck shifts up by one PEEK.
+  let cardsPassed = Math.min(count - 1, Math.floor(t / 2));
+  // The slide between cards happens during the TRANSIT (odd) segments.
+  const inSegment = t - cardsPassed * 2;
+  let slide = 0;
+  if (inSegment >= 1 && inSegment < 2) {
+    slide = easeInOutCubic(inSegment - 1); // 0→1 during the transit
+  } else if (inSegment >= 2) {
+    // Defensive: should not happen because cardsPassed already absorbed it.
+    slide = 1;
+  }
+  // The deck's "read head" in card-index space (so card i is centred when head ≈ i).
+  const head = cardsPassed + slide;
 
-  // Each card flips face-down → face-up over the half-step as it reaches centre,
-  // then stays up. The first card flips IN PLACE (centre is clamped at 0.5).
-  const rotationY = easeInOutCubic(clamp01((head - index) / 0.5)) * Math.PI;
+  const y = (head - index) * MOBILE_PEEK; // +y up, -y down
+  const dist = Math.abs(head - index);
+  const scale = 1 - 0.12 * Math.min(dist, 1);
 
-  const scale = 1 - 0.12 * Math.min(Math.abs(centre - cardCentre), 1);
+  // Rotation: this card is face-up only while it has reached centre. It rotates
+  // 0→π during its OWN flip segment (segment 2*index), then stays at π.
+  const ownFlipStart = 2 * index;
+  let rotationY: number;
+  if (t < ownFlipStart) rotationY = 0;
+  else if (t > ownFlipStart + 1) rotationY = Math.PI;
+  else rotationY = easeInOutCubic(t - ownFlipStart) * Math.PI;
 
   return { x: 0, y, z: 0, rotationY, scale };
 }
