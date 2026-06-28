@@ -96,11 +96,9 @@ function drawYinYang(ctx: CanvasRenderingContext2D, cx: number, cy: number): voi
 }
 
 /**
- * A tai-chi master in a true horse stance (ma bu): conical hat (douli), a
- * settled torso with a waist sash, arms spread wide into a rounded "ward-off"
- * embrace, and deeply bent knees that bow out WIDER than the planted feet so the
- * legs read as a sunk, rooted arch (not an open jumping-jack V). Spec 033, chosen
- * from four parallel candidates and verified by render.
+ * Tai-chi master in "ward-off" (Peng): a bow stance with the front knee bent and
+ * the back leg extended, one forearm rounded across the chest and the other hand
+ * low, under a conical hat (douli). Pose 2, chosen by the owner (spec 036).
  */
 function drawTaiChi(ctx: CanvasRenderingContext2D, cx: number, cy: number): void {
   ctx.save();
@@ -108,138 +106,92 @@ function drawTaiChi(ctx: CanvasRenderingContext2D, cx: number, cy: number): void
   ctx.lineJoin = "round";
   ctx.strokeStyle = GOLD;
   ctx.fillStyle = GOLD;
-  ctx.lineWidth = 8.5;
+  ctx.lineWidth = 8;
+
+  const sh = cy - 58; // shoulder line
+  const hp = cy + 24; // hip line
+  const brimY = cy - 116;
+  const apex = cy - 152;
+  const headY = cy - 92;
+  const fy = cy + 190; // foot line
+
+  const foot = (fx: number, fyy: number, dir: number) => {
+    ctx.beginPath();
+    ctx.moveTo(fx - 18 * dir, fyy + 2);
+    ctx.quadraticCurveTo(fx, fyy + 8, fx + 20 * dir, fyy - 2);
+    ctx.stroke();
+  };
 
   // Conical hat (douli): brim ellipse + cone.
-  const hatBrimY = cy - 116;
-  const apexY = cy - 152;
   ctx.beginPath();
-  ctx.ellipse(cx, hatBrimY, 48, 12, 0, 0, Math.PI * 2);
+  ctx.ellipse(cx, brimY, 46, 12, 0, 0, Math.PI * 2);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(cx - 44, hatBrimY - 2);
-  ctx.quadraticCurveTo(cx - 14, apexY + 6, cx, apexY);
-  ctx.quadraticCurveTo(cx + 14, apexY + 6, cx + 44, hatBrimY - 2);
+  ctx.moveTo(cx - 44, brimY - 2);
+  ctx.quadraticCurveTo(cx - 14, apex + 6, cx, apex);
+  ctx.quadraticCurveTo(cx + 14, apex + 6, cx + 44, brimY - 2);
   ctx.stroke();
 
-  // Head.
-  const headY = cy - 92;
+  // Head + neck.
   ctx.beginPath();
   ctx.arc(cx, headY, 17, 0, Math.PI * 2);
   ctx.stroke();
-
-  // Neck + settled torso (side lines + waist sash).
-  const shoulderY = cy - 58;
-  const hipY = cy + 24;
   ctx.beginPath();
   ctx.moveTo(cx, headY + 17);
-  ctx.lineTo(cx, shoulderY - 4);
+  ctx.lineTo(cx, sh - 2);
+  ctx.stroke();
+
+  // Torso: shoulder line, spine, hip line.
+  ctx.beginPath();
+  ctx.moveTo(cx - 30, sh + 2);
+  ctx.quadraticCurveTo(cx, sh - 8, cx + 30, sh + 2);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(cx - 30, shoulderY + 2);
-  ctx.quadraticCurveTo(cx, shoulderY - 8, cx + 30, shoulderY + 2);
+  ctx.moveTo(cx, sh - 2);
+  ctx.quadraticCurveTo(cx + 2, cy - 16, cx, hp);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(cx - 24, shoulderY + 4);
-  ctx.quadraticCurveTo(cx - 16, cy - 18, cx - 20, hipY);
+  ctx.moveTo(cx - 22, hp);
+  ctx.quadraticCurveTo(cx, hp + 8, cx + 22, hp);
   ctx.stroke();
+
+  // Right arm: rounded "ward-off" (peng) forearm carried across the chest.
   ctx.beginPath();
-  ctx.moveTo(cx + 24, shoulderY + 4);
-  ctx.quadraticCurveTo(cx + 16, cy - 18, cx + 20, hipY);
+  ctx.moveTo(cx + 28, sh + 2);
+  ctx.quadraticCurveTo(cx + 58, cy - 66, cx + 24, cy - 50);
+  ctx.quadraticCurveTo(cx - 14, cy - 36, cx - 30, cy - 42);
+  ctx.stroke();
+
+  // Left arm low, with an open hand.
+  ctx.beginPath();
+  ctx.moveTo(cx - 28, sh + 4);
+  ctx.quadraticCurveTo(cx - 46, cy - 6, cx - 40, cy + 18);
   ctx.stroke();
   ctx.lineWidth = 6;
-  ctx.beginPath();
-  ctx.moveTo(cx - 21, cy - 6);
-  ctx.quadraticCurveTo(cx, cy + 2, cx + 21, cy - 6);
-  ctx.stroke();
+  for (const a of [-8, 0, 8]) {
+    ctx.beginPath();
+    ctx.moveTo(cx - 40, cy + 18);
+    ctx.lineTo(cx - 50, cy + 16 + a);
+    ctx.stroke();
+  }
   ctx.lineWidth = 8.5;
 
-  // Arms spread wide into a rounded ward-off embrace, hands softly curling.
+  // Bow stance: front (left) leg deeply bent, back (right) leg extended.
+  const sign = -1; // front leg to the left
   ctx.beginPath();
-  ctx.moveTo(cx + 28, shoulderY + 4);
-  ctx.quadraticCurveTo(cx + 96, cy - 64, cx + 132, cy - 50);
-  ctx.bezierCurveTo(cx + 152, cy - 40, cx + 154, cy - 22, cx + 140, cy - 6);
+  ctx.moveTo(cx + sign * 14, hp + 4);
+  ctx.quadraticCurveTo(cx + sign * 52, cy + 70, cx + sign * 60, cy + 104);
+  ctx.quadraticCurveTo(cx + sign * 60, cy + 150, cx + sign * 92, fy);
   ctx.stroke();
   ctx.beginPath();
-  ctx.moveTo(cx + 140, cy - 6);
-  ctx.quadraticCurveTo(cx + 124, cy - 2, cx + 116, cy - 12);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(cx + 140, cy - 6);
-  ctx.quadraticCurveTo(cx + 134, cy + 10, cx + 122, cy + 10);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(cx - 28, shoulderY + 4);
-  ctx.quadraticCurveTo(cx - 96, cy - 64, cx - 132, cy - 50);
-  ctx.bezierCurveTo(cx - 152, cy - 40, cx - 154, cy - 22, cx - 140, cy - 6);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(cx - 140, cy - 6);
-  ctx.quadraticCurveTo(cx - 124, cy - 2, cx - 116, cy - 12);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(cx - 140, cy - 6);
-  ctx.quadraticCurveTo(cx - 134, cy + 10, cx - 122, cy + 10);
-  ctx.stroke();
-
-  // Legs: TRUE ma bu. Knees bow out wider than the feet; shins angle back in to
-  // planted feet, so each knee shows a clear bend and the pair reads as a sunk
-  // rooted arch.
-  const hipL = cx - 18;
-  const hipR = cx + 18;
-  const thighEndY = cy + 78;
-  const kneeX = 112;
-  const footY = cy + 190;
-  const footX = 64;
-
-  ctx.beginPath();
-  ctx.moveTo(hipL - 4, hipY + 2);
-  ctx.quadraticCurveTo(cx, hipY + 12, hipR + 4, hipY + 2);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(hipR, hipY + 4);
-  ctx.quadraticCurveTo(cx + 78, cy + 40, cx + kneeX, thighEndY);
-  ctx.quadraticCurveTo(cx + kneeX - 2, cy + 132, cx + footX, footY);
-  ctx.stroke();
-  ctx.lineWidth = 7;
-  ctx.beginPath();
-  ctx.moveTo(cx + footX - 20, footY + 2);
-  ctx.quadraticCurveTo(cx + footX + 6, footY + 9, cx + footX + 28, footY - 2);
-  ctx.stroke();
-  ctx.lineWidth = 8.5;
-
-  ctx.beginPath();
-  ctx.moveTo(hipL, hipY + 4);
-  ctx.quadraticCurveTo(cx - 78, cy + 40, cx - kneeX, thighEndY);
-  ctx.quadraticCurveTo(cx - kneeX + 2, cy + 132, cx - footX, footY);
-  ctx.stroke();
-  ctx.lineWidth = 7;
-  ctx.beginPath();
-  ctx.moveTo(cx - footX + 20, footY + 2);
-  ctx.quadraticCurveTo(cx - footX - 6, footY + 9, cx - footX - 28, footY - 2);
-  ctx.stroke();
-  ctx.lineWidth = 8.5;
-
-  // Knee accents (emphasise the bend).
-  ctx.beginPath();
-  ctx.arc(cx + kneeX, thighEndY, 3.5, 0, Math.PI * 2);
+  ctx.arc(cx + sign * 60, cy + 104, 3.2, 0, Math.PI * 2);
   ctx.fill();
   ctx.beginPath();
-  ctx.arc(cx - kneeX, thighEndY, 3.5, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Highlights.
-  ctx.strokeStyle = GOLD_HI;
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.moveTo(cx - 24, hatBrimY - 6);
-  ctx.quadraticCurveTo(cx - 8, apexY + 6, cx, apexY);
+  ctx.moveTo(cx - sign * 12, hp + 4);
+  ctx.quadraticCurveTo(cx - sign * 64, cy + 96, cx - sign * 120, cy + 186);
   ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(cx - 14, cy - 5);
-  ctx.quadraticCurveTo(cx, cy + 1, cx + 14, cy - 5);
-  ctx.stroke();
+  foot(cx + sign * 92, fy, sign);
+  foot(cx - sign * 120, cy + 186, -sign);
 
   ctx.restore();
 }
