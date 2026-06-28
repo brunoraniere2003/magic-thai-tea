@@ -43,9 +43,10 @@ export const CARD_CHOREOGRAPHY = {
   /** MOBILE: uniform scale. Below 0.72 so a card clears the fixed header and a
    *  neighbour can peek from the bottom edge (spec 035). */
   MOBILE_SCALE: 0.7,
-  /** MOBILE: push the whole deck DOWN (world units) so the focused card sits
-   *  clearly below the pinned heading (spec 041). */
-  MOBILE_Y: -0.34,
+  /** MOBILE: small downward nudge only (the heading now fades out, so the deck no
+   *  longer needs a big offset to clear it). Keeps the first card close to the
+   *  title (spec 044). */
+  MOBILE_Y: -0.05,
   /** DESKTOP: a small downward nudge so there is breathing room under the title
    *  at the start (the title then fades out as the cards take over). */
   DESKTOP_Y: -0.22,
