@@ -6,6 +6,7 @@ import { Stage3D } from "@/webgl/core/Stage3D";
 import { useDriveProgress } from "@/webgl/core/useDriveProgress";
 import { DeckPoster } from "@/webgl/cards/DeckPoster";
 import type { DeckCard } from "@/webgl/cards/FlippingCardsScene";
+import { MobileDeck } from "@/components/sections/home/MobileDeck";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { HOME, type WorldKey } from "@/content/home";
 
@@ -56,13 +57,21 @@ export function Worlds() {
     label: world.title,
   }));
 
+  // Phones get a STATIC stacked layout (constant spacing, no pin/collision);
+  // desktop keeps the 3D flip deck pinned on scroll (spec 042).
+  if (isMobile) {
+    return (
+      <section id="worlds" className="scroll-mt-24">
+        <MobileDeck onBook={scrollToContact} />
+      </section>
+    );
+  }
+
   return (
     <section id="worlds" className="scroll-mt-24">
-      {/* Heading + deck pin together from the first frame (no empty lead-in gap).
-          Shorter pin on phones (220vh) so contact sits close to the last card;
-          taller on desktop (320vh) for a long all-face-up hold. Responsive height
-          is pure CSS, so the single ScrollTrigger never re-inits. */}
-      <div ref={triggerRef} className="relative h-[220vh] md:h-[320vh]">
+      {/* Heading + deck pin together from the first frame (no empty lead-in gap),
+          then a long all-face-up hold before releasing to contact. */}
+      <div ref={triggerRef} className="relative h-[320vh]">
         <div className="sticky top-0 h-screen overflow-hidden">
           <Stage3D
             className="absolute inset-0"
@@ -74,13 +83,11 @@ export function Worlds() {
                 progressRef={progressRef}
                 cards={cards}
                 onBook={scrollToContact}
-                isMobile={isMobile}
               />
             )}
           />
           {/* Heading rides at the top of the pinned stage, on an opaque-to-clear
-              backdrop (stage colour) so cards sliding up the carousel dissolve
-              cleanly BEHIND it instead of colliding with the title. */}
+              backdrop so the deck reads cleanly behind the title. */}
           <div className="pointer-events-none absolute inset-x-0 top-0 z-10 bg-gradient-to-b from-stage from-40% via-stage/90 to-transparent px-6 pb-28 pt-16 sm:pt-20">
             <SectionHeading
               eyebrow={HOME.worldsHeading.eyebrow}

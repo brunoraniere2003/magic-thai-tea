@@ -223,3 +223,13 @@ export function getCardFaceTexture(
 ): CanvasTexture {
   return (cache[symbol] ??= textureFromDraw(drawFace(symbol, title)));
 }
+
+/** The same drawn front as a PNG data URL, for the static mobile <img> cards. */
+export function cardFaceDataURL(symbol: WorldSymbol, title: string): string {
+  const canvas = document.createElement("canvas");
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext("2d");
+  if (ctx) drawFace(symbol, title)(ctx);
+  return canvas.toDataURL("image/png");
+}
