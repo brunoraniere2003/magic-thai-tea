@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 import type { RefObject } from "react";
 import WebGLFluidEnhanced from "webgl-fluid-enhanced";
-import { FEI_MEDIANS, LONG_MEDIANS } from "@/webgl/core/dragonGlyphMedians";
 
 interface FlamePoint {
   x: number;
@@ -12,95 +11,54 @@ interface FlamePoint {
   vy: number;
 }
 
-// How small the name is (each char fits a cell this wide), how dense the trace
-// is, and how fast the flame flows along the stroke.
-const CELL_FRACTION = 0.26; // of viewport width
-const CELL_MAX = 120; // px ceiling, so it stays small on big phones
-const STEP_PX = 5; // splat spacing along a stroke (denser = smoother line)
-const FLOW = 22; // tangential flame speed
-const RISE = 10; // gentle upward bias (fire rises)
+// Horizontal "lanes" placed roughly at the hero copy: eyebrow, the two title
+// lines, the subtitle, and the two buttons. The flame sweeps each lane in turn,
+// in a straight, gently-curved line, alternating direction, as the locked hero
+// scrolls.
+const LANES = [0.31, 0.4, 0.49, 0.58, 0.66, 0.72];
+const SIDE_MARGIN = 0.08; // start/end this far from the edges (fraction of width)
+const STEP_PX = 7; // splat spacing along a lane
+const FLOW = 34; // horizontal flame speed (the sweep)
+const CURVE = 0.045; // lane bow as a fraction of height (slightly curved)
 
 /**
- * Map one character's stroke medians into ordered flame points in CSS pixels,
- * centred on (cx, cy) inside a square `cell`. Data y increases UPWARD, so we
- * flip it. Points are interpolated ALONG each stroke (not across strokes: the
- * pen lifts between strokes) and carry a velocity along the stroke tangent.
+ * Build the ordered sweep points: for each lane (top→bottom) a straight,
+ * slightly-curved horizontal line, ordered in its sweep direction (alternating
+ * left→right / right→left). The flame follows this list as the scroll advances,
+ * so it sweeps lane by lane toward each line of hero copy.
  */
-function buildCharPoints(
-  strokes: number[][][],
-  cx: number,
-  cy: number,
-  cell: number,
-): FlamePoint[] {
-  let minX = Infinity;
-  let maxX = -Infinity;
-  let minY = Infinity;
-  let maxY = -Infinity;
-  for (const stroke of strokes) {
-    for (const [x, y] of stroke) {
-      const fy = -y; // flip to screen space
-      if (x < minX) minX = x;
-      if (x > maxX) maxX = x;
-      if (fy < minY) minY = fy;
-      if (fy > maxY) maxY = fy;
-    }
-  }
-  const w = maxX - minX || 1;
-  const h = maxY - minY || 1;
-  const scale = Math.min(cell / w, cell / h);
-  const ox = cx - (minX + w / 2) * scale;
-  const oy = cy - (minY + h / 2) * scale;
-  const map = (x: number, y: number) => ({ x: ox + x * scale, y: oy + -y * scale });
-
+function computePoints(W: number, H: number): FlamePoint[] {
   const pts: FlamePoint[] = [];
-  for (const stroke of strokes) {
-    const m = stroke.map(([x, y]) => map(x, y));
-    for (let i = 0; i < m.length - 1; i++) {
-      const a = m[i];
-      const b = m[i + 1];
-      const dx = b.x - a.x;
-      const dy = b.y - a.y;
-      const len = Math.hypot(dx, dy) || 1;
-      const steps = Math.max(1, Math.round(len / STEP_PX));
-      const ux = dx / len;
-      const uy = dy / len;
-      for (let k = 0; k < steps; k++) {
-        const t = k / steps;
-        pts.push({
-          x: a.x + dx * t,
-          y: a.y + dy * t,
-          vx: ux * FLOW,
-          vy: -uy * FLOW - RISE,
-        });
-      }
+  const margin = W * SIDE_MARGIN;
+  LANES.forEach((fy, k) => {
+    const ltr = k % 2 === 0; // alternate direction per lane
+    const xStart = ltr ? margin : W - margin;
+    const xEnd = ltr ? W - margin : margin;
+    const dir = ltr ? 1 : -1;
+    const span = Math.abs(xEnd - xStart) || 1;
+    const n = Math.max(2, Math.round(span / STEP_PX));
+    const y0 = H * fy;
+    const bow = (ltr ? -1 : 1) * H * CURVE; // gentle arc, alternating up/down
+    for (let i = 0; i <= n; i++) {
+      const t = i / n;
+      pts.push({
+        x: xStart + (xEnd - xStart) * t,
+        y: y0 + bow * Math.sin(Math.PI * t),
+        vx: dir * FLOW,
+        vy: -6, // slight lift
+      });
     }
-    const last = m[m.length - 1];
-    if (last) pts.push({ x: last.x, y: last.y, vx: 0, vy: -RISE });
-  }
+  });
   return pts;
 }
 
 /**
- * Build the full ordered trace: 飛 stacked on top of 龍, both small and centred.
- * The fire follows this list in order, so it "writes" the name along the lines.
- */
-function computePoints(W: number, H: number): FlamePoint[] {
-  const cell = Math.min(W * CELL_FRACTION, CELL_MAX);
-  const gap = cell * 0.14;
-  const centerY = H * 0.46;
-  const cx = W / 2;
-  return [
-    ...buildCharPoints(FEI_MEDIANS, cx, centerY - (cell + gap) / 2, cell),
-    ...buildCharPoints(LONG_MEDIANS, cx, centerY + (cell + gap) / 2, cell),
-  ];
-}
-
-/**
- * Mobile hero (spec 030/032): the fire **writes** 飛龍 by tracing the stroke
- * CENTERLINES in writing order (not a top-to-bottom raster) as the visitor
- * scrolls, driven by `progressRef` from the locked hero. Small and centred.
- * Pauses off-screen. Decorative → aria-hidden. (Desktop keeps the touch-reactive
- * HeroCanvas; reduced-motion / no-webgl shows the static poster.)
+ * Mobile hero (spec 037): the fire SWEEPS across the hero in straight, gently
+ * curved horizontal lines, one per line of copy (eyebrow / title / subtitle /
+ * buttons), alternating left↔right, driven by `progressRef` from the locked
+ * hero (it stays pinned until the sweep finishes). Pauses off-screen.
+ * Decorative → aria-hidden. (Desktop keeps the touch-reactive HeroCanvas;
+ * reduced-motion / no-webgl shows the static poster.)
  */
 export function HeroDragonFire({
   progressRef,
@@ -117,12 +75,12 @@ export function HeroDragonFire({
     sim.setConfig({
       simResolution: 128,
       dyeResolution: 1024,
-      densityDissipation: 1.3, // let the drawn strokes linger while writing
+      densityDissipation: 1.9, // each sweep glows then fades as the next runs
       velocityDissipation: 2.2,
       pressure: 0.8,
-      curl: 6,
-      splatRadius: 0.0045, // thin flame line (much smaller)
-      splatForce: 1800,
+      curl: 7,
+      splatRadius: 0.009, // a flame line you can read as a sweep
+      splatForce: 2000,
       shading: true,
       colorful: false,
       colorPalette: ["#ff6a1a", "#e0a040", "#c9762e", "#ffb347"],

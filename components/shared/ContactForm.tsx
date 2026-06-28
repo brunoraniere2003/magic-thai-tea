@@ -17,13 +17,12 @@ const EMPTY: ContactValues = { name: "", email: "", phone: DEFAULT_DIAL };
 type Status = "idle" | "submitting" | "success" | "error";
 
 /**
- * Light phone mask. Defaults to "+1" and formats a US number as
- * "+1 (415) 699-1715"; if the visitor changes the country code it keeps "+" plus
- * their digits so any international number still works.
+ * Tidy the phone ON BLUR only (never while typing, so it never fights the
+ * cursor). US numbers (the "+1" default) become "+1 (415) 699-1715"; any other
+ * country is left exactly as the visitor typed it.
  */
 function formatPhone(input: string): string {
-  let v = input.replace(/[^\d+]/g, "");
-  v = "+" + v.replace(/\+/g, ""); // exactly one leading "+"
+  const v = input.trim();
   if (v.startsWith("+1")) {
     const d = v.slice(2).replace(/\D/g, "").slice(0, 10);
     let out = "+1";
@@ -32,7 +31,7 @@ function formatPhone(input: string): string {
     if (d.length >= 6) out += "-" + d.slice(6, 10);
     return out;
   }
-  return "+" + v.slice(1).replace(/\D/g, "").slice(0, 15);
+  return v;
 }
 
 // Leads go straight to Ethan's Flying Dragon Tea inbox via FormSubmit, sent from
@@ -166,7 +165,8 @@ export function ContactForm() {
             placeholder="+1 (415) 699-1715"
             className={fieldClasses}
             value={values.phone}
-            onChange={(event) => update("phone", formatPhone(event.target.value))}
+            onChange={(event) => update("phone", event.target.value)}
+            onBlur={(event) => update("phone", formatPhone(event.target.value))}
             aria-invalid={Boolean(errors.phone)}
             aria-describedby={errors.phone ? "phone-error" : undefined}
           />
