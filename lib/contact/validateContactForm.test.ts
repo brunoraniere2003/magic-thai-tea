@@ -5,6 +5,7 @@ const valid = {
   name: "Jane Doe",
   email: "jane@example.com",
   phone: "(415) 699-1715",
+  message: "I would love to book a tea tasting.",
 };
 
 describe("validateContactForm", () => {
@@ -13,10 +14,16 @@ describe("validateContactForm", () => {
   });
 
   it("flags missing required fields", () => {
-    const errors = validateContactForm({ name: "", email: "", phone: "" });
+    const errors = validateContactForm({
+      name: "",
+      email: "",
+      phone: "",
+      message: "",
+    });
     expect(errors.name).toBeTruthy();
     expect(errors.email).toBeTruthy();
     expect(errors.phone).toBeTruthy();
+    expect(errors.message).toBeTruthy();
   });
 
   it("flags an invalid email", () => {
@@ -40,9 +47,11 @@ describe("validateContactForm", () => {
       name: "   ",
       email: "  jane@example.com  ",
       phone: "  4156991715  ",
+      message: "  hello  ",
     });
     expect(errors.name).toBeTruthy();
     expect(errors.email).toBeFalsy();
     expect(errors.phone).toBeFalsy();
+    expect(errors.message).toBeFalsy();
   });
 });

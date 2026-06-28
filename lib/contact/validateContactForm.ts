@@ -2,6 +2,7 @@ export interface ContactValues {
   name: string;
   email: string;
   phone: string;
+  message: string;
 }
 
 export type ContactField = keyof ContactValues;
@@ -38,6 +39,10 @@ export function validateContactForm(values: ContactValues): ContactErrors {
     errors.phone = "Please enter your phone number.";
   } else if (digits < MIN_DIGITS || digits > MAX_DIGITS) {
     errors.phone = "Please enter a valid phone number.";
+  }
+
+  if (!values.message.trim()) {
+    errors.message = "Please write a short message.";
   }
 
   return errors;
