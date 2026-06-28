@@ -7,7 +7,6 @@ import { Stage3D } from "@/webgl/core/Stage3D";
 import { useDriveProgress } from "@/webgl/core/useDriveProgress";
 import { DeckPoster } from "@/webgl/cards/DeckPoster";
 import type { DeckCard } from "@/webgl/cards/FlippingCardsScene";
-import { MobileFlipDeck } from "@/components/sections/home/MobileFlipDeck";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { HOME, type WorldKey } from "@/content/home";
 
@@ -73,22 +72,12 @@ export function Worlds() {
     label: world.title,
   }));
 
-  // Mobile gets static HTML cards, each with its OWN pin+flip when centered, in
-  // normal page flow (constant spacing, no shared long pin). Desktop keeps the
-  // 3D flip deck (spec 047).
-  if (isMobile) {
-    return (
-      <section id="worlds" className="scroll-mt-24">
-        <MobileFlipDeck onBook={scrollToContact} />
-      </section>
-    );
-  }
-
   return (
     <section id="worlds" className="scroll-mt-24">
-      {/* Desktop pin (210vh) flips the spread deck then holds briefly before
-          contact. */}
-      <div ref={triggerRef} className="relative h-[210vh]">
+      {/* Mobile pin (190vh) drives the lock-flip-descend carousel without a long
+          end-lock after the last card; desktop pin (210vh) flips the spread deck
+          then holds briefly before contact. */}
+      <div ref={triggerRef} className="relative h-[190vh] md:h-[210vh]">
         <div className="sticky top-0 h-screen overflow-hidden">
           <Stage3D
             className="absolute inset-0"
@@ -100,6 +89,7 @@ export function Worlds() {
                 progressRef={progressRef}
                 cards={cards}
                 onBook={scrollToContact}
+                isMobile={isMobile}
               />
             )}
           />

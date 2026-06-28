@@ -163,20 +163,6 @@ export function drawDetailFace(
   }
 }
 
-/** The fully-revealed face (invitation + Book) as a PNG data URL, for the static
- *  HTML mobile cards. */
-export function cardDetailDataURL(blurb: string): string {
-  const canvas = document.createElement("canvas");
-  canvas.width = CARD_ART.W;
-  canvas.height = CARD_ART.H;
-  const ctx = canvas.getContext("2d");
-  if (ctx) {
-    const words = blurb.split(/\s+/);
-    drawDetailFace(ctx, words, words.length, 1);
-  }
-  return canvas.toDataURL("image/png");
-}
-
 /** Greedy word-wrap into lines that fit `maxWidth` under the current ctx.font. */
 export function wrapText(
   ctx: CanvasRenderingContext2D,

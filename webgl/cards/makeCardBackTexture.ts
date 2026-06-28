@@ -49,13 +49,3 @@ let cached: CanvasTexture | null = null;
 export function getCardBackTexture(): CanvasTexture {
   return (cached ??= textureFromDraw(drawCardBack));
 }
-
-/** Card back as a PNG data URL, for the static HTML mobile cards. */
-export function cardBackDataURL(): string {
-  const canvas = document.createElement("canvas");
-  canvas.width = CARD_ART.W;
-  canvas.height = CARD_ART.H;
-  const ctx = canvas.getContext("2d");
-  if (ctx) drawCardBack(ctx);
-  return canvas.toDataURL("image/png");
-}
