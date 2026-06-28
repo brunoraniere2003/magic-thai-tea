@@ -17,7 +17,7 @@ test("contact form submits a lead and confirms success", async ({ page }) => {
 
   await page.getByLabel("Your name").fill("Jane Doe");
   await page.getByLabel("Email").fill("jane@example.com");
-  await page.getByLabel("Phone").fill("(415) 699-1715");
+  await page.getByLabel("Phone").fill("+14156991715");
   await page.getByRole("button", { name: /send message/i }).click();
 
   await expect(page.getByText(/Ethan will be in touch soon/i)).toBeVisible();

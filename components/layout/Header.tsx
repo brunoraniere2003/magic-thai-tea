@@ -125,7 +125,7 @@ export function Header() {
     <header
       className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-500 ${
         scrolled && !open
-          ? "border-stone/10 bg-stage/70 backdrop-blur-md"
+          ? "border-stone/10 bg-stage"
           : "border-transparent"
       }`}
     >

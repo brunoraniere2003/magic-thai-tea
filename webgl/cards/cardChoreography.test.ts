@@ -172,20 +172,30 @@ describe("cardTransform - flips overlap (cards chain into each other)", () => {
   });
 });
 
-describe("cardTransformMobile - focused carousel (spec 031)", () => {
+describe("cardTransformMobile - rising carousel (spec 035)", () => {
   const PEEK = CARD_CHOREOGRAPHY.MOBILE_PEEK;
 
-  it("p=0: card 0 centered, face-down, full size; later cards stack below", () => {
-    expect(cardTransformMobile(0, 0, 3).y).toBeCloseTo(0);
+  it("p=0: nothing centred yet; cards wait below, the nearest one first", () => {
+    expect(cardTransformMobile(0, 0, 3).y).toBeLessThan(0);
     expect(cardTransformMobile(0, 0, 3).rotationY).toBeCloseTo(0);
-    expect(cardTransformMobile(0, 0, 3).scale).toBeCloseTo(1);
-    expect(cardTransformMobile(0, 1, 3).y).toBeLessThan(0);
+    expect(cardTransformMobile(0, 1, 3).y).toBeLessThan(
+      cardTransformMobile(0, 0, 3).y,
+    );
     expect(cardTransformMobile(0, 2, 3).y).toBeLessThan(
       cardTransformMobile(0, 1, 3).y,
     );
   });
 
-  it("p=1: last card centered & face-up; earlier cards stack above", () => {
+  it("each card centres & turns face-up at p = (index+1)/count", () => {
+    for (let i = 0; i < 3; i++) {
+      const t = cardTransformMobile((i + 1) / 3, i, 3);
+      expect(t.y).toBeCloseTo(0);
+      expect(t.rotationY).toBeCloseTo(Math.PI);
+      expect(t.scale).toBeCloseTo(1);
+    }
+  });
+
+  it("p=1: the LAST card is centred & face-up; earlier cards have risen above", () => {
     expect(cardTransformMobile(1, 2, 3).y).toBeCloseTo(0);
     expect(cardTransformMobile(1, 2, 3).rotationY).toBeCloseTo(Math.PI);
     expect(cardTransformMobile(1, 1, 3).y).toBeGreaterThan(0);
@@ -195,16 +205,14 @@ describe("cardTransformMobile - focused carousel (spec 031)", () => {
   });
 
   it("the focused card is full size; its neighbours are a touch smaller", () => {
-    expect(cardTransformMobile(0, 0, 3).scale).toBeCloseTo(1);
-    expect(cardTransformMobile(0, 1, 3).scale).toBeLessThan(1);
-    expect(cardTransformMobile(0.5, 1, 3).scale).toBeCloseTo(1);
+    expect(cardTransformMobile(1 / 3, 0, 3).scale).toBeCloseTo(1);
+    expect(cardTransformMobile(1 / 3, 1, 3).scale).toBeLessThan(1);
   });
 
-  it("a card is face-up by the time it reaches the centre; neighbours peek", () => {
-    expect(cardTransformMobile(0.5, 1, 3).y).toBeCloseTo(0);
-    expect(cardTransformMobile(0.5, 1, 3).rotationY).toBeCloseTo(Math.PI);
-    expect(cardTransformMobile(0.5, 0, 3).y).toBeCloseTo(PEEK);
-    expect(cardTransformMobile(0.5, 2, 3).y).toBeCloseTo(-PEEK);
+  it("a centred card has a neighbour peeking one PEEK above and below", () => {
+    expect(cardTransformMobile(2 / 3, 1, 3).y).toBeCloseTo(0);
+    expect(cardTransformMobile(2 / 3, 0, 3).y).toBeCloseTo(PEEK);
+    expect(cardTransformMobile(2 / 3, 2, 3).y).toBeCloseTo(-PEEK);
   });
 
   it("x stays 0 and progress clamps outside [0,1]", () => {

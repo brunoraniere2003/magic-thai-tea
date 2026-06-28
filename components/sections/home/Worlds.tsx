@@ -38,13 +38,14 @@ function scrollToContact() {
  */
 export function Worlds() {
   const isMobile = useIsMobile();
-  // The choreography (stack→spread→flip ALL) finishes by ~61% of this travel;
-  // the rest is a held "all face-up" state. With the 320vh pin below, that hold
-  // lasts ~1 screen of scroll before the section releases, so the page never
-  // scrolls on to contact mid-flip (spec 033).
+  // Shared by desktop and mobile so the ScrollTrigger is built once (no
+  // hydration re-init). end≈195% leaves progress finishing close to the pin
+  // release: desktop keeps a long "all face-up" hold (flips finish by ~61%);
+  // mobile's rising carousel lands its LAST card at p=1, right before release,
+  // so there is no long end-lock (spec 033/035).
   const { triggerRef, progressRef } = useDriveProgress<HTMLDivElement>({
     start: "top top",
-    end: "+=165%",
+    end: "+=195%",
   });
 
   const cards: DeckCard[] = HOME.worlds.map((world) => ({

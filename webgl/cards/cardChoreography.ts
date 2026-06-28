@@ -40,8 +40,9 @@ export const CARD_CHOREOGRAPHY = {
   DAMP_LAMBDA: 10,
   /** MOBILE: vertical gap (card-local units) between the focused card and a peek. */
   MOBILE_PEEK: 2.8,
-  /** MOBILE: uniform scale so the focused card fills the phone viewport. */
-  MOBILE_SCALE: 0.8,
+  /** MOBILE: uniform scale. Below 0.72 so a card clears the fixed header and a
+   *  neighbour can peek from the bottom edge (spec 035). */
+  MOBILE_SCALE: 0.7,
 } as const;
 
 export function clamp01(x: number): number {
@@ -90,12 +91,13 @@ export function cardTransform(
 }
 
 /**
- * MOBILE choreography (spec 031): a focused carousel. As the scroll [0,1] runs,
- * each card rises from below, flips face-up as it settles into the centre, then
- * slides up and away while the next does the same. The card on either side of
- * the focused one PEEKS in at the top/bottom edges (MOBILE_PEEK), close but not
- * overlapping. The focused card is full size, neighbours a touch smaller. The
- * first card holds centred at p=0 and the last at p=1. Desktop is untouched.
+ * MOBILE choreography (spec 035): a rising carousel. A "read head" rises through
+ * the deck as scroll [0,1] runs; card i is centred exactly when pos === index+1,
+ * so each card RISES from below and flips face-up as it ARRIVES at the centre
+ * (not early/in place), and the LAST card lands centred at p=1 (no long end-lock).
+ * Cards that have passed continue up and off the top (cleanly hidden behind the
+ * opaque header). Neighbours peek one MOBILE_PEEK away, close but not overlapping;
+ * the focused card is full size, neighbours a touch smaller. Desktop is untouched.
  */
 export function cardTransformMobile(
   p: number,
@@ -104,20 +106,15 @@ export function cardTransformMobile(
 ): CardTarget {
   const { MOBILE_PEEK } = CARD_CHOREOGRAPHY;
 
-  const pos = clamp01(p) * count; // 0..count, the deck's read head
-  // Clamp the centre so the first and last cards hold centred at the ends.
-  const centre = Math.min(Math.max(pos, 0.5), count - 0.5);
-  const cardCentre = index + 0.5;
+  const pos = clamp01(p) * count; // read head, 0..count
+  const cardCentre = index + 1; // card i is centred when pos === index + 1
+  const rel = pos - cardCentre; // 0 at centre; <0 waiting below; >0 risen above
+  const y = rel * MOBILE_PEEK; // +y up, -y down (three.js group y)
 
-  const y = (centre - cardCentre) * MOBILE_PEEK;
+  // Flip up over the last 0.7 of the rise; face-up exactly at centre, stays up.
+  const rotationY = easeInOutCubic(clamp01((pos - (cardCentre - 0.7)) / 0.7)) * Math.PI;
 
-  // Flip 0..pi over the first half of the card's band, so it is face-up exactly
-  // when it reaches the centre (uses the raw pos, not the clamped centre).
-  const rotationY = easeInOutCubic(clamp01((pos - index) / 0.5)) * Math.PI;
-
-  // Focused card full size, neighbours shrink a little (emphasis on focus).
-  const dist = Math.min(Math.abs(centre - cardCentre), 1);
-  const scale = 1 - 0.12 * dist;
+  const scale = 1 - 0.12 * Math.min(Math.abs(rel), 1);
 
   return { x: 0, y, z: 0, rotationY, scale };
 }
