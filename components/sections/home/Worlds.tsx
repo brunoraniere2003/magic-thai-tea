@@ -74,9 +74,10 @@ export function Worlds() {
 
   return (
     <section id="worlds" className="scroll-mt-24">
-      {/* Mobile pin (220vh) drives the lock-flip-descend carousel; desktop pin
-          (210vh) flips the spread deck then holds briefly before contact. */}
-      <div ref={triggerRef} className="relative h-[220vh] md:h-[210vh]">
+      {/* Mobile pin (190vh) drives the lock-flip-descend carousel without a long
+          end-lock after the last card; desktop pin (210vh) flips the spread deck
+          then holds briefly before contact. */}
+      <div ref={triggerRef} className="relative h-[190vh] md:h-[210vh]">
         <div className="sticky top-0 h-screen overflow-hidden">
           <Stage3D
             className="absolute inset-0"
