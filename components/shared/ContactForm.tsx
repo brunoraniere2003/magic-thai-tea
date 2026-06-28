@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, type FormEvent, type ReactNode } from "react";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 import { SITE } from "@/content/site";
 import { buttonClasses } from "@/components/ui/Button";
 import { buildSmsHref } from "@/lib/contact/sms";
@@ -11,28 +13,8 @@ import {
   type ContactErrors,
 } from "@/lib/contact/validateContactForm";
 
-// Phone starts with the US code pre-filled; the visitor can change it.
-const DEFAULT_DIAL = "+1 ";
-const EMPTY: ContactValues = { name: "", email: "", phone: DEFAULT_DIAL };
+const EMPTY: ContactValues = { name: "", email: "", phone: "" };
 type Status = "idle" | "submitting" | "success" | "error";
-
-/**
- * Tidy the phone ON BLUR only (never while typing, so it never fights the
- * cursor). US numbers (the "+1" default) become "+1 (415) 699-1715"; any other
- * country is left exactly as the visitor typed it.
- */
-function formatPhone(input: string): string {
-  const v = input.trim();
-  if (v.startsWith("+1")) {
-    const d = v.slice(2).replace(/\D/g, "").slice(0, 10);
-    let out = "+1";
-    if (d.length) out += " (" + d.slice(0, 3);
-    if (d.length >= 3) out += ") " + d.slice(3, 6);
-    if (d.length >= 6) out += "-" + d.slice(6, 10);
-    return out;
-  }
-  return v;
-}
 
 // Leads go straight to Ethan's Flying Dragon Tea inbox via FormSubmit, sent from
 // the browser (their server-side endpoint blocks datacenter IPs). Account-free.
@@ -156,19 +138,22 @@ export function ContactForm() {
         </Field>
 
         <Field id="phone" label="Phone" error={errors.phone}>
-          <input
+          {/* Country-aware phone mask: pick a country (flag dropdown), and the
+              number formats as you type for THAT country. Defaults to US (+1). */}
+          <PhoneInput
             id="phone"
-            name="phone"
-            type="tel"
-            autoComplete="tel"
-            inputMode="tel"
-            placeholder="+1 (415) 699-1715"
-            className={fieldClasses}
-            value={values.phone}
-            onChange={(event) => update("phone", event.target.value)}
-            onBlur={(event) => update("phone", formatPhone(event.target.value))}
-            aria-invalid={Boolean(errors.phone)}
-            aria-describedby={errors.phone ? "phone-error" : undefined}
+            international
+            defaultCountry="US"
+            value={values.phone || undefined}
+            onChange={(value) => update("phone", value ?? "")}
+            placeholder="(415) 699-1715"
+            className="phone-field"
+            numberInputProps={{
+              className:
+                "w-full bg-transparent font-sans text-base text-cream outline-none placeholder:text-stone/50",
+              "aria-invalid": Boolean(errors.phone),
+              "aria-describedby": errors.phone ? "phone-error" : undefined,
+            }}
           />
         </Field>
 

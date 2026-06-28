@@ -58,19 +58,11 @@ export function Worlds() {
 
   return (
     <section id="worlds" className="scroll-mt-24">
-      <div className="mx-auto max-w-7xl px-6 pt-16 sm:pt-20">
-        <SectionHeading
-          eyebrow={HOME.worldsHeading.eyebrow}
-          title={HOME.worldsHeading.title}
-          align="center"
-          className="mx-auto mb-6 max-w-2xl"
-        />
-      </div>
-
-      {/* 320vh of travel: spread + all flips finish early, then a long locked
-          hold of the full face-up deck before the section releases to contact. */}
+      {/* 320vh of travel: the heading + deck pin together from the first frame
+          (no empty lead-in gap); spread + all flips finish early, then a long
+          locked hold of the full face-up deck before releasing to contact. */}
       <div ref={triggerRef} className="relative h-[320vh]">
-        <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
+        <div className="sticky top-0 h-screen overflow-hidden">
           <Stage3D
             className="absolute inset-0"
             interactive
@@ -85,6 +77,15 @@ export function Worlds() {
               />
             )}
           />
+          {/* Heading rides at the top of the pinned stage, above the cards. */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 px-6 pt-16 sm:pt-20">
+            <SectionHeading
+              eyebrow={HOME.worldsHeading.eyebrow}
+              title={HOME.worldsHeading.title}
+              align="center"
+              className="mx-auto max-w-2xl"
+            />
+          </div>
         </div>
       </div>
     </section>

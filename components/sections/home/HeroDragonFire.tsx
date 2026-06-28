@@ -11,33 +11,47 @@ interface FlamePoint {
   vy: number;
 }
 
-// Horizontal "lanes" placed roughly at the hero copy: eyebrow, the two title
-// lines, the subtitle, and the two buttons. The flame sweeps each lane in turn,
-// in a straight, gently-curved line, alternating direction, as the locked hero
-// scrolls.
-const LANES = [0.31, 0.4, 0.49, 0.58, 0.66, 0.72];
+// Fallback lane y-fractions if the hero copy can't be measured.
+const LANES_FALLBACK = [0.31, 0.4, 0.49, 0.58, 0.66, 0.72];
 const SIDE_MARGIN = 0.08; // start/end this far from the edges (fraction of width)
 const STEP_PX = 7; // splat spacing along a lane
 const FLOW = 34; // horizontal flame speed (the sweep)
 const CURVE = 0.045; // lane bow as a fraction of height (slightly curved)
 
 /**
- * Build the ordered sweep points: for each lane (top→bottom) a straight,
- * slightly-curved horizontal line, ordered in its sweep direction (alternating
- * left→right / right→left). The flame follows this list as the scroll advances,
- * so it sweeps lane by lane toward each line of hero copy.
+ * One sweep line per line of hero copy, placed at the MEASURED vertical centre
+ * of each `[data-fire-line]` element (eyebrow / title / subtitle / both
+ * buttons), so the flame really runs toward each text and button. Each lane is a
+ * straight, gently-curved horizontal line ordered in its sweep direction
+ * (alternating left→right / right→left). The flame follows this list as the
+ * locked hero scrolls, sweeping lane by lane.
  */
-function computePoints(W: number, H: number): FlamePoint[] {
+function computePoints(container: HTMLElement): FlamePoint[] {
+  const W = container.clientWidth;
+  const H = container.clientHeight;
+  const cTop = container.getBoundingClientRect().top;
+
+  const section = container.closest("section");
+  const measured = section
+    ? Array.from(section.querySelectorAll<HTMLElement>("[data-fire-line]"))
+        .map((el) => {
+          const r = el.getBoundingClientRect();
+          return (r.top + r.bottom) / 2 - cTop; // vertical centre, container-relative
+        })
+        .filter((y) => y > 0 && y < H)
+        .sort((a, b) => a - b)
+    : [];
+  const laneYs = measured.length ? measured : LANES_FALLBACK.map((f) => H * f);
+
   const pts: FlamePoint[] = [];
   const margin = W * SIDE_MARGIN;
-  LANES.forEach((fy, k) => {
+  laneYs.forEach((y0, k) => {
     const ltr = k % 2 === 0; // alternate direction per lane
     const xStart = ltr ? margin : W - margin;
     const xEnd = ltr ? W - margin : margin;
     const dir = ltr ? 1 : -1;
     const span = Math.abs(xEnd - xStart) || 1;
     const n = Math.max(2, Math.round(span / STEP_PX));
-    const y0 = H * fy;
     const bow = (ltr ? -1 : 1) * H * CURVE; // gentle arc, alternating up/down
     for (let i = 0; i <= n; i++) {
       const t = i / n;
@@ -93,11 +107,14 @@ export function HeroDragonFire({
     });
     sim.start();
 
-    let points = computePoints(container.clientWidth, container.clientHeight);
+    let points = computePoints(container);
     const recompute = () => {
-      points = computePoints(container.clientWidth, container.clientHeight);
+      points = computePoints(container);
     };
     window.addEventListener("resize", recompute);
+    // Re-measure once the web fonts / layout settle so lanes sit on the copy.
+    const t1 = window.setTimeout(recompute, 400);
+    const t2 = window.setTimeout(recompute, 1200);
 
     const dpr = () => window.devicePixelRatio || 1;
     const clamp01 = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n);
@@ -150,6 +167,8 @@ export function HeroDragonFire({
       cancelAnimationFrame(raf);
       observer.disconnect();
       window.removeEventListener("resize", recompute);
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
       sim.stop();
     };
   }, [progressRef]);
