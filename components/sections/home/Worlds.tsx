@@ -1,12 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useEffect, useRef } from "react";
 import { SectionHeading } from "@/components/shared";
 import { Stage3D } from "@/webgl/core/Stage3D";
 import { useDriveProgress } from "@/webgl/core/useDriveProgress";
 import { DeckPoster } from "@/webgl/cards/DeckPoster";
 import type { DeckCard } from "@/webgl/cards/FlippingCardsScene";
-import { MobileDeck } from "@/components/sections/home/MobileDeck";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
 import { HOME, type WorldKey } from "@/content/home";
 
@@ -39,15 +39,30 @@ function scrollToContact() {
  */
 export function Worlds() {
   const isMobile = useIsMobile();
-  // end=120% (viewport units, so identical mobile/desktop -> one ScrollTrigger,
-  // no hydration re-init). It finishes the choreography by the MOBILE pin release
-  // (220vh - 100vh), keeping contact close to the last card on phones; on desktop
-  // (taller 320vh pin) progress reaches 1 well before release, leaving a long
-  // "all face-up" hold so fast scrolls never pass mid-flip (spec 039).
+  // Progress completes over 110vh of scroll. Pin heights below: mobile 220vh
+  // (room for the lock-flip-descend carousel), desktop 210vh (flip + a SHORT
+  // hold before releasing to contact). Pure-CSS responsive height = one
+  // ScrollTrigger, no hydration re-init (spec 043).
   const { triggerRef, progressRef } = useDriveProgress<HTMLDivElement>({
     start: "top top",
-    end: "+=120%",
+    end: "+=110%",
   });
+  const headingRef = useRef<HTMLDivElement>(null);
+
+  // The heading fades out as the cards take over, so it never collides with the
+  // moving cards and is gone once the deck is "locked" flipping.
+  useEffect(() => {
+    let raf = 0;
+    const tick = () => {
+      const el = headingRef.current;
+      if (el) {
+        el.style.opacity = String(Math.max(0, 1 - progressRef.current / 0.18));
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [progressRef]);
 
   const cards: DeckCard[] = HOME.worlds.map((world) => ({
     symbol: world.symbol,
@@ -57,21 +72,11 @@ export function Worlds() {
     label: world.title,
   }));
 
-  // Phones get a STATIC stacked layout (constant spacing, no pin/collision);
-  // desktop keeps the 3D flip deck pinned on scroll (spec 042).
-  if (isMobile) {
-    return (
-      <section id="worlds" className="scroll-mt-24">
-        <MobileDeck onBook={scrollToContact} />
-      </section>
-    );
-  }
-
   return (
     <section id="worlds" className="scroll-mt-24">
-      {/* Heading + deck pin together from the first frame (no empty lead-in gap),
-          then a long all-face-up hold before releasing to contact. */}
-      <div ref={triggerRef} className="relative h-[320vh]">
+      {/* Mobile pin (220vh) drives the lock-flip-descend carousel; desktop pin
+          (210vh) flips the spread deck then holds briefly before contact. */}
+      <div ref={triggerRef} className="relative h-[220vh] md:h-[210vh]">
         <div className="sticky top-0 h-screen overflow-hidden">
           <Stage3D
             className="absolute inset-0"
@@ -83,12 +88,16 @@ export function Worlds() {
                 progressRef={progressRef}
                 cards={cards}
                 onBook={scrollToContact}
+                isMobile={isMobile}
               />
             )}
           />
-          {/* Heading rides at the top of the pinned stage, on an opaque-to-clear
-              backdrop so the deck reads cleanly behind the title. */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 bg-gradient-to-b from-stage from-40% via-stage/90 to-transparent px-6 pb-28 pt-16 sm:pt-20">
+          {/* Heading fades out as the cards lock (see effect above), so it never
+              collides and is hidden while the deck is flipping. */}
+          <div
+            ref={headingRef}
+            className="pointer-events-none absolute inset-x-0 top-0 z-10 px-6 pb-24 pt-16 sm:pt-20"
+          >
             <SectionHeading
               eyebrow={HOME.worldsHeading.eyebrow}
               title={HOME.worldsHeading.title}

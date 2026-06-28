@@ -213,7 +213,11 @@ export function FlippingCardsScene({
           the focused card sits clearly below the pinned heading. */}
       <group
         scale={isMobile ? CARD_CHOREOGRAPHY.MOBILE_SCALE : 1}
-        position={isMobile ? [0, CARD_CHOREOGRAPHY.MOBILE_Y, 0] : [0, 0, 0]}
+        position={[
+          0,
+          isMobile ? CARD_CHOREOGRAPHY.MOBILE_Y : CARD_CHOREOGRAPHY.DESKTOP_Y,
+          0,
+        ]}
       >
         {cards.map((card, i) => (
           <FlipCard
