@@ -78,8 +78,10 @@ export function Worlds() {
               />
             )}
           />
-          {/* Heading rides at the top of the pinned stage, above the cards. */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 px-6 pt-16 sm:pt-20">
+          {/* Heading rides at the top of the pinned stage, on an opaque-to-clear
+              backdrop (stage colour) so cards sliding up the carousel dissolve
+              cleanly BEHIND it instead of colliding with the title. */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 bg-gradient-to-b from-stage from-40% via-stage/90 to-transparent px-6 pb-28 pt-16 sm:pt-20">
             <SectionHeading
               eyebrow={HOME.worldsHeading.eyebrow}
               title={HOME.worldsHeading.title}
