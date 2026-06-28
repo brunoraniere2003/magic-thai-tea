@@ -70,15 +70,6 @@ export const HOME: HomeContent = {
       symbol: "tea",
     },
     {
-      key: "yinyang",
-      eyebrow: "Balance",
-      title: "Yin & Yang",
-      essence: "Where tea meets tai chi.",
-      blurb:
-        "Book the full experience. Tea and tai chi together, stillness and motion in one evening. Tap Book to plan it.",
-      symbol: "yinyang",
-    },
-    {
       key: "taichi",
       eyebrow: "Tai chi chuan",
       title: "Tai Chi",
@@ -86,6 +77,15 @@ export const HOME: HomeContent = {
       blurb:
         "Book a tai chi performance or class for your event. Breath, balance, a quiet power. Tap Book to plan a date.",
       symbol: "taichi",
+    },
+    {
+      key: "yinyang",
+      eyebrow: "Balance",
+      title: "Yin & Yang",
+      essence: "Where tea meets tai chi.",
+      blurb:
+        "Book the full experience. Tea and tai chi together, stillness and motion in one evening. Tap Book to plan it.",
+      symbol: "yinyang",
     },
   ],
 

@@ -98,7 +98,8 @@ function drawYinYang(ctx: CanvasRenderingContext2D, cx: number, cy: number): voi
 /**
  * Tai-chi master in "ward-off" (Peng): a bow stance with the front knee bent and
  * the back leg extended, one forearm rounded across the chest and the other hand
- * low, under a conical hat (douli). Pose 2, chosen by the owner (spec 036).
+ * low. Bare-headed (the conical hat was removed and the figure shifted up so it
+ * sits centred between the title and the button band — spec 055).
  */
 function drawTaiChi(ctx: CanvasRenderingContext2D, cx: number, cy: number): void {
   ctx.save();
@@ -108,10 +109,13 @@ function drawTaiChi(ctx: CanvasRenderingContext2D, cx: number, cy: number): void
   ctx.fillStyle = GOLD;
   ctx.lineWidth = 8;
 
+  // Shift the figure UP within the icon slot: with the hat removed, the natural
+  // visual centre of the figure (head→feet) sits ~40 below the slot's centre, so
+  // we offset cy here to recentre it (and lift it a touch more, per request).
+  cy -= 50;
+
   const sh = cy - 58; // shoulder line
   const hp = cy + 24; // hip line
-  const brimY = cy - 116;
-  const apex = cy - 152;
   const headY = cy - 92;
   const fy = cy + 190; // foot line
 
@@ -121,16 +125,6 @@ function drawTaiChi(ctx: CanvasRenderingContext2D, cx: number, cy: number): void
     ctx.quadraticCurveTo(fx, fyy + 8, fx + 20 * dir, fyy - 2);
     ctx.stroke();
   };
-
-  // Conical hat (douli): brim ellipse + cone.
-  ctx.beginPath();
-  ctx.ellipse(cx, brimY, 46, 12, 0, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(cx - 44, brimY - 2);
-  ctx.quadraticCurveTo(cx - 14, apex + 6, cx, apex);
-  ctx.quadraticCurveTo(cx + 14, apex + 6, cx + 44, brimY - 2);
-  ctx.stroke();
 
   // Head + neck.
   ctx.beginPath();
