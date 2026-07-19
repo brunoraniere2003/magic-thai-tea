@@ -12,7 +12,7 @@ export function Opportunities() {
   return (
     <section
       id="opportunities"
-      className="mx-auto max-w-6xl scroll-mt-24 px-6 py-24 sm:py-32"
+      className="mx-auto max-w-6xl scroll-mt-24 px-6 pb-24 pt-8 sm:py-32"
     >
       <SectionHeading
         eyebrow={HOME.opportunitiesHeading.eyebrow}
