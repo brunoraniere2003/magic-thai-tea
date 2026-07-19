@@ -36,10 +36,37 @@ export interface SectionIntro {
   intro?: string;
 }
 
+export interface OpportunityImage {
+  src: string;
+  alt: string;
+}
+
+export interface Opportunity {
+  key: "tea" | "taichi";
+  eyebrow: string;
+  title: string;
+  description: string;
+  formats: string[];
+  image: OpportunityImage;
+  /** Extra real photos shown alongside the main one (small gallery strip). */
+  gallery: OpportunityImage[];
+  cta: HeroCta;
+}
+
+export interface Review {
+  quote: string;
+  name: string;
+  role?: string;
+}
+
 export interface HomeContent {
   hero: HeroContent;
   worldsHeading: SectionIntro;
   worlds: World[];
+  opportunitiesHeading: SectionIntro;
+  opportunities: Opportunity[];
+  reviewsHeading: SectionIntro;
+  reviews: Review[];
   contact: SectionIntro;
 }
 
@@ -86,6 +113,102 @@ export const HOME: HomeContent = {
       blurb:
         "Book the full experience. Tea and tai chi together, stillness and motion in one evening. Tap Book to plan it.",
       symbol: "yinyang",
+    },
+  ],
+
+  opportunitiesHeading: {
+    eyebrow: "What you can book",
+    title: "Two practices. One presence.",
+  },
+
+  opportunities: [
+    {
+      key: "tea",
+      eyebrow: "The Chinese art of tea",
+      title: "A ceremony that slows the room down.",
+      description:
+        "Gongfu cha is a Chinese tea tradition: small clay vessels, the same leaves steeped again and again, each infusion drawing out a new layer of flavor. Ethan pours it as a guided ceremony, part ritual, part conversation, that turns a simple cup of tea into a shared, unhurried moment.",
+      formats: ["Intimate tasting", "Group session", "Private event"],
+      image: {
+        src: "/images/tea/tea-pouring-smiling.jpg",
+        alt: "Ethan Holtzman smiling while pouring tea for guests during a ceremony",
+      },
+      gallery: [
+        {
+          src: "/images/tea/tea-outside.jpg",
+          alt: "An outdoor tea ceremony setup with cups and a kettle",
+        },
+        {
+          src: "/images/tea/tea-friends-smiling.jpg",
+          alt: "A group of friends smiling together during a tea tasting",
+        },
+      ],
+      cta: { label: "Reserve a tasting", href: "#contact" },
+    },
+    {
+      key: "taichi",
+      eyebrow: "Tai chi chuan",
+      title: "Strength that moves like calm.",
+      description:
+        "Tai chi is moving meditation: slow, deliberate forms that build balance, breath control, and a quiet kind of power. Ethan teaches it one on one or in small groups, meeting each student at their own pace, indoors or outside.",
+      formats: ["Private lesson", "Small group", "Event performance"],
+      image: {
+        src: "/images/tai-chi/tai-chi-teaching.jpg",
+        alt: "Ethan Holtzman teaching a tai chi stance to a student outdoors",
+      },
+      gallery: [
+        {
+          src: "/images/tai-chi/tai-chi-teaching-2.jpg",
+          alt: "Ethan Holtzman guiding a student through a tai chi movement",
+        },
+        {
+          src: "/images/tai-chi/master-and-ethan.jpg",
+          alt: "Ethan Holtzman standing together with his tai chi master",
+        },
+      ],
+      cta: { label: "Begin your practice", href: "#contact" },
+    },
+  ],
+
+  reviewsHeading: {
+    eyebrow: "What people feel",
+    title: "Don't take our word for it.",
+  },
+
+  reviews: [
+    {
+      quote:
+        "Working with Ethan was delightful from beginning to end. He was calm, charismatic, and completely in tune with our guests. The ceremony was educational and entertaining, the tea itself was delicious, and the whole evening flew by. I will absolutely work with him again.",
+      name: "Cathy Cao",
+      role: "Founder",
+    },
+    {
+      quote:
+        "Ethan creates a warm, intimate atmosphere from the first moment. His knowledge of tea runs deep, and he shares it with genuine passion and humor. Two hours passed like twenty minutes.",
+      name: "Lucy Shen",
+      role: "Brand Marketing Manager",
+    },
+    {
+      quote:
+        "Ethan is charismatic and creates such a warm, inviting space to connect and drink delicious tea. It is an experience unlike anything else.",
+      name: "Sydney Devlin",
+      role: "Social Media Manager",
+    },
+    {
+      quote:
+        "You will never forget your night with Ethan. He evokes every sense, touch, smell, taste, sight. You need to experience it to believe it.",
+      name: "Doug Richard",
+      role: "Brand Designer",
+    },
+    {
+      quote:
+        "What made Ethan's tea ceremony so extraordinary was his warmth and engaging personality. Every cup became a truly memorable experience, filled with laughter, thoughtful conversation, and quiet appreciation.",
+      name: "Dana",
+    },
+    {
+      quote:
+        "Ethan gives a meticulous and mesmerizing tea ceremony. I learned so much about tea and how preparation affects the taste. He is funny, engaging, and happy to answer every question.",
+      name: "Mary T.",
     },
   ],
 

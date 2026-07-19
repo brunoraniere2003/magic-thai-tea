@@ -38,6 +38,7 @@ Fluxo: escrever spec → **revisão do dono** → implementar em TDD → PR.
 | 028 | red-flying-dragon-lp | 🟡 in progress | 021 |
 | 029 | premium-mobile | ✅ done | 028 |
 | 030 | lp-polish | 🟡 in progress | 028, 029 |
+| 032 | reviews-opportunities | ⚪ planned | 028, 030 |
 
 > **Pivô (ADR 0009, 2026-06-26):** o produto vira **uma landing page** da marca **"The Red Flying Dragon"** (chá + tai chi), **sem Magic**. Descopa o mundo Magic e a estrutura multi-página (009, 012–014, 022, 023, 026, 027). Contato passa a usar **Resend** (ADR 0010, reverte §2). Premium no mobile passa a valer (ADR 0011, reverte ADR 0005). As novas specs **028** (LP) e **029** (premium mobile) estendem a 021.
 
