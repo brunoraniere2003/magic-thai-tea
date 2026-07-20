@@ -13,7 +13,13 @@ import { HOME } from "@/content/home";
  */
 export function Reviews() {
   const onWheel = (event: WheelEvent<HTMLElement>) => {
-    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+    // Shift+scroll (or a trackpad's native horizontal gesture) already comes in
+    // as deltaX: let the browser handle it natively, just keep Lenis (the
+    // page's smooth-scroll library) from swallowing the event before it gets
+    // here. Plain vertical wheel input over the rail is redirected sideways.
+    const horizontalIntent = Math.abs(event.deltaX) > Math.abs(event.deltaY);
+    event.stopPropagation();
+    if (horizontalIntent) return;
     event.currentTarget.scrollLeft += event.deltaY;
     event.preventDefault();
   };

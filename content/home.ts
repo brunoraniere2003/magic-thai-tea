@@ -39,6 +39,8 @@ export interface SectionIntro {
 export interface OpportunityImage {
   src: string;
   alt: string;
+  /** Crop focus for object-cover (default "center"). */
+  position?: "center" | "top";
 }
 
 export interface Opportunity {
@@ -130,8 +132,8 @@ export const HOME: HomeContent = {
         "Gongfu cha is a Chinese tea tradition: small clay vessels, the same leaves steeped again and again, each infusion drawing out a new layer of flavor. Ethan pours it as a guided ceremony, part ritual, part conversation, that turns a simple cup of tea into a shared, unhurried moment.",
       formats: ["Intimate tasting", "Group session", "Private event"],
       image: {
-        src: "/images/tea/tea-pouring-smiling.jpg",
-        alt: "Ethan Holtzman smiling while pouring tea for guests during a ceremony",
+        src: "/images/tea/tea-ceremony-fire.jpg",
+        alt: "Ethan Holtzman seated at a tea ceremony in a red silk jacket, warm light around him",
       },
       gallery: [
         {
@@ -139,12 +141,13 @@ export const HOME: HomeContent = {
           alt: "A group of friends smiling together during a tea tasting",
         },
         {
-          src: "/images/tea/tea-ceremony-fire.jpg",
-          alt: "Ethan Holtzman seated at a tea ceremony in a red silk jacket, warm light around him",
-        },
-        {
           src: "/images/tea/tea-spread-overhead.jpg",
           alt: "An overhead view of a full gongfu tea spread with cups, pots, and food",
+          position: "top",
+        },
+        {
+          src: "/images/tea/tea-pouring-smiling.jpg",
+          alt: "Ethan Holtzman smiling while pouring tea for guests during a ceremony",
         },
       ],
       cta: { label: "Reserve a tasting", href: "#contact" },

@@ -100,7 +100,11 @@ export function Opportunities() {
                           alt={photo.alt}
                           fill
                           sizes="(min-width: 768px) 20vw, 45vw"
-                          className="object-cover transition-transform duration-500 hover:scale-105"
+                          className={`object-cover transition-transform duration-500 hover:scale-105 ${
+                            photo.position === "top"
+                              ? "object-top"
+                              : "object-center"
+                          }`}
                         />
                       </div>
                     ))}
