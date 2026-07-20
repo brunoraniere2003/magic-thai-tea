@@ -83,7 +83,11 @@ export function Opportunities() {
                 {opportunity.gallery.length > 0 ? (
                   <Stagger
                     as="div"
-                    className="mt-8 grid grid-cols-2 gap-3"
+                    className={`mt-8 grid gap-3 ${
+                      opportunity.gallery.length >= 3
+                        ? "grid-cols-3"
+                        : "grid-cols-2"
+                    }`}
                     start="top 90%"
                   >
                     {opportunity.gallery.map((photo) => (

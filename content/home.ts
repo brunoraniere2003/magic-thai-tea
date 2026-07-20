@@ -135,12 +135,16 @@ export const HOME: HomeContent = {
       },
       gallery: [
         {
-          src: "/images/tea/tea-outside.jpg",
-          alt: "An outdoor tea ceremony setup with cups and a kettle",
-        },
-        {
           src: "/images/tea/tea-friends-smiling.jpg",
           alt: "A group of friends smiling together during a tea tasting",
+        },
+        {
+          src: "/images/tea/tea-ceremony-fire.jpg",
+          alt: "Ethan Holtzman seated at a tea ceremony in a red silk jacket, warm light around him",
+        },
+        {
+          src: "/images/tea/tea-spread-overhead.jpg",
+          alt: "An overhead view of a full gongfu tea spread with cups, pots, and food",
         },
       ],
       cta: { label: "Reserve a tasting", href: "#contact" },

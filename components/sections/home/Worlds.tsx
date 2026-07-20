@@ -80,7 +80,7 @@ export function Worlds() {
       <div ref={triggerRef} className="relative h-[190vh] md:h-[210vh]">
         <div className="sticky top-0 h-screen overflow-hidden">
           <Stage3D
-            className="absolute inset-0"
+            className="absolute inset-x-0 bottom-0 top-[24vh] sm:top-[22vh]"
             interactive
             poster={<DeckPoster />}
             renderScene={(active) => (

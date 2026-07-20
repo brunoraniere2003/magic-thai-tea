@@ -1,12 +1,23 @@
+"use client";
+
+import type { WheelEvent } from "react";
 import { Stagger } from "@/components/motion";
 import { SectionHeading } from "@/components/shared";
 import { HOME } from "@/content/home";
 
 /**
  * Social proof, real client reviews. Snap-scroll rail on every viewport: one
- * card fills the screen on mobile, several are visible on desktop.
+ * card fills the screen on mobile, several are visible on desktop. On desktop,
+ * vertical mouse-wheel input over the rail is redirected to horizontal scroll
+ * (mirrors the visible gold scrollbar so more cards never feel hidden).
  */
 export function Reviews() {
+  const onWheel = (event: WheelEvent<HTMLElement>) => {
+    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+    event.currentTarget.scrollLeft += event.deltaY;
+    event.preventDefault();
+  };
+
   return (
     <section id="reviews" className="scroll-mt-24 py-24 sm:py-32">
       <SectionHeading
@@ -17,8 +28,9 @@ export function Reviews() {
       />
       <Stagger
         as="ul"
-        className="flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-4 [scrollbar-width:none] sm:px-[max(1.5rem,calc((100vw-72rem)/2))] [&::-webkit-scrollbar]:hidden"
+        className="reviews-rail flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-6 sm:px-[max(1.5rem,calc((100vw-72rem)/2))]"
         start="top 90%"
+        onWheel={onWheel}
       >
         {HOME.reviews.map((review) => (
           <li

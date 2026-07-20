@@ -62,6 +62,35 @@ body {
   transform: rotateY(180deg);
 }
 
+/* Reviews rail: visible, on-theme scrollbar (a thin gold thumb) instead of
+   hiding it, so the extra cards read as reachable, not cut off. Fades the
+   right edge (desktop only) as an extra "there's more" cue. */
+.reviews-rail {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-gold) transparent;
+}
+.reviews-rail::-webkit-scrollbar {
+  height: 6px;
+}
+.reviews-rail::-webkit-scrollbar-track {
+  background: transparent;
+}
+.reviews-rail::-webkit-scrollbar-thumb {
+  background-color: var(--color-gold);
+  border-radius: 999px;
+}
+@media (min-width: 640px) {
+  .reviews-rail {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 24px,
+      black calc(100% - 64px),
+      transparent
+    );
+  }
+}
+
 /* Respect users who ask for less motion (WCAG / constitution §4) */
 @media (prefers-reduced-motion: reduce) {
   *,
