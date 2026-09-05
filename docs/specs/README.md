@@ -39,10 +39,12 @@ Fluxo: escrever spec → **revisão do dono** → implementar em TDD → PR.
 | 029 | premium-mobile | ✅ done | 028 |
 | 030 | lp-polish | 🟡 in progress | 028, 029 |
 | 032 | reviews-opportunities | ⚪ planned | 028, 030 |
-| 033 | content-handoff-2026-08 | ⚪ planned | 028, 030 · ADR 0012 |
+| 033 | content-handoff-2026-08 | 🔵 in review | 028, 030 · ADR 0012 |
 
 > **Pivô (ADR 0009, 2026-06-26):** o produto vira **uma landing page** da marca **"The Red Flying Dragon"** (chá + tai chi), **sem Magic**. Descopa o mundo Magic e a estrutura multi-página (009, 012–014, 022, 023, 026, 027). Contato passa a usar **Resend** (ADR 0010, reverte §2). Premium no mobile passa a valer (ADR 0011, reverte ADR 0005). As novas specs **028** (LP) e **029** (premium mobile) estendem a 021.
 
 > **Epic 019 (immersive-home):** reverte o ADR 0004 §4 ("sem WebGL na Home") via ADR 0005; o runtime 3D da **020** é reusado pelas cartas (021) e estendido por 028/029.
+
+> **Docs vivas:** `../methodology.md` (práticas e ciclo) · `../CHANGELOG.md` (diário) · `../blockers.md` (pendências externas B1–B6).
 
 > Roadmap e justificativas: ver `../blueprint.md` e os ADRs em `../adr/`.
