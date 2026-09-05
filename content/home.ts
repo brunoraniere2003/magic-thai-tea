@@ -114,6 +114,8 @@ export interface BookingPolicyItem {
 
 export interface BookingPolicyContent {
   title: string;
+  /** One line shown while the terms are collapsed. */
+  teaser: string;
   items: BookingPolicyItem[];
 }
 
@@ -132,11 +134,21 @@ export interface Review {
   role?: string;
 }
 
+/** How a channel previews itself on the card. */
+export interface ConnectPreview {
+  /** "grid" = mini feed, "video" = play card, "portrait" = single photo. */
+  kind: "grid" | "video" | "portrait";
+  images: PracticeImage[];
+}
+
 export interface ConnectLink {
   label: string;
   value: string;
   href: string;
   note?: string;
+  preview: ConnectPreview;
+  /** Real third-party embed, when the platform allows one. */
+  embed?: { url: string; frameTitle: string };
 }
 
 export interface ConnectContent {
@@ -367,6 +379,7 @@ export const HOME: HomeContent = {
   // handoff — Booking Policy
   bookingPolicy: {
     title: "Booking policy",
+    teaser: "50% deposit, free reschedule 72 hours out",
     items: [
       {
         label: "Deposit",
@@ -475,18 +488,60 @@ export const HOME: HomeContent = {
         label: "Email",
         value: "flyingdragontea@gmail.com",
         href: "mailto:flyingdragontea@gmail.com",
+        note: "write to Ethan directly",
+        preview: {
+          kind: "portrait",
+          images: [
+            {
+              src: "/images/tea/tea-pouring-smiling.jpg",
+              alt: "Ethan Holtzman pouring tea for guests",
+            },
+          ],
+        },
       },
       {
         label: "Instagram",
         value: "@theredflyingdragon",
         href: "https://www.instagram.com/theredflyingdragon",
         note: "tea, Tai Chi, and magic behind the scenes",
+        preview: {
+          kind: "grid",
+          images: [
+            {
+              src: "/images/tea/tea-spread-overhead.jpg",
+              alt: "A gongfu tea spread seen from above",
+              position: "top",
+            },
+            {
+              src: "/images/tai-chi/tai-chi-teaching-2.jpg",
+              alt: "Ethan guiding a student through a tai chi movement",
+            },
+            {
+              src: "/images/tea/tea-friends-smiling.jpg",
+              alt: "Friends smiling together during a tea tasting",
+            },
+          ],
+        },
       },
       {
         label: "Podcast",
         value: "The Third Steep",
         href: "https://www.youtube.com/@TheThirdSteep",
         note: "conversations over tea",
+        preview: {
+          kind: "video",
+          images: [
+            {
+              src: "/images/tea/tea-ceremony-fire.jpg",
+              alt: "Ethan seated at a tea ceremony in warm light",
+            },
+          ],
+        },
+        // The channel exists but has published nothing yet (blocker B8), and
+        // YouTube refuses to embed an empty uploads playlist. Fill this in and
+        // the card turns into a real player, no other change needed:
+        // url: "https://www.youtube.com/embed/videoseries?list=UUbXEDU56uNY-IeExVh1gEeA&rel=0"
+        embed: undefined,
       },
     ],
   },

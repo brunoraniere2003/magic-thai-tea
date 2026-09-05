@@ -1,12 +1,18 @@
+import Image from "next/image";
 import type { ReactNode } from "react";
 import { Stagger } from "@/components/motion";
 import { SectionHeading } from "@/components/shared";
-import { HOME } from "@/content/home";
+import { TiltCard } from "@/components/shared/TiltCard";
+import { HOME, type ConnectLink } from "@/content/home";
 
 /**
- * "Find me elsewhere" (spec 033 / R8): three gold line-art cards, one per
- * channel. Hover and focus lift the card and warm its edge; only transform and
- * opacity move (§5), so reduced motion loses nothing but the lift.
+ * "Find me elsewhere" (spec 033 / R8).
+ *
+ * The podcast is a real YouTube embed of the channel's uploads, so the section
+ * plays Ethan's latest episode without anyone leaving the page. Instagram
+ * cannot be embedded logged-out, so it gets a framed feed of his own photos
+ * that links out. Cards lean toward the cursor on mouse, stay flat on touch
+ * and under reduced motion (§5).
  */
 export function Connect() {
   const { connect } = HOME;
@@ -14,7 +20,7 @@ export function Connect() {
   return (
     <section
       id="connect"
-      className="mx-auto max-w-5xl scroll-mt-24 px-6 py-20 sm:py-28"
+      className="mx-auto max-w-6xl scroll-mt-24 px-6 py-20 sm:py-28"
     >
       <SectionHeading
         eyebrow={connect.eyebrow}
@@ -25,54 +31,133 @@ export function Connect() {
 
       <Stagger
         as="ul"
-        className="grid gap-4 sm:grid-cols-3 sm:gap-5"
+        className="grid min-w-0 gap-5 sm:grid-cols-3"
         start="top 90%"
       >
-        {connect.links.map((link) => {
-          const external = link.href.startsWith("http");
-          return (
-            <li key={link.label}>
-              <a
-                href={link.href}
-                {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
-                className="group flex h-full flex-col gap-4 rounded-2xl border border-stone/20 bg-stage/40 p-6 transition-[transform,border-color] duration-300 hover:-translate-y-1 hover:border-gold/50 focus-visible:-translate-y-1 focus-visible:border-gold/50 focus-visible:outline-none motion-reduce:transform-none"
-              >
-                <span className="text-gold">
-                  {ICONS[link.label] ?? ICONS.Email}
-                </span>
-                <span className="font-sans text-[0.65rem] uppercase tracking-[0.3em] text-stone/70">
-                  {link.label}
-                </span>
-                <span className="font-display text-lg leading-snug text-cream transition-colors group-hover:text-white">
-                  {link.value}
-                </span>
-                {link.note ? (
-                  <span className="mt-auto font-sans text-sm leading-relaxed text-stone">
-                    {link.note}
-                  </span>
-                ) : null}
-              </a>
-            </li>
-          );
-        })}
+        {connect.links.map((link) => (
+          <li key={link.label} className="min-w-0">
+            <ChannelCard link={link} />
+          </li>
+        ))}
       </Stagger>
     </section>
   );
 }
 
+function ChannelCard({ link }: { link: ConnectLink }) {
+  const external = link.href.startsWith("http");
+
+  return (
+    <TiltCard className="h-full">
+      <a
+        href={link.href}
+        {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+        className="group flex h-full flex-col overflow-hidden rounded-2xl border border-stone/20 bg-stage/40 transition-colors duration-300 hover:border-gold/50 focus-visible:border-gold/50 focus-visible:outline-none"
+      >
+        {link.embed ? (
+          <div className="relative aspect-[16/9] w-full bg-ink">
+            <iframe
+              src={link.embed.url}
+              title={link.embed.frameTitle}
+              loading="lazy"
+              allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"
+              allowFullScreen
+              className="absolute inset-0 h-full w-full"
+            />
+          </div>
+        ) : (
+          <Preview link={link} />
+        )}
+
+        <div className="flex flex-1 flex-col gap-2 p-5">
+          <span className="flex items-center gap-2 text-gold">
+            {ICONS[link.label] ?? ICONS.Email}
+            <span className="font-sans text-[0.65rem] uppercase tracking-[0.3em] text-stone/70">
+              {link.label}
+            </span>
+          </span>
+          <span className="font-display text-lg leading-snug text-cream transition-colors [overflow-wrap:anywhere] group-hover:text-white">
+            {link.value}
+          </span>
+          {link.note ? (
+            <span className="mt-auto font-sans text-sm leading-relaxed text-stone">
+              {link.note}
+            </span>
+          ) : null}
+        </div>
+      </a>
+    </TiltCard>
+  );
+}
+
+/** The photo half of a card: always visible, since phones cannot hover. */
+function Preview({ link }: { link: ConnectLink }) {
+  const { kind, images } = link.preview;
+  const zoom =
+    "object-cover opacity-75 transition-[transform,opacity] duration-500 group-hover:scale-105 group-hover:opacity-100 group-focus-visible:scale-105 group-focus-visible:opacity-100 motion-reduce:transform-none";
+
+  if (kind === "grid") {
+    return (
+      <div className="relative grid aspect-[16/9] grid-cols-3 gap-px bg-stone/10">
+        {images.map((image) => (
+          <div key={image.src} className="relative overflow-hidden">
+            <Image
+              src={image.src}
+              alt={image.alt}
+              fill
+              sizes="(min-width: 1024px) 12vw, 33vw"
+              className={`${zoom} ${
+                image.position === "top" ? "object-top" : "object-center"
+              }`}
+            />
+          </div>
+        ))}
+        <Veil />
+      </div>
+    );
+  }
+
+  const [image] = images;
+
+  return (
+    <div className="relative aspect-[16/9] overflow-hidden">
+      <Image
+        src={image.src}
+        alt={image.alt}
+        fill
+        sizes="(min-width: 1024px) 25vw, 100vw"
+        className={`${zoom} ${
+          image.position === "top" ? "object-top" : "object-center"
+        }`}
+      />
+      <Veil />
+    </div>
+  );
+}
+
+/** Keeps the photos sitting under the copy instead of shouting over it. */
+function Veil() {
+  return (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-stage via-stage/20 to-transparent"
+    />
+  );
+}
+
 const iconProps = {
-  width: 32,
-  height: 32,
+  width: 18,
+  height: 18,
   viewBox: "0 0 32 32",
   fill: "none",
   stroke: "currentColor",
-  strokeWidth: 1.25,
+  strokeWidth: 1.6,
   strokeLinecap: "round" as const,
   strokeLinejoin: "round" as const,
   "aria-hidden": true,
 };
 
-/** Drawn in the same thin gold line-art language as the card faces. */
+/** Drawn in the same thin gold line art as the card faces in the hero. */
 const ICONS: Record<string, ReactNode> = {
   Email: (
     <svg {...iconProps}>
@@ -84,7 +169,7 @@ const ICONS: Record<string, ReactNode> = {
     <svg {...iconProps}>
       <rect x="4" y="4" width="24" height="24" rx="7" />
       <circle cx="16" cy="16" r="6" />
-      <circle cx="23" cy="9" r="1.4" fill="currentColor" stroke="none" />
+      <circle cx="23" cy="9" r="1.6" fill="currentColor" stroke="none" />
     </svg>
   ),
   Podcast: (

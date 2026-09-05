@@ -22,3 +22,10 @@
 - **Ferramentas**: navegadores do Playwright instalados em `D:\ms-playwright` (`PLAYWRIGHT_BROWSERS_PATH` no ambiente do usuário), seguindo a regra de manter instalações fora do C:.
 - **docs(adr) — decisão do dono**: **ADR 0013 aceito** — o contato **fica no FormSubmit por tempo indeterminado** e isso **não é um problema**. O ADR 0010 (Resend) vira **superado**, não pendência; constituição §2 e §10 atualizadas (FormSubmit + honeypot, sem Turnstile). Blocker B7 encerrado.
 - **feat(033) — presença visual** (pedido do dono ao ver no ar): **Yin & Yang** ganha o par de fotos (chá + tai chi) e os dados do pacote puxados da tabela (`PricingRow.id`); **Connect** vira três cartões com ícones de line-art dourado e lift no hover/foco; **Tea List** vira painel com selo 茶 e brasa dourada atrás. Só `transform`/`opacity` animam (§5); sem overflow horizontal a 390px.
+- **feat(033) — rodada visual 2** (pedido do dono, "quero extraordinário"):
+  - **Magic** ganha um leque de cartas em line-art dourado (não há foto de mágica no projeto — blocker B9) e layout em duas colunas.
+  - **Connect** vira três cartões com preview real (mini-feed do Instagram, retrato no e-mail, foto do podcast), inclinação 3D no cursor (`TiltCard`, só mouse, desligada no toque e no reduced-motion) e caminho pronto para o embed do YouTube.
+  - **Tea List** vira faixa full-bleed: foto da cerimônia ao fundo, vapor subindo em SVG (`@keyframes steam-rise`, transform/opacity), painel de vidro e selo 茶.
+  - **Booking policy** vira `<details>` minimalista ("+" que expande), reusado também na seção **Magic**.
+- **Achado**: o canal **The Third Steep não tem nenhum vídeo publicado** (feed vazio, canal de 22/07/2026) — por isso o embed do YouTube dá erro 153. O código está pronto: basta preencher `connect.links[].embed` quando ele publicar (blocker B8).
+- **Responsividade verificada** a 320, 360, 390, 414, 768 e 1440 px: **0 px de overflow horizontal** em todas.

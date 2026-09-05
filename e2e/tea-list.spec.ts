@@ -76,8 +76,13 @@ test("pricing and booking policy are readable on a phone", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/");
+  await page.waitForLoadState("networkidle");
 
-  await expect(page.getByText(/50% non-refundable/)).toBeVisible();
+  // The terms are a disclosure now: teaser first, full text once opened.
+  const policy = page.locator("#services details");
+  await expect(policy.getByText(/50% deposit/)).toBeVisible();
+  await policy.locator("summary").click({ force: true });
+  await expect(policy.getByText(/50% non-refundable/)).toBeVisible();
 
   // Nothing may push the page sideways (§4).
   const overflow = await page.evaluate(

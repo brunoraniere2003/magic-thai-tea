@@ -109,6 +109,7 @@ describe("HOME content", () => {
       "Cancellation",
       "Weather (outdoor Tai Chi)",
     ]);
+    expect(HOME.bookingPolicy.teaser).toBeTruthy();
     expect(HOME.bookingPolicy.items[0].text).toContain("50% non-refundable");
     expect(HOME.bookingPolicy.items[1].text).toContain("72+ hours");
   });

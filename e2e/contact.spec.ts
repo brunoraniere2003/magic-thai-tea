@@ -31,6 +31,8 @@ test("contact form blocks an empty submit with validation errors", async ({
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  // Client validation only runs once React has hydrated the form.
+  await page.waitForLoadState("networkidle");
 
   await page.getByRole("button", { name: /send message/i }).click();
 
