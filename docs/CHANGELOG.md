@@ -20,3 +20,4 @@
 - **fix(qualidade)** — consertados gates que **já estavam vermelhos antes desta spec**: 4 erros de lint em `webgl/cards/` (texture de detalhe saiu do `useMemo` para um cache de módulo; `prefer-const`) e 4 testes E2E presos em copy antiga do hero ("Wonder, in three forms.").
 - **Verificação**: lint ✅ · typecheck ✅ · 147 testes unitários ✅ · build ✅ · 11 E2E ✅ · LCP 232 ms desktop / 132 ms mobile, CLS 0 (build de produção, §3).
 - **Ferramentas**: navegadores do Playwright instalados em `D:\ms-playwright` (`PLAYWRIGHT_BROWSERS_PATH` no ambiente do usuário), seguindo a regra de manter instalações fora do C:.
+- **docs(adr) — decisão do dono**: **ADR 0013 aceito** — o contato **fica no FormSubmit por tempo indeterminado** e isso **não é um problema**. O ADR 0010 (Resend) vira **superado**, não pendência; constituição §2 e §10 atualizadas (FormSubmit + honeypot, sem Turnstile). Blocker B7 encerrado.

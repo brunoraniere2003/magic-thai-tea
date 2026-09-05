@@ -6,7 +6,7 @@
 ## 0. Produto
 > Atualizado pelo **ADR 0009** (2026-06-26): pivô pra LP única, sem Magic.
 > Atualizado pelo **ADR 0012** (2026-09-05): Magic **volta** e a LP cresce pras seções do handoff do Ethan. Continua sendo **uma** página com **uma** conversão.
-> Corrigido pelo **ADR 0013** (2026-09-05): o contato roda em **FormSubmit**, não em Resend — o ADR 0010 nunca chegou a ser implementado.
+> Corrigido pelo **ADR 0013** (2026-09-05): o contato roda em **FormSubmit** e **fica assim por tempo indeterminado** (decisão do dono). O ADR 0010 (Resend) está **superado**, não pendente.
 
 **Landing page única** de captação da marca **The Red Flying Dragon** (🍵 Tea · ☯️ Tai Chi — yin-yang como elo). Três seções: Hero → Cartas → Contato. Dois objetivos: **encantar** (animação extraordinária) e **converter** tráfego pago em **contato** (formulário + SMS). Público: Estados Unidos. *(Histórico: nasceu como site multi-página "Ethan Holtzman — Magic·Tea·Tai Chi"; Magic e as landings por mundo foram descopados.)*
 
@@ -15,7 +15,7 @@
 - **Português:** documentação de processo (specs, changelog, ADRs) — é para leitura do dono.
 
 ## 2. Stack travada
-Next.js (App Router) + TypeScript + Tailwind · GSAP+ScrollTrigger, Lenis, Three.js/react-three-fiber, Framer Motion · shadcn/ui · Vercel · **Resend** (contato — ADR 0010, reverteu Formspree). **Trocar qualquer peça = ADR.** *(Cal.com/agendamento descopado pelo ADR 0009; contato é a conversão.)*
+Next.js (App Router) + TypeScript + Tailwind · GSAP+ScrollTrigger, Lenis, Three.js/react-three-fiber, Framer Motion · shadcn/ui · Vercel · **FormSubmit** (contato, client-side — ADR 0013 supera o 0010/Resend). **Trocar qualquer peça = ADR.** *(Cal.com/agendamento descopado pelo ADR 0009; contato é a conversão.)*
 
 ## 3. Orçamentos de performance (gates de CI — falham o build)
 - LCP < 2,5s · INP < 200ms · CLS < 0,1.
@@ -46,7 +46,7 @@ GitHub Flow · `main` intocada (só via PR) · 1 branch por feature (`feat/NNN-n
 Nenhum código nasce sem spec aprovada. Tríade por feature: `requirements.md` (critérios em **GIVEN-WHEN-THEN**) + `design.md` + `tasks.md`. ADR para decisões. Changelog diário **local** a cada alteração. Blueprint é a visão.
 
 ## 10. Segurança
-Sem login/dados sensíveis. Chaves em `.env.local` (fora do git). Anti-spam (honeypot + Cloudflare Turnstile). **Consent antes de qualquer pixel** de anúncio. Nunca logar dados pessoais.
+Sem login/dados sensíveis. Chaves em `.env.local` (fora do git). Anti-spam: **honeypot** (Turnstile fora de escopo enquanto o spam não justificar — ADR 0013). **Consent antes de qualquer pixel** de anúncio. Nunca logar dados pessoais.
 
 ## 11. Qualidade
 10/10 ou não entrega. Nenhuma feature nova quebra o que já funciona.

@@ -23,7 +23,7 @@
 
 - `lib/newsletter/validateSignup.ts` — validação pura (nome opcional, e-mail obrigatório).
 - `lib/newsletter/subscribe.ts` — `subscribe(input, config, fetchImpl?)` + `resolveEndpoint(config)`: um único ponto de troca de destino.
-- Destinos: **hosted** (`NEXT_PUBLIC_NEWSLETTER_ENDPOINT`, quando o serviço for escolhido) e **fallback** — a caixa do dono via FormSubmit, a mesma infra que o contato realmente usa hoje (ADR 0013, não o Resend do ADR 0010). Trocar de provedor **não toca no componente**.
+- Destinos: **hosted** (`NEXT_PUBLIC_NEWSLETTER_ENDPOINT`, quando o serviço for escolhido) e **fallback** — a caixa do dono via FormSubmit, a mesma infra que o contato usa (ADR 0013: o FormSubmit fica, o Resend do ADR 0010 está superado). Trocar de provedor **não toca no componente**.
 - Validação de e-mail e honeypot reaproveitados do contato (§10). TDD integral.
 
 ## Env

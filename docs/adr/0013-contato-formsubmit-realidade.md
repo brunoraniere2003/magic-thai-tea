@@ -1,22 +1,29 @@
-# ADR 0013 — O contato roda em FormSubmit, não em Resend (corrige o ADR 0010)
+# ADR 0013 — O contato fica no FormSubmit (supera o ADR 0010)
 
-- **Status:** **Proposto — decisão do dono** (ficar ou migrar)
+- **Status:** **Aceito** — decisão do dono em 2026-09-05
 - **Data:** 2026-09-05
-- **Contexto:** o **ADR 0010** declara que o contato é enviado por **Resend**, via rota interna `app/api/contact/route.ts`, com honeypot + Cloudflare Turnstile. Auditando o código para planejar a spec 033, o que existe é outra coisa:
+- **Contexto:** o **ADR 0010** declarava que o contato seria enviado por **Resend**, via rota interna `app/api/contact/route.ts`, com honeypot + Cloudflare Turnstile. Auditando o código para planejar a spec 033, o que existe é outra coisa:
   - `components/shared/ContactForm.tsx:22` → `https://formsubmit.co/ajax/${SITE.contact.email}`;
   - **não existe** `app/api/contact/route.ts`;
   - `resend` está no `package.json`, mas **nenhum arquivo importa**;
   - não há Turnstile.
-    A documentação estava descrevendo uma intenção, não o sistema. Isso é exatamente o que a regra de doc viva existe para impedir.
 
 ## Decisão
 
-Registrar o estado real: **o contato hoje é FormSubmit (client-side)**. O ADR 0010 fica marcado como _não implementado_. Duas saídas, e o dono escolhe:
+**O contato continua no FormSubmit, por tempo indeterminado.** O dono avaliou e decidiu que isso **não é um problema** para este produto. O **ADR 0010 fica superado**: o Resend não será implementado, e nada aqui é dívida a cobrar depois.
 
-- **(A) Assumir o FormSubmit** — atualiza a constituição §2, remove a dependência `resend` e fecha o 0010 como superado. Barato, mas mantém dependência de terceiro e sem Turnstile.
-- **(B) Implementar o 0010 de verdade** — cria a rota, migra para Resend, adiciona honeypot + Turnstile. Custa uma spec própria e não bloqueia a 033.
+Concretamente:
+
+- Envio client-side do navegador direto para `formsubmit.co/ajax/<email do Ethan>` — sem rota interna, sem SDK.
+- Anti-spam = **honeypot** (`_honey`). Turnstile fica de fora enquanto o volume de spam não justificar.
+- O "Join the Tea List" (spec 033) usa o mesmo transporte como fallback, com a env `NEXT_PUBLIC_NEWSLETTER_ENDPOINT` disponível para quando o provedor de e-mail for escolhido (blocker B4).
+
+## Por quê
+
+O formulário funciona, é gratuito, não exige conta nem chave, e os leads chegam na caixa do Ethan. Migrar para Resend custaria uma spec, uma rota, chaves em env e verificação de domínio, para resolver um risco que hoje não se manifesta. Decisão do dono: não vale o custo agora.
 
 ## Consequências
 
-- A spec 033 (T6, "Join the Tea List") depende disso: o **fallback do signup** deve reusar a infra de contato **que realmente existe**. Enquanto o dono não decide, o provider de fallback aponta para FormSubmit e a troca fica atrás de uma env — nenhuma das duas saídas exige reescrever o componente.
-- Independente da escolha: o `package.json` não pode continuar carregando uma dependência não usada.
+- **Constituição §2 e §10** passam a descrever o FormSubmit + honeypot, não o Resend + Turnstile.
+- A dependência `resend` continua no `package.json` sem uso. Removê-la é limpeza opcional, não pendência.
+- Se um dia o volume de spam subir, ou a entrega falhar, isto vira spec própria — e este ADR é substituído por outro, não "consertado".
