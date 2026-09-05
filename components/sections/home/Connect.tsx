@@ -31,7 +31,7 @@ export function Connect() {
 
       <Stagger
         as="ul"
-        className="grid min-w-0 gap-5 sm:grid-cols-3"
+        className="grid min-w-0 items-start gap-5 sm:grid-cols-3"
         start="top 90%"
       >
         {connect.links.map((link) => (
@@ -54,20 +54,7 @@ function ChannelCard({ link }: { link: ConnectLink }) {
         {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
         className="group flex h-full flex-col overflow-hidden rounded-2xl border border-stone/20 bg-stage/40 transition-colors duration-300 hover:border-gold/50 focus-visible:border-gold/50 focus-visible:outline-none"
       >
-        {link.embed ? (
-          <div className="relative aspect-[16/9] w-full bg-ink">
-            <iframe
-              src={link.embed.url}
-              title={link.embed.frameTitle}
-              loading="lazy"
-              allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"
-              allowFullScreen
-              className="absolute inset-0 h-full w-full"
-            />
-          </div>
-        ) : (
-          <Preview link={link} />
-        )}
+        {link.embed ? <Embed link={link} /> : <Preview link={link} />}
 
         <div className="flex flex-1 flex-col gap-2 p-5">
           <span className="flex items-center gap-2 text-gold">
@@ -90,11 +77,76 @@ function ChannelCard({ link }: { link: ConnectLink }) {
   );
 }
 
+/**
+ * A real third-party embed. Lazy and ratio-boxed, so it costs nothing until it
+ * scrolls close and never shifts the layout (§3). A placeholder embed says so
+ * on its face: it is somebody else's content, standing in until Ethan's exists.
+ */
+function Embed({ link }: { link: ConnectLink }) {
+  const embed = link.embed;
+  if (!embed) return null;
+
+  const ratio = embed.ratio === "portrait" ? "aspect-[4/5]" : "aspect-[16/9]";
+  const crop = embed.cropTop ?? 0;
+
+  return (
+    <div className={`relative ${ratio} w-full overflow-hidden bg-ink`}>
+      <iframe
+        src={embed.url}
+        title={embed.frameTitle}
+        loading="lazy"
+        scrolling="no"
+        allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"
+        allowFullScreen
+        className="absolute inset-x-0 w-full"
+        style={{ top: -crop, height: `calc(100% + ${crop}px)` }}
+      />
+      {embed.placeholder ? (
+        <span className="pointer-events-none absolute bottom-3 left-3 rounded-full border border-gold/50 bg-stage/85 px-3 py-1 font-sans text-[0.6rem] uppercase tracking-[0.2em] text-gold">
+          Placeholder
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
 /** The photo half of a card: always visible, since phones cannot hover. */
 function Preview({ link }: { link: ConnectLink }) {
   const { kind, images } = link.preview;
   const zoom =
     "object-cover opacity-75 transition-[transform,opacity] duration-500 group-hover:scale-105 group-hover:opacity-100 group-focus-visible:scale-105 group-focus-visible:opacity-100 motion-reduce:transform-none";
+
+  if (kind === "letter") {
+    return (
+      <div className="relative flex aspect-[4/5] items-center justify-center overflow-hidden bg-[radial-gradient(70%_60%_at_50%_35%,rgba(224,160,64,0.14),transparent_70%)]">
+        <svg
+          aria-hidden
+          viewBox="0 0 200 200"
+          className="w-3/5 text-gold transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <rect x="30" y="62" width="140" height="92" rx="8" />
+          <path d="M32 68l68 50 68-50" />
+          <path d="M30 148l52-40M170 148l-52-40" />
+          {/* The same red chop that stamps the Tea List panel. */}
+          <rect
+            x="84"
+            y="22"
+            width="32"
+            height="32"
+            rx="6"
+            className="fill-crimson"
+          />
+          <path d="M92 32h16M100 32v14M94 44h12" />
+        </svg>
+        <Veil />
+      </div>
+    );
+  }
 
   if (kind === "grid") {
     return (
@@ -118,6 +170,7 @@ function Preview({ link }: { link: ConnectLink }) {
   }
 
   const [image] = images;
+  if (!image) return null;
 
   return (
     <div className="relative aspect-[16/9] overflow-hidden">

@@ -29,3 +29,5 @@
   - **Booking policy** vira `<details>` minimalista ("+" que expande), reusado também na seção **Magic**.
 - **Achado**: o canal **The Third Steep não tem nenhum vídeo publicado** (feed vazio, canal de 22/07/2026) — por isso o embed do YouTube dá erro 153. O código está pronto: basta preencher `connect.links[].embed` quando ele publicar (blocker B8).
 - **Responsividade verificada** a 320, 360, 390, 414, 768 e 1440 px: **0 px de overflow horizontal** em todas.
+- **feat(033) — embeds reais no Connect** (ADR 0015): post do Instagram embutido de verdade (com o cabeçalho branco do IG recortado), player do YouTube embutido **rotulado como placeholder** (canal Tea House Ghost, já que The Third Steep não publicou nada), e o card de e-mail virou painel desenhado (envelope + selo) para casar com o resto da página.
+- **Correção de um diagnóstico meu**: o erro 153 do player vinha do navegador de preview, não do canal vazio. O que comprova o canal vazio é o feed RSS sem entradas. No localhost os dois embeds carregam.

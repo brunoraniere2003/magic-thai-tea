@@ -136,8 +136,8 @@ export interface Review {
 
 /** How a channel previews itself on the card. */
 export interface ConnectPreview {
-  /** "grid" = mini feed, "video" = play card, "portrait" = single photo. */
-  kind: "grid" | "video" | "portrait";
+  /** "letter" = drawn panel, "grid" = mini feed, "portrait" = one photo. */
+  kind: "letter" | "grid" | "portrait";
   images: PracticeImage[];
 }
 
@@ -148,7 +148,22 @@ export interface ConnectLink {
   note?: string;
   preview: ConnectPreview;
   /** Real third-party embed, when the platform allows one. */
-  embed?: { url: string; frameTitle: string };
+  embed?: {
+    url: string;
+    frameTitle: string;
+    /**
+     * True when the embed shows someone else's content while Ethan's is not
+     * available yet. The card labels it, so nobody reads it as his.
+     */
+    placeholder?: boolean;
+    /** Frame shape: the Instagram post is tall, a video is 16:9. */
+    ratio?: "video" | "portrait";
+    /**
+     * Pixels of the provider's own chrome to clip off the top. Instagram
+     * renders a white header we do not want on a dark page.
+     */
+    cropTop?: number;
+  };
 }
 
 export interface ConnectContent {
@@ -489,21 +504,24 @@ export const HOME: HomeContent = {
         value: "flyingdragontea@gmail.com",
         href: "mailto:flyingdragontea@gmail.com",
         note: "write to Ethan directly",
-        preview: {
-          kind: "portrait",
-          images: [
-            {
-              src: "/images/tea/tea-pouring-smiling.jpg",
-              alt: "Ethan Holtzman pouring tea for guests",
-            },
-          ],
-        },
+        // Drawn, not photographed: an inbox has no photo, and the seal keeps
+        // the card in the same gold line-art family as the rest of the page.
+        preview: { kind: "letter", images: [] },
       },
       {
         label: "Instagram",
         value: "@theredflyingdragon",
         href: "https://www.instagram.com/theredflyingdragon",
         note: "tea, Tai Chi, and magic behind the scenes",
+        // Instagram has no profile embed (Meta only exposes single posts, and
+        // the profile page is login-walled). So the card embeds a real post
+        // from the account and links out to the profile.
+        embed: {
+          url: "https://www.instagram.com/p/DWncQMrDiLr/embed",
+          frameTitle: "Instagram post from @theredflyingdragon",
+          ratio: "portrait",
+          cropTop: 56,
+        },
         preview: {
           kind: "grid",
           images: [
@@ -529,7 +547,7 @@ export const HOME: HomeContent = {
         href: "https://www.youtube.com/@TheThirdSteep",
         note: "conversations over tea",
         preview: {
-          kind: "video",
+          kind: "portrait",
           images: [
             {
               src: "/images/tea/tea-ceremony-fire.jpg",
@@ -537,11 +555,17 @@ export const HOME: HomeContent = {
             },
           ],
         },
-        // The channel exists but has published nothing yet (blocker B8), and
-        // YouTube refuses to embed an empty uploads playlist. Fill this in and
-        // the card turns into a real player, no other change needed:
-        // url: "https://www.youtube.com/embed/videoseries?list=UUbXEDU56uNY-IeExVh1gEeA&rel=0"
-        embed: undefined,
+        // PLACEHOLDER (blocker B8). Ethan's channel has no published episode
+        // yet, so this plays "Gong Fu Tea|chA" by Tea House Ghost, another
+        // gongfu-tea conversation show, only to prove the player and the
+        // layout. The card is labelled so no visitor mistakes it for his.
+        // To go live: swap the list id for UUbXEDU56uNY-IeExVh1gEeA (his own
+        // uploads playlist) and drop `placeholder`.
+        embed: {
+          url: "https://www.youtube.com/embed/videoseries?list=UUg_-d3VHLMGiM6fuGRB0FtA&rel=0",
+          frameTitle: "Sample gongfu tea conversation, standing in for The Third Steep",
+          placeholder: true,
+        },
       },
     ],
   },
