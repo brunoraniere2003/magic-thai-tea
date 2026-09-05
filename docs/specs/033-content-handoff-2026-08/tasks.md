@@ -1,57 +1,76 @@
 # Spec 033 — Content handoff · Tasks
 
-> Branch `feat/033-content-handoff`. Spec = 1º commit (§8). Ordem: T0 → T1 → (T2–T8 paralelizáveis) → T9 → T10.
+> Branch `feat/033-content-handoff`. Spec = 1º commit (§8). Estado: **T0–T10 concluídas** (2026-09-05), aguardando merge.
 
-## T0 — ADR 0012: Magic volta, LP cresce  🔴 bloqueia T5 e a ordem de seções
-- [ ] `docs/adr/0012-magic-volta-lp-expandida.md`: contexto (handoff 8/20/26), decisão (reverte ADR 0009 no ponto "sem Magic" e "três seções"), consequências (peso da página, orçamento de perf), alternativas. **Aprovação do dono antes de codar.**
+## T0 — ADR 0012: Magic volta, LP cresce ✅
 
-## T1 — Docs (1º commit)
-- [ ] spec 033 (tríade) · README índice (033 🟡, dependências 028/030) · changelog · `.env.example` com as 4 envs novas. Commit `docs(033)`.
+- [x] `docs/adr/0012-magic-volta-lp-expandida.md`: contexto (handoff 8/20/26), decisão (reverte o ADR 0009 nos pontos "sem Magic" e "três seções"), consequências (peso da página, orçamento de perf), alternativas. **Aprovado pelo dono em 2026-09-05.**
+- [x] Constituição §0 atualizada com os ADRs 0012 e 0013.
 
-## T2 — Modelo de conteúdo (TDD)
-- [ ] `content/home.ts`: tipos + copy exata de Tea, Tai Chi, Yin & Yang, About, Connect, Tea List (R1, R2, R8).
-- [ ] `content/captions.ts` + `formatCaption` + 6 legendas iniciais + testes de formato (R6).
-- [ ] `content/home.test.ts`: nada vazio, links bem formados, podcast = URL do YouTube.
+## T1 — Docs (1º commit) ✅
 
-## T3 — Seções de copy
-- [ ] `TeaCeremony`, `TaiChi`, `YinYang`, `About`, `Connect` sobre os primitivos existentes; `app/page.tsx` na ordem alvo (R1, R2, R8).
+- [x] spec 033 (tríade) · README índice · `docs/CHANGELOG.md` · `docs/blockers.md` · `docs/methodology.md` · `.env.example` com as 3 envs novas.
+- [x] Fonte arquivada: `source-handoff.md` (cópia integral do doc do Ethan).
 
-## T4 — Preços + política
-- [ ] `PricingTable` (`primary | compact`) + `services` + add-ons (R4).
-- [ ] `BookingPolicy` perto dos preços (R5). Teste de responsividade: sem overflow horizontal ≤ 375px.
+## T2 — Modelo de conteúdo (TDD) ✅
 
-## T5 — Magic  *(depende de T0)*
-- [ ] `Magic.tsx`: heading "Also: Wonder, on Request", body, CTA "Inquire about magic" → `#contact` com assunto pré-marcado, `PricingTable variant="compact"` (R3).
+- [x] `content/home.ts`: tipos + copy verbatim de Tea, Tai Chi, Yin & Yang, About, Services, Booking Policy, Magic, Connect, Tea List, calendários e eventos (R1, R2, R8).
+- [x] `content/captions.ts` + `formatCaption` + `isWellFormedCaption` + `captionFor` + as 6 legendas iniciais, com testes de formato (R6).
+- [x] `content/home.test.ts`: 15 casos — nada vazio, links bem formados, podcast = URL do YouTube, eventos vazios no launch.
+- [x] **ADR 0014**: a proibição de travessão (spec 031 R2) passa a valer só para a copy autoral; a copy do cliente entra verbatim.
+- [x] Corrigida uma expectativa **já quebrada antes desta spec**: a ordem das cartas mudou no commit `af3d8a3` e o teste nunca foi atualizado.
 
-## T6 — Join the Tea List (TDD)
-- [ ] `lib/newsletter/provider.ts` + `resendFallbackProvider` + `httpFormProvider` + rota; testes de validação, honeypot e fallback (R7).
-- [ ] `TeaList.tsx`: Name (opcional) / Email (obrigatório) / "Join the list", estados de loading, erro e sucesso.
+## T3 — Seções de copy ✅
 
-## T7 — Calendários
-- [ ] `CalendarEmbed` lazy, acessível, sem CLS; "Upcoming Tai Chi Sessions" na seção Tai Chi (R9) e "See When I'm Free" perto do Contact (R10); env ausente → não renderiza.
-- [ ] Nota no README de deploy: alternativa *Appointment schedule* do Google se o dono preferir self-booking.
+- [x] `Practice` (uma seção por prática, alternando lados), `YinYang`, `About`, `Connect`; `app/page.tsx` na ordem alvo (R1, R2, R8).
+- [x] `Opportunities.tsx` removido — virou `Practice` com a copy do handoff.
 
-## T8 — Fotos & eventos
-- [ ] `Figure` com `<figcaption>` aplicado às fotos atuais (R6).
-- [ ] `EventsList` + `events: []` — some com zero entradas (R11).
+## T4 — Preços + política ✅
 
-## T9 — Qualidade & regressão
-- [ ] `npm run lint && npm run typecheck && npm run test && npm run build`; E2E Playwright: contato + signup da tea list.
-- [ ] Checagem de perf (LCP/CLS, §3) com as duas seções de iframe; a11y AA nas tabelas (headers/scope) e nos embeds (§4).
-- [ ] Conferência da copy caractere a caractere contra o handoff (R1–R5, R8).
+- [x] `PricingTable` (`primary | compact`): `<table>` real, cabeçalho no desktop e cards empilhados no celular via `data-label`, sem DOM duplicado (R4).
+- [x] `Services` + add-ons como nota de rodapé + `BookingPolicy` (`<dl>`) logo abaixo dos preços (R5).
+- [x] E2E confere que a 375px não há scroll horizontal.
 
-## T10 — Entrega
-- [ ] Commits `feat(033): ...`, PR `feat/033-content-handoff` → main, Vercel verde, print do site no ar. Changelog.
+## T5 — Magic ✅
+
+- [x] `Magic.tsx`: "Also: Wonder, on Request", body, CTA "Inquire about magic" → `#contact`, `PricingTable variant="compact"` (R3).
+
+## T6 — Join the Tea List (TDD) ✅
+
+- [x] `lib/newsletter/validateSignup.ts` (nome opcional, e-mail obrigatório) e `lib/newsletter/subscribe.ts` (endpoint trocável por env, fallback para a caixa do dono, honeypot silencioso, falhas tipadas) — 12 testes (R7).
+- [x] `TeaListForm` + seção `TeaList`: estados de loading, erro e sucesso, `aria-live`, honeypot fora da ordem de tabulação.
+
+## T7 — Calendários ✅
+
+- [x] `lib/calendar/embedUrl.ts`: aceita URL completa, id de agenda ou `<iframe>` colado; sem valor → `undefined` (5 testes).
+- [x] `CalendarEmbed` lazy, `title` acessível, `aspect-ratio` fixo (CLS 0); "Upcoming Tai Chi Sessions" dentro da seção Tai Chi (R9) e `Availability` perto do contato (R10). Env ausente → nada renderiza.
+
+## T8 — Fotos & eventos ✅
+
+- [x] `Figure` (`<figure>` + `<figcaption>`) aplicado às fotos das práticas e do About (R6).
+- [x] `Events` + `formatEventDate` (3 testes) — com zero entradas a seção não entra no DOM (R11).
+
+## T9 — Qualidade & regressão ✅
+
+- [x] `lint` ✅ · `typecheck` ✅ · `test` ✅ (**22 arquivos, 147 testes**) · `build` ✅ · `e2e` ✅ (**11 testes**).
+- [x] Consertados os gates que **já estavam vermelhos antes desta spec**: 4 erros de lint em `webgl/cards/` e 4 testes E2E presos em copy antiga do hero.
+- [x] Perf medida no build de produção: **LCP 232 ms (desktop) / 132 ms (mobile), CLS 0** — dentro do orçamento (§3).
+- [x] Copy conferida contra `source-handoff.md`.
+
+## T10 — Entrega ✅
+
+- [x] Commits `feat(033)` + `chore` + `docs`, PR `feat/033-content-handoff` → `main`.
 
 ---
 
-## Bloqueios do Ethan (rastrear fora do código — nada aqui impede o build)
-| # | Pendência | Destrava |
-|---|---|---|
-| B1 | Criar 2 agendas Google — "RFD – Tai Chi Schedule" (pública, detalhes) e "RFD – Availability" (free/busy). **Não reusar a agenda pessoal.** Enviar os embeds. | T7 (envs) |
-| B2 | Fotos finais de Tai Chi | T8 |
-| B3 | Legendas restantes (mesmo formato) | T8 (só dado) |
-| B4 | Escolher o provedor de e-mail marketing | T6 (troca de env) |
-| B5 | Datas/entradas de eventos | T8 (só dado) |
+## Bloqueios do Ethan (rastreados em `docs/blockers.md` — nenhum impede o build)
+
+| #   | Pendência                                                                                                                                    | Onde entra                            |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| B1  | Criar 2 agendas Google — "RFD – Tai Chi Schedule" (pública) e "RFD – Availability" (free/busy). **Não reusar a pessoal.** Enviar os embeds.   | envs `NEXT_PUBLIC_CALENDAR_*`         |
+| B2  | Fotos finais de Tai Chi                                                                                                                      | `content/home.ts`                     |
+| B3  | Legendas restantes (mesmo formato)                                                                                                           | `content/captions.ts`                 |
+| B4  | Escolher o provedor de e-mail marketing                                                                                                      | env `NEXT_PUBLIC_NEWSLETTER_ENDPOINT` |
+| B5  | Datas/entradas de eventos                                                                                                                    | `HOME.events.items`                   |
 
 > Já resolvido: podcast **The Third Steep** → https://www.youtube.com/@TheThirdSteep (o handoff listava como TBD).

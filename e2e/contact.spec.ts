@@ -15,11 +15,13 @@ test("contact form submits a lead and confirms success", async ({ page }) => {
 
   await page.goto("/");
 
-  await page.getByLabel("Your name").fill("Jane Doe");
-  await page.getByLabel("Email").fill("jane@example.com");
-  await page.getByLabel("Phone").fill("+14156991715");
-  await page.getByLabel("Message").fill("I would love to book a tea tasting.");
-  await page.getByRole("button", { name: /send message/i }).click();
+  // Scoped to the contact section: the tea list has an "Email" field too.
+  const form = page.locator("#contact");
+  await form.getByLabel("Your name").fill("Jane Doe");
+  await form.getByLabel("Email", { exact: true }).fill("jane@example.com");
+  await form.getByRole("textbox", { name: "Phone" }).fill("+14156991715");
+  await form.getByLabel("Message").fill("I would love to book a tea tasting.");
+  await form.getByRole("button", { name: /send message/i }).click();
 
   await expect(page.getByText(/Ethan will be in touch soon/i)).toBeVisible();
 });

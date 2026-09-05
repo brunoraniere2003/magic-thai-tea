@@ -11,6 +11,6 @@ test("under reduced motion: smooth scroll is OFF and content is reachable", asyn
 
   // Content is still present and the page is navigable.
   await expect(
-    page.getByRole("heading", { name: "Wonder, in three forms." }),
+    page.getByRole("heading", { name: "Tea, tai chi, and the calm in between." }),
   ).toBeVisible();
 });

@@ -5,6 +5,8 @@
 
 ## 0. Produto
 > Atualizado pelo **ADR 0009** (2026-06-26): pivô pra LP única, sem Magic.
+> Atualizado pelo **ADR 0012** (2026-09-05): Magic **volta** e a LP cresce pras seções do handoff do Ethan. Continua sendo **uma** página com **uma** conversão.
+> Corrigido pelo **ADR 0013** (2026-09-05): o contato roda em **FormSubmit**, não em Resend — o ADR 0010 nunca chegou a ser implementado.
 
 **Landing page única** de captação da marca **The Red Flying Dragon** (🍵 Tea · ☯️ Tai Chi — yin-yang como elo). Três seções: Hero → Cartas → Contato. Dois objetivos: **encantar** (animação extraordinária) e **converter** tráfego pago em **contato** (formulário + SMS). Público: Estados Unidos. *(Histórico: nasceu como site multi-página "Ethan Holtzman — Magic·Tea·Tai Chi"; Magic e as landings por mundo foram descopados.)*
 
