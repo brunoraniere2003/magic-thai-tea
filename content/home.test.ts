@@ -78,10 +78,21 @@ describe("HOME content", () => {
   it("combines both practices in the yin & yang block", () => {
     expect(HOME.yinYang.body).toContain("Tea slows you down");
     expect(HOME.yinYang.cta.href).toBe("#contact");
+    // One photo per half, and the block quotes a tier that really exists.
+    expect(HOME.yinYang.images).toHaveLength(2);
+    for (const image of HOME.yinYang.images) {
+      expect(image.src).toMatch(/^\/images\//);
+      expect(image.alt).toBeTruthy();
+    }
+    expect(
+      HOME.services.tiers.some((tier) => tier.id === HOME.yinYang.tierId),
+    ).toBe(true);
   });
 
   it("prices the three service tiers with every column filled", () => {
     expect(HOME.services.tiers).toHaveLength(3);
+    const ids = HOME.services.tiers.map((tier) => tier.id);
+    expect(new Set(ids).size).toBe(ids.length);
     for (const tier of HOME.services.tiers) {
       expect(tier.name).toBeTruthy();
       expect(tier.included.length).toBeGreaterThan(20);

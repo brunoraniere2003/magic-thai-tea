@@ -73,6 +73,10 @@ export interface YinYangContent {
   title: string;
   body: string;
   cta: HeroCta;
+  /** The two halves, shown side by side. */
+  images: [PracticeImage, PracticeImage];
+  /** Which Services tier this block quotes. */
+  tierId: string;
 }
 
 export interface AboutContent {
@@ -83,6 +87,8 @@ export interface AboutContent {
 }
 
 export interface PricingRow {
+  /** Stable handle, so other sections can quote a tier without matching text. */
+  id: string;
   /** First column: the tier or offering name. */
   name: string;
   included: string;
@@ -305,6 +311,18 @@ export const HOME: HomeContent = {
     title: "Yin & Yang",
     body: "Tea slows you down. Tai Chi grounds you. Together, they're a full evening of stillness and motion — a ceremony for the body and the senses, shaped around your space and your group.",
     cta: { label: "Plan the full evening", href: "#contact" },
+    images: [
+      {
+        src: "/images/tea/tea-spread-overhead.jpg",
+        alt: "A full gongfu tea spread seen from above, cups and pots laid out",
+        position: "top",
+      },
+      {
+        src: "/images/tai-chi/tai-chi-teaching-2.jpg",
+        alt: "Ethan Holtzman guiding a student through a tai chi movement outdoors",
+      },
+    ],
+    tierId: "yin-yang",
   },
 
   // handoff — Services (primary pricing table)
@@ -315,6 +333,7 @@ export const HOME: HomeContent = {
       "Every booking is shaped around your space and your group. Tell Ethan what you have in mind and he will quote it properly.",
     tiers: [
       {
+        id: "tea-tasting",
         name: "Tea Ceremony (Tasting)",
         included:
           "Guided gongfu tasting, 4–6 steepings across 1–2 teas, ritual + story + conversation",
@@ -323,6 +342,7 @@ export const HOME: HomeContent = {
         price: "$250–$450 flat, or $60–$85/person for larger groups",
       },
       {
+        id: "yin-yang",
         name: "Yin & Yang (Tea + Tai Chi)",
         included:
           "45–60 min guided Tai Chi (grounding, breath, a few forms) followed by the full tea ceremony",
@@ -331,6 +351,7 @@ export const HOME: HomeContent = {
         price: "$550–$900",
       },
       {
+        id: "extended-workshop",
         name: "Extended Workshop / Event",
         included:
           "Full immersive: Tai Chi instruction + tea ceremony, optional magic close as a finale, take-home toolkit (tea sample + form reference card)",
@@ -385,6 +406,7 @@ export const HOME: HomeContent = {
     cta: { label: "Inquire about magic", href: "#contact" },
     offerings: [
       {
+        id: "magic-show",
         name: "Magic Show / Walkabout",
         included:
           "Close-up magic for private events, corporate parties, restaurant walkabout",
@@ -392,6 +414,7 @@ export const HOME: HomeContent = {
         price: "$400–$800/hr or $600–$2,000 flat per event",
       },
       {
+        id: "magic-coaching",
         name: "Magic Coaching",
         included:
           "1:1 mentorship, sleight of hand fundamentals through advanced technique",

@@ -53,9 +53,9 @@ export function TeaListForm() {
     <form
       noValidate
       onSubmit={handleSubmit}
-      className="flex w-full max-w-xl flex-col gap-4"
+      className="flex w-full max-w-xl flex-col items-center gap-4"
     >
-      <div className="flex flex-col gap-4 sm:flex-row">
+      <div className="flex w-full flex-col gap-4 sm:flex-row">
         <div className="flex flex-1 flex-col gap-2 text-left">
           <label
             htmlFor="tea-list-name"
@@ -124,13 +124,13 @@ export function TeaListForm() {
 
       <button
         type="submit"
-        className={buttonClasses("primary", "self-start")}
+        className={buttonClasses("primary")}
         disabled={status === "submitting"}
       >
         {status === "submitting" ? "Joining..." : copy.buttonLabel}
       </button>
 
-      <p aria-live="polite" className="min-h-5 font-sans text-sm text-stone">
+      <p aria-live="polite" className="min-h-5 text-center font-sans text-sm text-stone">
         {status === "success" ? copy.successMessage : null}
         {status === "error" ? copy.errorMessage : null}
       </p>

@@ -25,7 +25,8 @@ Hero → Tea Ceremony → Tai Chi (+ Class Calendar) → Yin & Yang → About Et
 **R9 — Calendário de aulas.** GIVEN a seção Tai Chi THEN "Upcoming Tai Chi Sessions" + CTA "View the schedule" com **embed do calendário público** (detalhes completos). GIVEN a env do calendário ausente THEN a área some (ou mostra fallback textual) sem quebrar o build.
 **R10 — Disponibilidade.** GIVEN perto do Contact THEN "See When I'm Free" + CTA "View availability" com **segundo embed em free/busy**. Mesma regra de ausência da R9.
 **R11 — Eventos.** GIVEN a área "Upcoming Events" THEN aceita entradas (title, date, location, blurb); **com zero eventos a seção não renderiza** no launch.
-**R12 — Sem regressão.** GIVEN Hero, cartas, Reviews e o contato via Resend THEN continuam funcionando (§11).
+**R12 — Presença visual (adendo de 2026-09-05, depois do dono ver no ar).** GIVEN Yin & Yang, Connect e Join the Tea List THEN nenhuma delas é texto solto no preto: Yin & Yang mostra as duas metades em foto e os dados do seu tier; Connect são cartões com ícone e estado de hover/foco; a tea list é um painel com selo. GIVEN reduced-motion THEN tudo continua legível, sem movimento.
+**R13 — Sem regressão.** GIVEN Hero, cartas, Reviews e o contato via Resend THEN continuam funcionando (§11).
 
 ## Fora de escopo
 
