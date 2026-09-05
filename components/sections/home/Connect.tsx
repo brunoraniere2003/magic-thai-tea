@@ -6,16 +6,31 @@ import { TiltCard } from "@/components/shared/TiltCard";
 import { HOME, type ConnectLink } from "@/content/home";
 
 /**
- * "Find me elsewhere" (spec 033 / R8).
+ * "Find me elsewhere" (spec 033 / R8) as a bento grid.
  *
- * The podcast is a real YouTube embed of the channel's uploads, so the section
- * plays Ethan's latest episode without anyone leaving the page. Instagram
- * cannot be embedded logged-out, so it gets a framed feed of his own photos
- * that links out. Cards lean toward the cursor on mouse, stay flat on touch
- * and under reduced motion (§5).
+ * Sizes carry the hierarchy: Instagram is the tall tile because it is the feed
+ * that actually moves, the podcast and the inbox are wide tiles beside it. Each
+ * tile fills its cell (`auto-rows-fr` + `flex-1` media), so the row bottoms line
+ * up instead of ending ragged, and the media letterboxes itself rather than
+ * dictating the height.
+ *
+ * Instagram has no profile embed, so the tile embeds a real post; the podcast
+ * player is a labelled placeholder until Ethan publishes (ADR 0015). Tiles lean
+ * toward the cursor on mouse, stay flat on touch and reduced motion (§5).
  */
+
+/** Bento placement per channel: which cell each tile takes at each breakpoint. */
+const TILE_SPAN: Record<string, string> = {
+  Instagram: "sm:row-span-2 lg:col-span-5",
+  Podcast: "lg:col-span-7",
+  Email: "lg:col-span-7",
+};
+
 export function Connect() {
   const { connect } = HOME;
+  const ordered = [...connect.links].sort(
+    (a, b) => ORDER.indexOf(a.label) - ORDER.indexOf(b.label),
+  );
 
   return (
     <section
@@ -31,11 +46,14 @@ export function Connect() {
 
       <Stagger
         as="ul"
-        className="grid min-w-0 items-start gap-5 sm:grid-cols-3"
+        className="grid min-w-0 gap-4 sm:auto-rows-fr sm:grid-cols-2 lg:grid-cols-12 lg:auto-rows-[minmax(0,16rem)]"
         start="top 90%"
       >
-        {connect.links.map((link) => (
-          <li key={link.label} className="min-w-0">
+        {ordered.map((link) => (
+          <li
+            key={link.label}
+            className={`min-w-0 ${TILE_SPAN[link.label] ?? "lg:col-span-4"}`}
+          >
             <ChannelCard link={link} />
           </li>
         ))}
@@ -44,11 +62,14 @@ export function Connect() {
   );
 }
 
+/** Instagram first: it is the tile that spans two rows. */
+const ORDER = ["Instagram", "Podcast", "Email"];
+
 function ChannelCard({ link }: { link: ConnectLink }) {
   const external = link.href.startsWith("http");
 
   return (
-    <TiltCard className="h-full">
+    <TiltCard className="h-full" max={4}>
       <a
         href={link.href}
         {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
@@ -56,7 +77,7 @@ function ChannelCard({ link }: { link: ConnectLink }) {
       >
         {link.embed ? <Embed link={link} /> : <Preview link={link} />}
 
-        <div className="flex flex-1 flex-col gap-2 p-5">
+        <div className="flex shrink-0 flex-col gap-1 p-5">
           <span className="flex items-center gap-2 text-gold">
             {ICONS[link.label] ?? ICONS.Email}
             <span className="font-sans text-[0.65rem] uppercase tracking-[0.3em] text-stone/70">
@@ -67,7 +88,7 @@ function ChannelCard({ link }: { link: ConnectLink }) {
             {link.value}
           </span>
           {link.note ? (
-            <span className="mt-auto font-sans text-sm leading-relaxed text-stone">
+            <span className="font-sans text-sm leading-relaxed text-stone">
               {link.note}
             </span>
           ) : null}
@@ -78,19 +99,25 @@ function ChannelCard({ link }: { link: ConnectLink }) {
 }
 
 /**
- * A real third-party embed. Lazy and ratio-boxed, so it costs nothing until it
- * scrolls close and never shifts the layout (§3). A placeholder embed says so
- * on its face: it is somebody else's content, standing in until Ethan's exists.
+ * The media half of a tile. It grows into whatever the cell leaves over
+ * (`flex-1`) with a floor on small screens, so nothing collapses when the grid
+ * is a single column.
+ */
+const MEDIA = "relative min-h-56 w-full flex-1 overflow-hidden sm:min-h-0";
+
+/**
+ * A real third-party embed: lazy, and boxed by the tile rather than by its own
+ * aspect ratio, so it can never push the grid out of line (§3).
  */
 function Embed({ link }: { link: ConnectLink }) {
   const embed = link.embed;
   if (!embed) return null;
 
-  const ratio = embed.ratio === "portrait" ? "aspect-[4/5]" : "aspect-[16/9]";
-  const crop = embed.cropTop ?? 0;
+  const cropTop = embed.cropTop ?? 0;
+  const cropBottom = embed.cropBottom ?? 0;
 
   return (
-    <div className={`relative ${ratio} w-full overflow-hidden bg-ink`}>
+    <div className={`${MEDIA} bg-ink`}>
       <iframe
         src={embed.url}
         title={embed.frameTitle}
@@ -99,7 +126,10 @@ function Embed({ link }: { link: ConnectLink }) {
         allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"
         allowFullScreen
         className="absolute inset-x-0 w-full"
-        style={{ top: -crop, height: `calc(100% + ${crop}px)` }}
+        style={{
+          top: -cropTop,
+          height: `calc(100% + ${cropTop + cropBottom}px)`,
+        }}
       />
       {embed.placeholder ? (
         <span className="pointer-events-none absolute bottom-3 left-3 rounded-full border border-gold/50 bg-stage/85 px-3 py-1 font-sans text-[0.6rem] uppercase tracking-[0.2em] text-gold">
@@ -110,7 +140,7 @@ function Embed({ link }: { link: ConnectLink }) {
   );
 }
 
-/** The photo half of a card: always visible, since phones cannot hover. */
+/** Tiles with no embed: a drawn panel for the inbox, photos otherwise. */
 function Preview({ link }: { link: ConnectLink }) {
   const { kind, images } = link.preview;
   const zoom =
@@ -118,39 +148,33 @@ function Preview({ link }: { link: ConnectLink }) {
 
   if (kind === "letter") {
     return (
-      <div className="relative flex aspect-[4/5] items-center justify-center overflow-hidden bg-[radial-gradient(70%_60%_at_50%_35%,rgba(224,160,64,0.14),transparent_70%)]">
+      <div
+        className={`${MEDIA} flex items-center justify-center bg-[radial-gradient(70%_70%_at_50%_45%,rgba(224,160,64,0.14),transparent_70%)]`}
+      >
         <svg
           aria-hidden
-          viewBox="0 0 200 200"
-          className="w-3/5 text-gold transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none"
+          viewBox="0 0 200 140"
+          className="h-3/5 max-h-40 text-gold transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none"
           fill="none"
           stroke="currentColor"
           strokeWidth="1.2"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <rect x="30" y="62" width="140" height="92" rx="8" />
-          <path d="M32 68l68 50 68-50" />
-          <path d="M30 148l52-40M170 148l-52-40" />
+          <rect x="34" y="34" width="132" height="86" rx="8" />
+          <path d="M36 40l64 46 64-46" />
+          <path d="M34 114l50-38M166 114l-50-38" />
           {/* The same red chop that stamps the Tea List panel. */}
-          <rect
-            x="84"
-            y="22"
-            width="32"
-            height="32"
-            rx="6"
-            className="fill-crimson"
-          />
-          <path d="M92 32h16M100 32v14M94 44h12" />
+          <rect x="86" y="6" width="28" height="28" rx="6" className="fill-crimson" />
+          <path d="M93 16h14M100 12v16M95 26h10" />
         </svg>
-        <Veil />
       </div>
     );
   }
 
   if (kind === "grid") {
     return (
-      <div className="relative grid aspect-[16/9] grid-cols-3 gap-px bg-stone/10">
+      <div className={`${MEDIA} grid grid-cols-3 gap-px bg-stone/10`}>
         {images.map((image) => (
           <div key={image.src} className="relative overflow-hidden">
             <Image
@@ -173,7 +197,7 @@ function Preview({ link }: { link: ConnectLink }) {
   if (!image) return null;
 
   return (
-    <div className="relative aspect-[16/9] overflow-hidden">
+    <div className={MEDIA}>
       <Image
         src={image.src}
         alt={image.alt}

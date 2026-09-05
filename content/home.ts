@@ -163,6 +163,8 @@ export interface ConnectLink {
      * renders a white header we do not want on a dark page.
      */
     cropTop?: number;
+    /** Same idea for the provider chrome below the media (likes, caption). */
+    cropBottom?: number;
   };
 }
 
@@ -521,6 +523,7 @@ export const HOME: HomeContent = {
           frameTitle: "Instagram post from @theredflyingdragon",
           ratio: "portrait",
           cropTop: 56,
+          cropBottom: 96,
         },
         preview: {
           kind: "grid",
