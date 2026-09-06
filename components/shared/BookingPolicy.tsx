@@ -26,11 +26,20 @@ export function BookingPolicy({ teaser }: BookingPolicyProps) {
             {teaser ?? bookingPolicy.teaser}
           </span>
         </span>
-        <span
-          aria-hidden
-          className="shrink-0 text-gold transition-transform duration-300 group-open:rotate-45 motion-reduce:transform-none"
-        >
-          +
+        <span className="flex shrink-0 items-center gap-2 text-gold">
+          {/* One control, two labels: the open state swaps the wording. */}
+          <span className="underline-offset-4 group-hover:underline group-open:hidden">
+            Read more
+          </span>
+          <span className="hidden underline-offset-4 group-hover:underline group-open:inline">
+            Read less
+          </span>
+          <span
+            aria-hidden
+            className="transition-transform duration-300 group-open:rotate-45 motion-reduce:transform-none"
+          >
+            +
+          </span>
         </span>
       </summary>
 
