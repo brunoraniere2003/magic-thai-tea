@@ -21,7 +21,7 @@ const CONFIG: NewsletterConfig = {
 };
 
 const fieldClasses =
-  "w-full rounded-xl border border-stone/25 bg-stage px-4 py-3 font-sans text-base text-cream outline-none transition-colors placeholder:text-stone/50 focus:border-cream/60";
+  "w-full rounded-xl border border-stone/40 bg-stage/60 px-4 py-3 font-sans text-base text-cream outline-none transition-colors placeholder:text-stone/50 focus:border-cream/60";
 
 /** "Join the Tea List" signup: optional name, required email (spec 033 / R7). */
 export function TeaListForm() {
@@ -53,10 +53,10 @@ export function TeaListForm() {
     <form
       noValidate
       onSubmit={handleSubmit}
-      className="flex w-full max-w-xl flex-col items-center gap-4"
+      className="flex w-full flex-col items-stretch gap-4"
     >
-      <div className="flex w-full flex-col gap-4 sm:flex-row">
-        <div className="flex flex-1 flex-col gap-2 text-left">
+      <div className="flex w-full flex-col gap-4">
+        <div className="flex flex-col gap-2 text-left">
           <label
             htmlFor="tea-list-name"
             className="font-sans text-sm text-cream"
@@ -74,7 +74,7 @@ export function TeaListForm() {
           />
         </div>
 
-        <div className="flex flex-1 flex-col gap-2 text-left">
+        <div className="flex flex-col gap-2 text-left">
           <label
             htmlFor="tea-list-email"
             className="font-sans text-sm text-cream"
@@ -124,13 +124,13 @@ export function TeaListForm() {
 
       <button
         type="submit"
-        className={buttonClasses("primary")}
+        className={buttonClasses("primary", "self-start")}
         disabled={status === "submitting"}
       >
         {status === "submitting" ? "Joining..." : copy.buttonLabel}
       </button>
 
-      <p aria-live="polite" className="min-h-5 text-center font-sans text-sm text-stone">
+      <p aria-live="polite" className="min-h-5 font-sans text-sm text-stone">
         {status === "success" ? copy.successMessage : null}
         {status === "error" ? copy.errorMessage : null}
       </p>

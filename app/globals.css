@@ -133,24 +133,3 @@ body {
 .phone-field .PhoneInputCountrySelect option {
   color: var(--color-ink);
 }
-
-/* Rising steam over the Tea List band. Transform + opacity only (§5); the
-   reduced-motion block above already stops it for anyone who asks. */
-@keyframes steam-rise {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 12%, 0) scaleY(0.9);
-  }
-  35% {
-    opacity: 0.55;
-  }
-  100% {
-    opacity: 0;
-    transform: translate3d(0, -55%, 0) scaleY(1.15);
-  }
-}
-.steam-wisp {
-  transform-origin: 50% 100%;
-  animation: steam-rise 7s ease-in-out infinite;
-  will-change: transform, opacity;
-}
