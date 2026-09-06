@@ -80,7 +80,10 @@ export function Worlds() {
       <div ref={triggerRef} className="relative h-[190vh] md:h-[210vh]">
         <div className="sticky top-0 h-screen overflow-hidden">
           <Stage3D
-            className="absolute inset-x-0 bottom-0 top-[24vh] sm:top-[22vh]"
+            /* Phones: the stage fills the sticky screen, so a card leaving
+               slides out through the top edge of the viewport instead of being
+               chopped by a canvas edge in mid-air. Desktop keeps its framing. */
+            className="absolute inset-0 sm:inset-x-0 sm:bottom-0 sm:top-[22vh]"
             interactive
             poster={<DeckPoster />}
             renderScene={(active) => (
