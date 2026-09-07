@@ -14,6 +14,7 @@
 | B8  | **Publicar episódios em The Third Steep** — o canal existe (criado em 22/07/2026) mas o feed está vazio, e o YouTube recusa embed de playlist sem vídeo. | Ethan | 2026-09-05 | 🟡     | `HOME.connect` (campo `embed`)       | O player mostra, **rotulado como placeholder**, o canal Tea House Ghost (ADR 0015).                                 |
 | B9  | **Fotos de mágica** — não há nenhuma no projeto (o arquivo `worlds/magic.jpg` é uma praia sem relação).                                                    | Ethan | 2026-09-05 | 🟡     | seção Magic                          | A seção usa um leque de cartas desenhado em vez de foto real.                                   |
 | B10 | **Links de posts do Instagram** para embed — o perfil não pode ser embutido sem login; posts individuais podem.                                            | Ethan | 2026-09-05 | 🟡     | seção Connect                        | O card embute o post DWncQMrDiLr; um carrossel exigiria mais códigos de post (ADR 0015).                    |
+| B11 | **Porta 80 da VPS** — `http://theredflyingdragon.com` cai no app `banco-horas`, que é dono da porta 80. Correção pronta em `docs/deploy-vps.md`, mas mexe em app de terceiro. | Dono | 2026-09-07 | 🟡     | aprovação para recriar 2 containers  | Link `http://` antigo abre o site errado; HTTPS (o caminho normal) está correto.                |
 
 ## Resolvidos
 
@@ -22,3 +23,4 @@
 | B0  | Link do podcast "The Third Steep"             | 2026-09-05   | O handoff listava como TBD, mas o link já está vivo: https://www.youtube.com/@TheThirdSteep                    |
 | B6  | Aprovar o ADR 0012 (Magic volta à LP)         | 2026-09-05   | Aprovado pelo dono ao mandar executar a spec 033. ADR 0012 passa a **Aceito**.                                 |
 | B7  | Decidir o ADR 0013 (FormSubmit x Resend)      | 2026-09-05   | Dono decidiu: **fica no FormSubmit por tempo indeterminado**, e isso não é problema. ADR 0010 superado.        |
+| B12 | Conta Vercel pausada (deploy bloqueado)       | 2026-09-07   | Resolvido saindo da Vercel: produção passa a ser a VPS Hostinger (ADR 0016). O check "Vercel" no PR segue vermelho e deve ser ignorado. |

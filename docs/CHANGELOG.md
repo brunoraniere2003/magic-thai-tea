@@ -35,3 +35,12 @@
 - **fix(033) — Tea List refeita**: a versão anterior estava desalinhada (texto centralizado, campos à esquerda, botão centralizado) e empilhava efeitos sobre um formulário de dois campos. Agora são duas colunas: foto legível de um lado, e do outro o selo, o eyebrow, o título, a copy, os campos e o botão **todos na mesma margem esquerda** (verificado: 5 blocos com o mesmo `left`, no desktop e no celular). Fora: o vapor SVG (esticava e virava borrão) e o painel de vidro; os campos ganharam borda visível.
 - **fix(033) — booking policy ganha "Read more"**: o "+" sozinho não dizia que abria. Agora o controle é `Read more` / `Read less` em dourado, com o "+" girando ao lado, nas duas tabelas (Services e Magic).
 - **fix(033) — cartas cortadas no celular**: no mobile o palco 3D começava em `top-[24vh]`, então a carta que saía era **decepada por uma linha no meio da tela** e sobrava um bloco preto onde o título já tinha sumido (ele desaparece de propósito conforme o baralho trava). Agora, abaixo de 640 px, o palco preenche a tela travada (`inset-0`) e a carta sai pela borda de cima. Desktop intacto (`sm:top-[22vh]`).
+
+## 2026-09-07
+
+- **deploy(vps)** — produção migrada da Vercel (conta pausada) para a **VPS Hostinger** `72.61.59.26`, onde o site já estava servido desde julho. Atualizado `/var/www/magic-thai-tea` para a branch `feat/033-content-handoff`, `npm ci` + build (2 min) e `pm2 restart tai-tea`. **https://theredflyingdragon.com no ar com o conteúdo novo** (200, ~0,68 s).
+- **Nenhum dos 9 containers vizinhos foi tocado** (banco-horas, crm, n8n, caddy, frases-api, estudo-c1, matrizes-logicas, deploy-web, deploy-redirector) — uptimes intactos, conferidos depois do deploy.
+- **Segurança do deploy**: commit anterior salvo em `/root/tai-tea-rollback-commit.txt` e build anterior em `.next.bak`; o build roda **antes** do restart, então uma falha não derruba o site.
+- **docs**: novo **ADR 0016** (hospedagem na VPS), runbook `docs/deploy-vps.md` (deploy, rollback, mapa de portas) e `docs/handoff/mensagem-ethan-dns.md` (mensagem pronta pro Ethan, no tom do dono).
+- **Achado**: `http://theredflyingdragon.com` **sem HTTPS cai no app `banco-horas`** — a porta 80 da VPS é dele. HTTPS está correto. Correção proposta e **não executada** (mexe em app de terceiro): blocker B11.
+- **Achado**: o DNS da Namecheap **já aponta** para a VPS (A de `@` e `www` → 72.61.59.26), com certificado Let's Encrypt válido. A mensagem pro Ethan virou conferência, não setup.
