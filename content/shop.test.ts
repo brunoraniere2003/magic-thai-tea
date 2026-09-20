@@ -1,71 +1,76 @@
 import { describe, expect, it } from "vitest";
-import {
-  SHOP,
-  TEA_TIERS,
-  teasByTier,
-  buyLabelFor,
-  type ShopItem,
-} from "./shop";
+import { SHOP, allShopItems, priceOf, buyLabelFor } from "./shop";
 
-const ALL: ShopItem[] = [...SHOP.teas, ...SHOP.bundles];
+// Stripe owns the real prices. Nothing here can catch Ethan changing one on the
+// dashboard, so these numbers must be re-checked by hand before every launch.
+const ALL = allShopItems();
 
 describe("SHOP content", () => {
-  it("ships the seven teas and three bundles from the handoff", () => {
-    expect(SHOP.teas).toHaveLength(7);
-    expect(SHOP.bundles).toHaveLength(3);
+  it("ships the seven teas and three boxes from the handoff", () => {
+    expect(SHOP.shelves.flatMap((s) => s.items)).toHaveLength(7);
+    expect(SHOP.boxes.items).toHaveLength(3);
+    expect(ALL).toHaveLength(10);
   });
 
-  it("gives every item a live Stripe buy page and a price", () => {
+  it("gives every item a live Stripe page, used exactly once", () => {
     for (const item of ALL) {
       expect(item.buyUrl).toMatch(/^https:\/\/buy\.stripe\.com\/[A-Za-z0-9]+$/);
-      expect(item.price).toMatch(/^\$|From \$/);
-      expect(item.detail).toBeTruthy();
     }
-  });
-
-  it("never points a public control at a private booking link", () => {
-    // The 7 book.stripe.com links are Ethan's to send privately. If one ever
-    // lands in the shop, a stranger could pay for a service with no
-    // conversation first, which the handoff forbids outright.
-    expect(JSON.stringify(SHOP)).not.toContain("book.stripe.com");
-  });
-
-  it("uses each Stripe page exactly once", () => {
-    const urls = ALL.map((item) => item.buyUrl);
+    const urls = ALL.map((i) => i.buyUrl);
     expect(new Set(urls).size).toBe(urls.length);
   });
 
-  it("grades teas by tier and leaves bundles ungraded", () => {
-    for (const tea of SHOP.teas) {
-      expect(TEA_TIERS).toContain(tea.tier);
-    }
-    for (const bundle of SHOP.bundles) {
-      expect(bundle.tier).toBeUndefined();
-    }
+  it("never points a public control at a private booking link", () => {
+    // The 7 book.stripe.com links are Ethan's to send after a conversation. One
+    // of them on the page would let a stranger pay for a service unbooked.
+    expect(JSON.stringify(SHOP)).not.toContain("book.stripe.com");
   });
 
-  it("puts every tea in a tier that the page actually renders", () => {
-    const rendered = TEA_TIERS.flatMap((tier) => teasByTier(tier));
-    expect(rendered).toHaveLength(SHOP.teas.length);
+  it("prices every shelf once, and every box on its own", () => {
+    for (const shelf of SHOP.shelves) {
+      expect(shelf.price).toMatch(/^\$\d+$/);
+      expect(shelf.items.length).toBeGreaterThan(0);
+    }
+    for (const box of SHOP.boxes.items) {
+      expect(box.price).toMatch(/^(From )?\$\d+$/);
+    }
+    expect(priceOf(SHOP.shelves[1].items[0])).toBe("$12");
+    expect(priceOf(SHOP.boxes.items[0])).toBe("$79");
   });
 
   it("states the shipping rule, including that items ship separately", () => {
-    expect(SHOP.shipping).toContain("$8.95");
-    expect(SHOP.shipping).toMatch(/US only/i);
-    expect(SHOP.shipping).toMatch(/its own order/i);
+    const counter = SHOP.counter.join(" ");
+    expect(counter).toContain("$8.95");
+    expect(counter).toMatch(/U\.S\. only/);
+    expect(counter).toMatch(/one order/i);
+    expect(SHOP.boxes.arithmetic).toContain("$26.85");
+  });
+
+  it("says out loud that the buy control leaves for Stripe", () => {
+    expect(SHOP.buyLabel).toMatch(/stripe/i);
   });
 
   it("names every buy control after what it buys", () => {
     const labels = ALL.map(buyLabelFor);
     expect(new Set(labels).size).toBe(labels.length);
-    expect(buyLabelFor(SHOP.teas[2])).toBe("Buy Alishan Oolong, $12");
+    expect(buyLabelFor(SHOP.shelves[1].items[0])).toBe(
+      "Buy on Stripe: Alishan Oolong, $12",
+    );
   });
 
-  it("keeps every photo local, and flags the stand-ins", () => {
-    for (const item of ALL) {
-      expect(item.image.src).toMatch(/^\/images\/shop\//);
-      expect(item.image.alt).toBeTruthy();
-      expect(item.image.placeholder).toBe(true);
+  it("uses five local plates, all flagged as stand-ins", () => {
+    const plates = [...SHOP.shelves.map((s) => s.plate), SHOP.boxes.plate];
+    expect(plates).toHaveLength(5);
+    for (const plate of plates) {
+      expect(plate.src).toMatch(/^\/images\/shop\/plate-/);
+      expect(plate.alt).toBeTruthy();
+      expect(plate.placeholder).toBe(true);
+    }
+  });
+
+  it("never describes a plate as packaging we do not have", () => {
+    for (const shelf of SHOP.shelves) {
+      expect(shelf.plate.alt).not.toMatch(/pack|packet|box|label/i);
     }
   });
 });
