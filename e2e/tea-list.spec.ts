@@ -51,6 +51,7 @@ test("the page carries the handoff sections in order", async ({ page }) => {
     "about",
     "magic",
     "reviews",
+    "shop",
     "connect",
     "tea-list",
     "contact",

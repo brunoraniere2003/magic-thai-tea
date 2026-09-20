@@ -6,6 +6,7 @@ import { Services } from "@/components/sections/home/Services";
 import { About } from "@/components/sections/home/About";
 import { Magic } from "@/components/sections/home/Magic";
 import { Reviews } from "@/components/sections/home/Reviews";
+import { Shop } from "@/components/sections/home/Shop";
 import { Connect } from "@/components/sections/home/Connect";
 import { TeaList } from "@/components/sections/home/TeaList";
 import { Availability } from "@/components/sections/home/Availability";
@@ -18,8 +19,8 @@ import { CALENDAR_SOURCES } from "@/lib/calendar/sources";
 /**
  * Page order from the handoff (spec 033, ADR 0012):
  * Hero > Tea Ceremony > Tai Chi (+ class calendar) > Yin & Yang > Services >
- * About > Magic > Testimonials > Connect > Tea List > Availability > Events >
- * Contact.
+ * About > Magic > Testimonials > Shop the Tea > Connect > Tea List >
+ * Availability > Events > Contact.
  *
  * Worlds (the card deck) stays right after the hero: it is the landing page's
  * signature animation, and the handoff only reorders the content sections.
@@ -43,6 +44,7 @@ export default function Home() {
       <About />
       <Magic />
       <Reviews />
+      <Shop />
       <Connect />
       <TeaList />
       <Availability />
