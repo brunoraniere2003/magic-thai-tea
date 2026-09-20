@@ -17,13 +17,14 @@ export function Contact() {
         align="center"
         className="mx-auto mb-12 max-w-2xl"
       />
-      <Reveal>
-        <ContactForm />
+      {/* The terms come BEFORE the form: after the send button nobody reads
+          them, and the booking is charged in full once the date is set. */}
+      <Reveal className="mb-10">
+        <BookingPolicy />
       </Reveal>
 
-      {/* The same terms again, where the booking conversation actually starts. */}
-      <Reveal delay={0.1} className="mt-12">
-        <BookingPolicy />
+      <Reveal delay={0.05}>
+        <ContactForm />
       </Reveal>
     </section>
   );

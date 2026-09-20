@@ -34,9 +34,13 @@ export default function Home() {
       <Worlds />
       <Practice practice={tea} />
       <Practice practice={taichi} reversed>
+        {/* linkOnly: the class calendar still lists private bookings by client
+            name ("Private training with Wayne"). Until Ethan moves those out,
+            the site links to his public calendar instead of republishing it. */}
         <CalendarEmbed
           content={HOME.classesCalendar}
           source={CALENDAR_SOURCES.classes}
+          linkOnly
         />
       </Practice>
       <YinYang />

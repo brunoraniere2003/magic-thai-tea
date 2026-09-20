@@ -6,6 +6,12 @@ export interface CalendarEmbedProps {
   content: CalendarContent;
   /** Raw value from env: an embed URL, a calendar id, or a pasted iframe. */
   source?: string;
+  /**
+   * Show the heading and the link, but do NOT embed the grid. Used when the
+   * calendar still carries private event titles: linking out is Ethan's own
+   * public page, republishing it on his brand site is us amplifying the leak.
+   */
+  linkOnly?: boolean;
 }
 
 /**
@@ -15,7 +21,11 @@ export interface CalendarEmbedProps {
  * page ships without an empty frame. Lazy and fixed-ratio: it loads below the
  * fold and reserves its own space, so it costs no LCP and no layout shift (§3).
  */
-export function CalendarEmbed({ content, source }: CalendarEmbedProps) {
+export function CalendarEmbed({
+  content,
+  source,
+  linkOnly = false,
+}: CalendarEmbedProps) {
   const url = calendarEmbedUrl(source);
   if (!url) return null;
 
@@ -27,15 +37,17 @@ export function CalendarEmbed({ content, source }: CalendarEmbedProps) {
       <p className="max-w-2xl font-sans text-base leading-relaxed text-stone">
         {content.body}
       </p>
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-stone/20 sm:aspect-[16/9]">
-        <iframe
-          src={url}
-          title={content.frameTitle}
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          className="absolute inset-0 h-full w-full"
-        />
-      </div>
+      {linkOnly ? null : (
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-stone/20 sm:aspect-[16/9]">
+          <iframe
+            src={url}
+            title={content.frameTitle}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            className="absolute inset-0 h-full w-full"
+          />
+        </div>
+      )}
       <a
         href={url}
         target="_blank"
