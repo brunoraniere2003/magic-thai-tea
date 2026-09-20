@@ -91,10 +91,10 @@ export interface PricingRow {
   id: string;
   /** First column: the tier or offering name. */
   name: string;
-  included: string;
-  /** Omitted by the compact (magic) table. */
+  /** Dropped by the v2 services table, which shows name + range only. */
+  included?: string;
   groupSize?: string;
-  duration: string;
+  duration?: string;
   price: string;
 }
 
@@ -103,8 +103,6 @@ export interface ServicesContent {
   title: string;
   intro: string;
   tiers: PricingRow[];
-  /** Footnote under the table. */
-  addOns: string;
 }
 
 export interface BookingPolicyItem {
@@ -359,52 +357,47 @@ export const HOME: HomeContent = {
     eyebrow: "What you can book",
     title: "Tea & Tai Chi",
     intro:
-      "Every booking is shaped around your space and your group. Tell Ethan what you have in mind and he will quote it properly.",
+      "Ranges, so you know the ballpark before you write. Tell Ethan what you have in mind and he will quote it properly.",
     tiers: [
       {
-        id: "tea-tasting",
-        name: "Tea Ceremony (Tasting)",
-        included:
-          "Guided gongfu tasting, 4–6 steepings across 1–2 teas, ritual + story + conversation",
-        groupSize: "2–8 guests",
-        duration: "90 min–2 hrs",
-        price: "$250–$450 flat, or $60–$85/person for larger groups",
+        id: "tea-private",
+        name: "Tea Ceremony — Private (1–2 guests)",
+        price: "$150–$350",
+      },
+      {
+        id: "tea-group",
+        name: "Tea Ceremony — Group (3–6 guests)",
+        price: "$300–$600",
       },
       {
         id: "yin-yang",
-        name: "Yin & Yang (Tea + Tai Chi)",
-        included:
-          "45–60 min guided Tai Chi (grounding, breath, a few forms) followed by the full tea ceremony",
-        groupSize: "4–12 guests",
-        duration: "2.5–3 hrs",
-        price: "$550–$900",
+        name: "Yin & Yang — Combined Experience",
+        price: "$350–$750",
       },
       {
-        id: "extended-workshop",
-        name: "Extended Workshop / Event",
-        included:
-          "Full immersive: Tai Chi instruction + tea ceremony, optional magic close as a finale, take-home toolkit (tea sample + form reference card)",
-        groupSize: "10–30+ (event/corporate scale)",
-        duration: "Half-day or 3–4 hrs",
-        price: "Custom quote, starting ~$1,500",
+        id: "tai-chi-private",
+        name: "Tai Chi — Private Lesson",
+        price: "$120–$250",
+      },
+      {
+        id: "tai-chi-group",
+        name: "Tai Chi — Small Group / Event",
+        price: "$250–$600",
       },
     ],
-    addOns:
-      "Add-ons: private 1:1 lesson, magic set (15–20 min close-up), extra tea flight, travel fee beyond ~20 miles.",
   },
 
-  // handoff — Booking Policy
   bookingPolicy: {
     title: "Booking policy",
-    teaser: "50% deposit, free reschedule 72 hours out",
+    teaser: "Paid in full when the date is confirmed",
     items: [
       {
-        label: "Deposit",
-        text: "50% non-refundable to hold the date, balance due day-of. Private lessons under ~$150: 100% upfront.",
+        label: "Payment",
+        text: "The full amount is charged when the booking is confirmed, not a deposit. Ethan sends a secure payment link once your date and details are set.",
       },
       {
         label: "Cancellation",
-        text: "Full refund or free reschedule 72+ hours out. Inside 72 hours: deposit forfeited, one reschedule still allowed. No-shows forfeit full payment.",
+        text: "Full refund if cancelled 72+ hours out. Inside 72 hours: one free reschedule, no refund. No-shows forfeit the full payment.",
       },
       {
         label: "Weather (outdoor Tai Chi)",
@@ -413,13 +406,12 @@ export const HOME: HomeContent = {
     ],
   },
 
-  // handoff — About Ethan
   about: {
     eyebrow: "About",
     title: "About Ethan",
     paragraphs: [
-      "I come from a family of magicians — mine goes back generations, with names well known in the craft of wonder. I grew up backstage before I grew up anywhere else, and sleight of hand was the first language I learned for presence, timing, and connection.",
-      "That same instinct carried me into tea and into Tai Chi. In Taiwan, I trained as a gongfu tea specialist, learning the ceremony leaf by leaf, steep by steep, and now work directly with growers and importers to bring that tradition home. In Taipei, I studied Tai Chi and White Crane under my teacher, Sifu Chen — an internal art built on breath, root, and cultivated inner strength.",
+      "I come from a family of magicians. I grew up backstage before I grew up anywhere else, and sleight of hand was the first language I learned for presence, timing, and connection.",
+      "That same instinct carried me into tea and into Tai Chi. In Taiwan and Los Angeles, I trained as a gongfu tea apprentice, learning the ceremony leaf by leaf, steep by steep, and now work with growers and importers to bring that tradition home. In Taipei, I studied Tai Chi and White Crane under my teacher, Sifu Chen — an internal art built on breath, root, and cultivated inner strength.",
       "Three crafts, one thread: helping people slow down, pay attention, and feel something real — whether it's a card vanishing in your hand, a form moving through stillness, or a tea opening over six steepings. Come find out for yourself.",
     ],
     image: {
@@ -432,7 +424,7 @@ export const HOME: HomeContent = {
   magic: {
     eyebrow: "Magic",
     title: "Also: Wonder, on Request",
-    body: "Magic runs in my family — literally, generations deep, in a family of world-renowned magicians. It's where I learned presence and timing before I ever picked up a tea pot or trained a form. I still perform and I still teach: close-up walkabout magic for private parties, restaurants, and corporate events; small parlor sets for intimate gatherings; and 1:1 coaching for people who want to learn sleight of hand itself, from fundamentals to advanced technique. Ask about weaving a few minutes of astonishment into your tea or Tai Chi booking — or book magic on its own.",
+    body: "Magic runs in my family. It's where I learned presence and timing before I ever picked up a tea pot or trained a form. I still perform and I still teach: close-up walkabout magic for private parties, restaurants, and corporate events; small parlor sets for intimate gatherings; and 1:1 coaching for people who want to learn sleight of hand itself, from fundamentals to advanced technique. Ask about weaving a few minutes of astonishment into your tea or Tai Chi booking — or book magic on its own.",
     cta: { label: "Inquire about magic", href: "#contact" },
     offerings: [
       {
@@ -441,7 +433,7 @@ export const HOME: HomeContent = {
         included:
           "Close-up magic for private events, corporate parties, restaurant walkabout",
         duration: "1–3 hrs",
-        price: "$400–$800/hr or $600–$2,000 flat per event",
+        price: "$400–$1,200",
       },
       {
         id: "magic-coaching",
@@ -449,7 +441,7 @@ export const HOME: HomeContent = {
         included:
           "1:1 mentorship, sleight of hand fundamentals through advanced technique",
         duration: "60–90 min/session",
-        price: "$150–$300/session",
+        price: "$150–$300",
       },
     ],
   },

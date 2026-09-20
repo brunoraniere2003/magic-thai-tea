@@ -12,9 +12,9 @@ import { HOME } from "@/content/home";
 export function YinYang() {
   const { eyebrow, title, body, cta, images, tierId } = HOME.yinYang;
   const tier = HOME.services.tiers.find((row) => row.id === tierId);
-  const facts = tier
-    ? [tier.groupSize, tier.duration, tier.price].filter(Boolean)
-    : [];
+  // The v2 table is name + range only, so the only fact left to quote is the
+  // range itself. Anything else here would be a number we invented.
+  const facts = tier ? [tier.price].filter(Boolean) : [];
 
   return (
     <section

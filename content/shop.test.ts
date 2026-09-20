@@ -26,16 +26,20 @@ describe("SHOP content", () => {
     expect(JSON.stringify(SHOP)).not.toContain("book.stripe.com");
   });
 
+  // Checked against the live Stripe page on 2026-09-20: Tasting Flight is a
+  // flat $38 (+$8.95 shipping = $46.95), not the "$30-$45" the handoff drafted.
   it("prices every shelf once, and every box on its own", () => {
     for (const shelf of SHOP.shelves) {
       expect(shelf.price).toMatch(/^\$\d+$/);
       expect(shelf.items.length).toBeGreaterThan(0);
     }
     for (const box of SHOP.boxes.items) {
-      expect(box.price).toMatch(/^(From )?\$\d+$/);
+      expect(box.price).toMatch(/^\$\d+$/);
     }
     expect(priceOf(SHOP.shelves[1].items[0])).toBe("$12");
     expect(priceOf(SHOP.boxes.items[0])).toBe("$79");
+    const flight = SHOP.boxes.items.find((b) => b.id === "tasting-flight");
+    expect(flight?.price).toBe("$38");
   });
 
   it("states the shipping rule, including that items ship separately", () => {

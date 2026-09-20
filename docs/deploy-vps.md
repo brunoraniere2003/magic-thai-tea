@@ -60,9 +60,12 @@ pm2 restart tai-tea
 
 ## Variáveis de ambiente
 
-Nenhuma é obrigatória. Para ligar calendários ou o provedor da tea list, crie
-`/var/www/magic-thai-tea/.env.production` com as chaves de `.env.example` e rode
-`pm2 restart tai-tea --update-env`.
+Nenhuma é obrigatória — os dois calendários já vêm com os ids públicos no código.
+
+**Atenção:** `NEXT_PUBLIC_*` é **inlinado no build** pelo Next. Trocar qualquer uma
+delas exige `npm run build` de novo — `pm2 restart --update-env` sozinho **não** muda
+nada. Para o provedor da tea list, crie `/var/www/magic-thai-tea/.env.production`
+com as chaves de `.env.example`, rode o build e só então reinicie.
 
 ## Problema conhecido — porta 80
 

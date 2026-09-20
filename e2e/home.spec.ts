@@ -10,13 +10,13 @@ test("home renders the three cards and the conversion path", async ({
 
   // The three cards (static poster under reduced motion).
   await expect(
-    page.getByRole("heading", { name: "Tea", level: 3 }).first(),
+    page.getByRole("heading", { name: "Tea", exact: true, level: 3 }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "Yin & Yang", level: 3 }),
+    page.getByRole("heading", { name: "Yin & Yang", exact: true, level: 3 }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "Tai Chi", level: 3 }),
+    page.getByRole("heading", { name: "Tai Chi", exact: true, level: 3 }),
   ).toBeVisible();
 
   // Card essence copy.

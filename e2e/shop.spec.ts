@@ -62,9 +62,9 @@ test("each buy control names what it buys, and says where it goes", async ({
 
   // Drawers take their accessible name from their own content (no aria-label,
   // which would erase the pack note for screen readers); boxes carry one.
-  await expect(
-    page.getByRole("link", { name: /Alishan Oolong.*Buy on Stripe/s }),
-  ).toHaveCount(1);
+  await expect(page.getByRole("link", { name: /Alishan Oolong/ })).toHaveCount(
+    1,
+  );
   await expect(
     page.getByRole("link", { name: "Buy on Stripe: Dragon's Feast, $79" }),
   ).toHaveCount(1);

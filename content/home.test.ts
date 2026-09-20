@@ -89,34 +89,46 @@ describe("HOME content", () => {
     ).toBe(true);
   });
 
-  it("prices the three service tiers with every column filled", () => {
-    expect(HOME.services.tiers).toHaveLength(3);
+  it("prices the five service ranges of the v2 handoff", () => {
+    expect(HOME.services.tiers).toHaveLength(5);
     const ids = HOME.services.tiers.map((tier) => tier.id);
     expect(new Set(ids).size).toBe(ids.length);
     for (const tier of HOME.services.tiers) {
       expect(tier.name).toBeTruthy();
-      expect(tier.included.length).toBeGreaterThan(20);
-      expect(tier.groupSize).toBeTruthy();
-      expect(tier.duration).toBeTruthy();
-      expect(tier.price).toMatch(/\$/);
+      expect(tier.price).toMatch(/^\$\d+–\$\d+$/);
+      // The v2 table is name + range only: no included/group/duration columns.
+      expect(tier.included).toBeUndefined();
+      expect(tier.groupSize).toBeUndefined();
+      expect(tier.duration).toBeUndefined();
     }
-    expect(HOME.services.addOns).toContain("travel fee");
   });
 
-  it("states the deposit, cancellation and weather policy", () => {
+  it("drops the Extended Workshop tier everywhere (v2)", () => {
+    const copy = JSON.stringify(HOME);
+    expect(copy).not.toContain("Extended Workshop");
+    expect(copy).not.toContain("1,500");
+  });
+
+  it("charges in full on confirmation, not a deposit (v2)", () => {
     expect(HOME.bookingPolicy.items.map((item) => item.label)).toEqual([
-      "Deposit",
+      "Payment",
       "Cancellation",
       "Weather (outdoor Tai Chi)",
     ]);
     expect(HOME.bookingPolicy.teaser).toBeTruthy();
-    expect(HOME.bookingPolicy.items[0].text).toContain("50% non-refundable");
+    expect(HOME.bookingPolicy.items[0].text).toMatch(/full amount is charged/i);
+    expect(HOME.bookingPolicy.items[0].text).not.toMatch(/deposit is|50%/);
     expect(HOME.bookingPolicy.items[1].text).toContain("72+ hours");
   });
 
   it("tells Ethan's story in three paragraphs, magic first", () => {
     expect(HOME.about.paragraphs).toHaveLength(3);
     expect(HOME.about.paragraphs[0]).toContain("family of magicians");
+    // v2 cut the lineage boast and the "specialist" title.
+    expect(HOME.about.paragraphs[0]).not.toMatch(/generations|well known/);
+    expect(HOME.about.paragraphs[1]).toContain("Taiwan and Los Angeles");
+    expect(HOME.about.paragraphs[1]).toContain("gongfu tea apprentice");
+    expect(HOME.magic.body).toMatch(/^Magic runs in my family\./);
     expect(HOME.about.paragraphs[2]).toContain("Three crafts, one thread");
   });
 
@@ -128,8 +140,11 @@ describe("HOME content", () => {
     for (const offering of HOME.magic.offerings) {
       // The compact table has no group-size column.
       expect(offering.groupSize).toBeUndefined();
-      expect(offering.price).toMatch(/\$/);
+      expect(offering.price).toMatch(/^\$\d+–\$[\d,]+$/);
+      // v2 dropped the per-hour and per-session qualifiers.
+      expect(offering.price).not.toMatch(/\/hr|\/session/);
     }
+    expect(HOME.magic.offerings[0].price).toBe("$400–$1,200");
   });
 
   it("links email, Instagram and the live podcast", () => {

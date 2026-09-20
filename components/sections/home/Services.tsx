@@ -28,12 +28,11 @@ export function Services() {
         <PricingTable
           caption="Tea and Tai Chi pricing by tier"
           rows={services.tiers}
-          footnote={services.addOns}
         />
       </Reveal>
 
       <Reveal delay={0.1} className="mt-8">
-        <BookingPolicy />
+        <BookingPolicy defaultOpen />
       </Reveal>
     </section>
   );

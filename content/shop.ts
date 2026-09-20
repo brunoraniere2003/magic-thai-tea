@@ -221,7 +221,7 @@ export const SHOP: ShopContent = {
         name: "Tasting Flight",
         hanzi: "三選",
         note: "Any three teas, 15g each. You note your picks at checkout.",
-        price: "From $38",
+        price: "$38",
         weight: "plain",
         buyUrl: "https://buy.stripe.com/00w3co9O6aUP99a7cueEo0m",
       },

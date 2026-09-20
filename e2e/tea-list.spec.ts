@@ -54,6 +54,7 @@ test("the page carries the handoff sections in order", async ({ page }) => {
     "shop",
     "connect",
     "tea-list",
+    "availability",
     "contact",
   ]);
 });
@@ -70,7 +71,7 @@ test("magic is back with its inquiry CTA and its own prices", async ({
   await expect(
     page.getByRole("link", { name: "Inquire about magic" }),
   ).toBeVisible();
-  await expect(page.getByText("$150–$300/session")).toBeVisible();
+  await expect(page.getByText("$150–$300", { exact: true })).toBeVisible();
 });
 
 test("pricing and booking policy are readable on a phone", async ({ page }) => {
@@ -80,10 +81,11 @@ test("pricing and booking policy are readable on a phone", async ({ page }) => {
   await page.waitForLoadState("networkidle");
 
   // The terms are a disclosure now: teaser first, full text once opened.
+  // Charging in full on confirmation is a term that must not hide, so the
+  // block next to the prices starts open.
   const policy = page.locator("#services details");
-  await expect(policy.getByText(/50% deposit/)).toBeVisible();
-  await policy.locator("summary").click({ force: true });
-  await expect(policy.getByText(/50% non-refundable/)).toBeVisible();
+  await expect(policy).toHaveAttribute("open", "");
+  await expect(policy.getByText(/full amount is charged/)).toBeVisible();
 
   // Nothing may push the page sideways (§4).
   const overflow = await page.evaluate(

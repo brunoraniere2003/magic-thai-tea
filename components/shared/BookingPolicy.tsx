@@ -1,8 +1,13 @@
 import { HOME } from "@/content/home";
 
 export interface BookingPolicyProps {
-  /** One line shown while collapsed. Defaults to the deposit rule. */
+  /** One line shown while collapsed. Defaults to the payment rule. */
   teaser?: string;
+  /**
+   * Start open. Used next to the prices: the booking is charged in full on
+   * confirmation, and a term like that must not hide behind a closed toggle.
+   */
+  defaultOpen?: boolean;
 }
 
 /**
@@ -12,11 +17,11 @@ export interface BookingPolicyProps {
  * keyboard and screen-reader correct by construction. It sits under any
  * pricing table, so both Services and Magic can carry the same terms.
  */
-export function BookingPolicy({ teaser }: BookingPolicyProps) {
+export function BookingPolicy({ teaser, defaultOpen = false }: BookingPolicyProps) {
   const { bookingPolicy } = HOME;
 
   return (
-    <details className="group border-t border-stone/15 pt-4">
+    <details open={defaultOpen} className="group border-t border-stone/15 pt-4">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-sans text-xs text-stone/80 transition-colors hover:text-cream focus-visible:text-cream focus-visible:outline-none [&::-webkit-details-marker]:hidden">
         <span>
           <span className="uppercase tracking-[0.2em]">

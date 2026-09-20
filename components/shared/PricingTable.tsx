@@ -26,7 +26,10 @@ export function PricingTable({
   variant = "primary",
   footnote,
 }: PricingTableProps) {
+  // v2 services are name + range only; magic still has included/duration.
+  const showIncluded = rows.some((row) => row.included);
   const showGroupSize = rows.some((row) => row.groupSize);
+  const showDuration = rows.some((row) => row.duration);
   const scale = variant === "compact" ? "text-sm" : "text-base";
   const tone =
     variant === "compact"
@@ -40,21 +43,25 @@ export function PricingTable({
         <thead className="hidden md:table-header-group">
           <tr className="border-b border-stone/20">
             <th scope="col" className={`${HEAD_CLASSES} px-5 pt-5`}>
-              {variant === "compact" ? "Offering" : "Tier"}
+              {variant === "compact" ? "Offering" : "Service"}
             </th>
-            <th scope="col" className={`${HEAD_CLASSES} px-5 pt-5`}>
-              What&apos;s included
-            </th>
+            {showIncluded ? (
+              <th scope="col" className={`${HEAD_CLASSES} px-5 pt-5`}>
+                What&apos;s included
+              </th>
+            ) : null}
             {showGroupSize ? (
               <th scope="col" className={`${HEAD_CLASSES} px-5 pt-5`}>
                 Group size
               </th>
             ) : null}
+            {showDuration ? (
+              <th scope="col" className={`${HEAD_CLASSES} px-5 pt-5`}>
+                Duration
+              </th>
+            ) : null}
             <th scope="col" className={`${HEAD_CLASSES} px-5 pt-5`}>
-              Duration
-            </th>
-            <th scope="col" className={`${HEAD_CLASSES} px-5 pt-5`}>
-              Price
+              {showIncluded ? "Price" : "Price range"}
             </th>
           </tr>
         </thead>
@@ -70,11 +77,15 @@ export function PricingTable({
               >
                 {row.name}
               </th>
-              <Cell label="What's included">{row.included}</Cell>
+              {showIncluded ? (
+                <Cell label="What's included">{row.included ?? ""}</Cell>
+              ) : null}
               {showGroupSize ? (
                 <Cell label="Group size">{row.groupSize ?? ""}</Cell>
               ) : null}
-              <Cell label="Duration">{row.duration}</Cell>
+              {showDuration ? (
+                <Cell label="Duration">{row.duration ?? ""}</Cell>
+              ) : null}
               <Cell label="Price" emphasis>
                 {row.price}
               </Cell>
