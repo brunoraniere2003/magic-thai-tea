@@ -15,6 +15,11 @@
 | B9  | **Fotos de mágica** — não há nenhuma no projeto (o arquivo `worlds/magic.jpg` é uma praia sem relação).                                                    | Ethan | 2026-09-05 | 🟡     | seção Magic                          | A seção usa um leque de cartas desenhado em vez de foto real.                                   |
 | B10 | **Links de posts do Instagram** para embed — o perfil não pode ser embutido sem login; posts individuais podem.                                            | Ethan | 2026-09-05 | 🟡     | seção Connect                        | O card embute o post DWncQMrDiLr; um carrossel exigiria mais códigos de post (ADR 0015).                    |
 | B11 | **Porta 80 da VPS** — `http://theredflyingdragon.com` cai no app `banco-horas`, que é dono da porta 80. Correção pronta em `docs/deploy-vps.md`, mas mexe em app de terceiro. | Dono | 2026-09-07 | 🟡     | aprovação para recriar 2 containers  | Link `http://` antigo abre o site errado; HTTPS (o caminho normal) está correto.                |
+| B13 | **Prazo de envio dos chás** ("ships within N business days") — vender sem prazo declarado contraria a regra de venda por correspondência da FTC. | Ethan | 2026-09-20 | 🟡 | `SHOP.turnaround` | O campo fica vazio e a página não insinua prazo nenhum. |
+| B14 | **Fotos reais dos produtos** | Ethan | 2026-09-20 | 🟡 | `public/images/shop/` | A loja usa 5 pranchas de placeholder, rotuladas como tal. |
+| B15 | **Preço do Tasting Flight** — o handoff diz "$30–$45" e "starts at $38" na mesma linha | Ethan | 2026-09-20 | 🟡 | `SHOP.boxes` | Exibimos "From $38"; preço errado em página de venda é o pior bug possível. |
+| B16 | **Qual agenda é qual** (aulas x disponibilidade) — a v2 mandou os dois embeds mas não disse o papel de cada um | Ethan | 2026-09-20 | 🟡 | envs de calendário | Os dois slots são construídos; o não confirmado não renderiza. |
+| B17 | **Aval para os hanzi** nas gavetas da loja e para o rótulo "Elixir" | Ethan | 2026-09-20 | 🟡 | `content/shop.ts` | Texto nosso em cima de nome de produto dele — precisa do ok antes do lançamento. |
 
 ## Resolvidos
 

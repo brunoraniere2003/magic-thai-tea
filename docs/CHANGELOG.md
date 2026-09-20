@@ -44,3 +44,13 @@
 - **docs**: novo **ADR 0016** (hospedagem na VPS), runbook `docs/deploy-vps.md` (deploy, rollback, mapa de portas) e `docs/handoff/mensagem-ethan-dns.md` (mensagem pronta pro Ethan, no tom do dono).
 - **Achado**: `http://theredflyingdragon.com` **sem HTTPS cai no app `banco-horas`** — a porta 80 da VPS é dele. HTTPS está correto. Correção proposta e **não executada** (mexe em app de terceiro): blocker B11.
 - **Achado**: o DNS da Namecheap **já aponta** para a VPS (A de `@` e `www` → 72.61.59.26), com certificado Let's Encrypt válido. A mensagem pro Ethan virou conferência, não setup.
+
+## 2026-09-20
+
+- **Handoff v2 do Ethan** (doc de 3/9) capturado, com as 17 URLs da Stripe extraídas do DOM (10 "Buy" públicas, 7 "Book" privadas) e arquivado em `docs/specs/034-handoff-v2-loja-e-precos/source-handoff-v2.md`.
+- **ADR 0017** — a loja entra e os serviços seguem pessoais; reverte o ADR 0012 no ponto "conversão única" e atualiza a constituição §0.
+- **Spec 034** aberta (tríade) com R1–R20 e os bloqueios B13–B17.
+- **feat(shop)** — seção "Shop the Tea" entre Testimonials e Connect: prateleiras por faixa com o preço na régua, gavetas de papel creme com carimbo 買 e "Buy on Stripe" visível, 5 pranchas de foto placeholder (Unsplash, baixadas), balcão fixo com a regra de frete antes do primeiro clique e o bloco de combos com a aritmética real ($26,85 em três avulsos). Nova animação-assinatura `ShelfRule`.
+- **Desenho escolhido por painel**: 3 direções independentes (editorial, apotecário, galeria) julgadas por 3 critérios (marca, conversão, execução). A primeira versão (grid de cards com `hover:scale`) foi descartada por ser exatamente o vício que o dono apontou.
+- **Testes** — `content/shop.test.ts` (9) e `e2e/shop.spec.ts` (4), incluindo o **guard que falha se `book.stripe.com` aparecer** em qualquer lugar do site. Total: 156 unitários + 15 E2E.
+- **Achados registrados**: cada link da Stripe é um pedido separado (3 chás = 3 fretes); prazo de envio é exigência legal antes da compra; 10 botões "Buy" idênticos quebram leitor de tela; `NEXT_PUBLIC_*` é inlinado no build, então ligar calendário exige rebuild.
