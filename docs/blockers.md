@@ -17,7 +17,7 @@
 | B13 | **Prazo de envio dos chás** ("ships within N business days") — vender sem prazo declarado contraria a regra de venda por correspondência da FTC. | Ethan | 2026-09-20 | 🟡 | `SHOP.turnaround` | O campo fica vazio e a página não insinua prazo nenhum. |
 | B14 | **Fotos reais dos produtos** | Ethan | 2026-09-20 | 🟡 | `public/images/shop/` | A loja usa 5 pranchas de placeholder, rotuladas como tal. |
 | B17 | **Aval para os hanzi** nas gavetas da loja e para o rótulo "Elixir" | Ethan | 2026-09-20 | 🟡 | `content/shop.ts` | Texto nosso em cima de nome de produto dele — precisa do ok antes do lançamento. |
-| B18 | **Limpar a agenda pública de Tai Chi** — ela lista reservas privadas por nome ("Private training with Wayne"). Mover esses eventos para outra agenda. | Ethan | 2026-09-20 | 🟡 | `linkOnly` sai de `app/page.tsx` | Enquanto isso o site **não embute** a grade: mostra o título, o texto e o botão que leva à agenda pública dele. |
+| B18 | **Limpar a agenda pública de Tai Chi** — ela lista reservas privadas por nome ("Private training with Wayne"). Mover esses eventos para outra agenda. | Ethan | 2026-09-20 | 🟡 | `linkOnly` sai de `app/page.tsx` | Resolvido do nosso lado: o site **lê o feed e desenha a própria grade**, publicando só as aulas. Continua valendo o aviso — a agenda dele é pública e quem abrir o link vê tudo. |
 
 ## Resolvidos
 
