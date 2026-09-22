@@ -22,8 +22,9 @@ Rodam ali **9 containers de outros projetos**. Nenhum deles pode ser tocado num 
 
 | Porta | Quem ocupa |
 |---|---|
-| 80 | `banco-horas` (app próprio, container) |
+| 80 | `deploy-caddy-1` (redireciona o nosso http→https; o resto vai pro banco-horas) |
 | 443 | `deploy-caddy-1` (o nosso HTTPS passa por aqui) |
+| 8081 | `banco-horas` (app próprio, container) |
 | 3000 | **`tai-tea` (nós, via pm2 — não é container)** |
 | 3009 | `deploy-web-1` |
 | 5678 | `n8n` |
@@ -41,8 +42,9 @@ git rev-parse HEAD > /root/tai-tea-rollback-commit.txt   # guarda o commit atual
 rm -rf .next.bak && cp -r .next .next.bak                # guarda o build atual
 git fetch --prune origin
 git checkout <branch> && git reset --hard origin/<branch>
+export TZ=America/Los_Angeles                            # datas calculadas no servidor
 npm ci && npm run build                                  # ~2 min; NÃO reinicia nada se falhar
-pm2 restart tai-tea --update-env
+TZ=America/Los_Angeles pm2 restart tai-tea --update-env
 pm2 save
 curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:3000/   # espera 200
 ```
@@ -67,26 +69,26 @@ delas exige `npm run build` de novo — `pm2 restart --update-env` sozinho **nã
 nada. Para o provedor da tea list, crie `/var/www/magic-thai-tea/.env.production`
 com as chaves de `.env.example`, rode o build e só então reinicie.
 
-## Problema conhecido — porta 80
+## Porta 80 (resolvido em 2026-09-21)
 
-`http://theredflyingdragon.com` (sem HTTPS) **cai no app `banco-horas`**, porque a porta 80 da VPS pertence àquele container e o Caddy só publica a 443. Na prática quase ninguém tropeça nisso (o navegador tenta HTTPS primeiro e o Caddy manda HSTS), mas um link `http://` antigo abre o site errado.
+Antes, `http://theredflyingdragon.com` caía no app `banco-horas` — que era dono da porta 80 — **com a API dele aberta** (`/api/state`). Agora:
 
-**Correção proposta (exige tocar em outro app — pedir aprovação antes):**
+| Porta | Quem |
+|---|---|
+| 80 | **Caddy** — `http://theredflyingdragon.com` e `www` → **301 para https**; qualquer outro acesso http (inclusive `http://72.61.59.26`) → proxy para o banco-horas, igual antes |
+| 8081 | `banco-horas` (antes 80) — dados no volume nomeado, intactos (`/api/state` com os mesmos 5.183 bytes) |
 
-1. `/opt/banco-horas/docker-compose.yml`: trocar `"80:3000"` por `"8081:3000"`.
-2. `/opt/carpediem-campanha/deploy/docker-compose.yml`: publicar `"80:80"` no Caddy.
-3. No `Caddyfile`, acrescentar:
-   ```
-   http://theredflyingdragon.com, http://www.theredflyingdragon.com {
-     redir https://{host}{uri} permanent
-   }
-   :80 {
-     reverse_proxy 172.20.0.1:8081   # banco-horas continua igual em http://72.61.59.26
-   }
-   ```
-4. `docker compose up -d` nas duas pastas.
+Backups da mudança em `/root/backup-port80-<data>/` (os dois `docker-compose.yml` e o `Caddyfile`). Rollback: copiar os três de volta e `docker compose up -d` em `/opt/banco-horas` e `caddy` em `/opt/carpediem-campanha/deploy`.
 
-Os dados do `banco-horas` ficam em volume Docker, então recriar o container não perde nada — mas é um app de terceiro no ar, então **não fizemos sem autorização**.
+## Fuso horário
+
+As listas de aulas e de disponibilidade são calculadas **no servidor**, que roda em UTC. Sem fuso, "hoje" em Los Angeles sumia da lista à noite. O build e o processo rodam com `TZ=America/Los_Angeles`:
+
+```bash
+export TZ=America/Los_Angeles
+npm ci && npm run build
+TZ=America/Los_Angeles pm2 restart tai-tea --update-env && pm2 save
+```
 
 ## Verificação pós-deploy
 
