@@ -178,7 +178,7 @@ export const SHOP: ShopContent = {
       id: "elixir",
       label: "Elixir",
       price: "$5",
-      unit: "/ serving",
+      unit: "/ pack",
       plate: plate("remedy", "Ginger and dried fruit beside a warm cup"),
       items: [
         {

@@ -34,6 +34,9 @@ export const SITE: Site = {
   tagline: "The Chinese arts of tea and tai chi, by Ethan Holtzman.",
   nav: [
     { label: "The practice", href: "#worlds" },
+    // The shop sits eight screens down; without this nobody arriving from an
+    // ad or a link ever finds it (spec 034, T7).
+    { label: "Shop", href: "#shop" },
     { label: "Talk to Ethan", href: "#contact" },
   ],
   contact: {

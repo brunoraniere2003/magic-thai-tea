@@ -515,7 +515,7 @@ export const HOME: HomeContent = {
           frameTitle: "Instagram post from @theredflyingdragon",
           ratio: "portrait",
           cropTop: 56,
-          cropBottom: 96,
+          cropBottom: 140,
         },
         preview: {
           kind: "grid",

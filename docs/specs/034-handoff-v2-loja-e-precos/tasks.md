@@ -49,7 +49,7 @@
 ## T7 — Entrega
 
 - [ ] PR `feat/034-handoff-v2` → `main`, deploy no VPS pelo runbook, print do site no ar.
-- [ ] Decidir se "Shop" entra no menu (`content/site.ts`) — muda navegação, é decisão do dono.
+- [x] "Shop" entra no menu (`content/site.ts`), entre "The practice" e "Talk to Ethan" — pedido do dono de deixar tudo pronto para entregar.
 
 ---
 

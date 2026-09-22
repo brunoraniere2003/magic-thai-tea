@@ -67,3 +67,14 @@
 - **feat(034) — "See When I'm Free" também deixa de ser iframe**: o embed usava só a agenda "BUSINESS", mas as reservas privadas do Ethan vivem na agenda de **aulas** — então quinta 11h aparecia livre enquanto ele dava aula. Agora o site lê **as duas agendas**, marca ocupado sem dizer com quem, e não conta aula aberta como ocupado (dá pra entrar nela). 14 dias à frente, revalidado de hora em hora.
 - `lib/calendar/parseBusy.ts`: expande recorrência semanal, respeita cancelamento (EXDATE), junta blocos sobrepostos e devolve **só dia, início e fim** — o tipo de saída não tem onde guardar nome, local ou convidado. 9 testes, incluindo um que falha se "Wayne", o endereço ou o Zoom aparecerem.
 - O botão "View availability" virou "Talk to Ethan": o calendário agora está na própria página, então o próximo passo é a conversa.
+
+## 2026-09-21
+
+- **Auditoria pré-entrega** (5 agentes: copy, privacidade, visual, links, veredito). Reprovou o site com dois bloqueios e quatro importantes. Corrigido:
+  - **"View the schedule" levava à agenda crua do Google** — com nome de cliente, endereço residencial e link do Zoom a um clique. Agora o botão é "Talk to Ethan" → `#contact`. A lista continua saneada.
+  - **Player do podcast achatado (449×141) e dentro de um link** — clicar no play navegava pra fora. O card deixou de ser `<a>`: só a legenda é link, e cada mídia tem a proporção dela (vídeo 16:9, post do Instagram 4:5). O rodapé branco do Instagram sumiu.
+  - **Connect encolhia pra largura do conteúdo** (`mx-auto` dentro de `flex-col`); ganhou `w-full`.
+  - **Cartas no celular sob o título** (fallback estático, reduced-motion): o `DeckPoster` vira carrossel horizontal no celular — uma carta por tela, como no 3D. Medido: a carta começa 170 px abaixo do título em 390 e 46 px em 320.
+  - **Loja**: legenda "Placeholder photography" (8,8 px, contraste 2,6:1) removida — as pranchas não mostram produto, então não precisam de aviso; o marcador fica no código. Ginger Elixir passa de "/ serving" para "/ pack".
+  - **"Shop" no menu**, entre "The practice" e "Talk to Ethan".
+- **Preços conferidos na Stripe, os 10**: cada página cobra exatamente o preço do site + $8,95 de frete.

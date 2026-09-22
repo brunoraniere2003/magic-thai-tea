@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { Stagger } from "@/components/motion";
+import { Reveal, Stagger } from "@/components/motion";
 import { SectionHeading } from "@/components/shared";
 import { TiltCard } from "@/components/shared/TiltCard";
 import { HOME, type ConnectLink } from "@/content/home";
@@ -19,23 +19,17 @@ import { HOME, type ConnectLink } from "@/content/home";
  * toward the cursor on mouse, stay flat on touch and reduced motion (§5).
  */
 
-/** Bento placement per channel: which cell each tile takes at each breakpoint. */
-const TILE_SPAN: Record<string, string> = {
-  Instagram: "sm:row-span-2 lg:col-span-5",
-  Podcast: "lg:col-span-7",
-  Email: "lg:col-span-7",
-};
-
 export function Connect() {
   const { connect } = HOME;
   const ordered = [...connect.links].sort(
     (a, b) => ORDER.indexOf(a.label) - ORDER.indexOf(b.label),
   );
+  const [instagram, ...rest] = ordered;
 
   return (
     <section
       id="connect"
-      className="mx-auto max-w-6xl scroll-mt-24 px-6 py-20 sm:py-28"
+      className="mx-auto w-full max-w-6xl scroll-mt-24 px-6 py-20 sm:py-28"
     >
       <SectionHeading
         eyebrow={connect.eyebrow}
@@ -44,20 +38,29 @@ export function Connect() {
         className="mx-auto mb-12"
       />
 
-      <Stagger
-        as="ul"
-        className="grid min-w-0 gap-4 sm:auto-rows-fr sm:grid-cols-2 lg:grid-cols-12 lg:auto-rows-[minmax(0,16rem)]"
-        start="top 90%"
-      >
-        {ordered.map((link) => (
-          <li
-            key={link.label}
-            className={`min-w-0 ${TILE_SPAN[link.label] ?? "lg:col-span-4"}`}
-          >
-            <ChannelCard link={link} />
-          </li>
-        ))}
-      </Stagger>
+      {/* Each medium keeps its own shape — the post is 4:5, the player 16:9 —
+          instead of being stretched to fill a cell. Stretching is what exposed
+          Instagram's white footer and squashed the player. The right column's
+          last tile grows so both columns end on the same line. */}
+      <div className="grid min-w-0 gap-4 lg:grid-cols-12">
+        <Reveal className="min-w-0 lg:col-span-6">
+          {instagram ? <ChannelCard link={instagram} /> : null}
+        </Reveal>
+        <Stagger
+          as="ul"
+          className="flex min-w-0 flex-col gap-4 lg:col-span-6"
+          start="top 90%"
+        >
+          {rest.map((link, index) => (
+            <li
+              key={link.label}
+              className={`min-w-0 ${index === rest.length - 1 ? "flex-1" : ""}`}
+            >
+              <ChannelCard link={link} />
+            </li>
+          ))}
+        </Stagger>
+      </div>
     </section>
   );
 }
@@ -67,17 +70,27 @@ const ORDER = ["Instagram", "Podcast", "Email"];
 
 function ChannelCard({ link }: { link: ConnectLink }) {
   const external = link.href.startsWith("http");
+  const linkProps = external ? { target: "_blank", rel: "noreferrer" } : {};
 
   return (
     <TiltCard className="h-full" max={4}>
-      <a
-        href={link.href}
-        {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
-        className="group flex h-full flex-col overflow-hidden rounded-2xl border border-stone/20 bg-stage/40 transition-colors duration-300 hover:border-gold/50 focus-visible:border-gold/50 focus-visible:outline-none"
-      >
-        {link.embed ? <Embed link={link} /> : <Preview link={link} />}
+      {/* The card itself is not a link: an embedded player inside an <a> is
+          invalid HTML, and a click on "play" would navigate away. Only the
+          caption below the media is the link. */}
+      <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-stone/20 bg-stage/40 transition-colors duration-300 focus-within:border-gold/50 hover:border-gold/50">
+        {link.embed ? (
+          <Embed link={link} />
+        ) : (
+          <a href={link.href} {...linkProps} tabIndex={-1} aria-hidden className="flex flex-1 flex-col">
+            <Preview link={link} />
+          </a>
+        )}
 
-        <div className="flex shrink-0 flex-col gap-1 p-5">
+        <a
+          href={link.href}
+          {...linkProps}
+          className="mt-auto flex shrink-0 flex-col gap-1 p-5 focus-visible:outline-none"
+        >
           <span className="flex items-center gap-2 text-gold">
             {ICONS[link.label] ?? ICONS.Email}
             <span className="font-sans text-[0.65rem] uppercase tracking-[0.3em] text-stone/70">
@@ -92,8 +105,8 @@ function ChannelCard({ link }: { link: ConnectLink }) {
               {link.note}
             </span>
           ) : null}
-        </div>
-      </a>
+        </a>
+      </div>
     </TiltCard>
   );
 }
@@ -103,7 +116,7 @@ function ChannelCard({ link }: { link: ConnectLink }) {
  * (`flex-1`) with a floor on small screens, so nothing collapses when the grid
  * is a single column.
  */
-const MEDIA = "relative min-h-56 w-full flex-1 overflow-hidden sm:min-h-0";
+const MEDIA = "relative w-full overflow-hidden";
 
 /**
  * A real third-party embed: lazy, and boxed by the tile rather than by its own
@@ -115,9 +128,12 @@ function Embed({ link }: { link: ConnectLink }) {
 
   const cropTop = embed.cropTop ?? 0;
   const cropBottom = embed.cropBottom ?? 0;
+  // The box has the medium's own ratio, so the provider's chrome sits at a
+  // fixed distance and the crop holds at every width.
+  const ratio = embed.ratio === "portrait" ? "aspect-[4/5]" : "aspect-video";
 
   return (
-    <div className={`${MEDIA} bg-ink`}>
+    <div className={`${MEDIA} ${ratio} bg-ink`}>
       <iframe
         src={embed.url}
         title={embed.frameTitle}
@@ -130,6 +146,11 @@ function Embed({ link }: { link: ConnectLink }) {
           top: -cropTop,
           height: `calc(100% + ${cropTop + cropBottom}px)`,
         }}
+      />
+      {/* Hides the hairline where Instagram's own footer begins. */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-stage"
       />
       {embed.placeholder ? (
         <span className="pointer-events-none absolute bottom-3 left-3 rounded-full border border-gold/50 bg-stage/85 px-3 py-1 font-sans text-[0.6rem] uppercase tracking-[0.2em] text-gold">
@@ -149,7 +170,7 @@ function Preview({ link }: { link: ConnectLink }) {
   if (kind === "letter") {
     return (
       <div
-        className={`${MEDIA} flex items-center justify-center bg-[radial-gradient(70%_70%_at_50%_45%,rgba(224,160,64,0.14),transparent_70%)]`}
+        className={`${MEDIA} flex min-h-24 flex-1 items-center justify-center bg-[radial-gradient(70%_70%_at_50%_45%,rgba(224,160,64,0.14),transparent_70%)]`}
       >
         <svg
           aria-hidden

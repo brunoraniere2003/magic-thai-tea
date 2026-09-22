@@ -85,7 +85,14 @@ export function Worlds() {
                chopped by a canvas edge in mid-air. Desktop keeps its framing. */
             className="absolute inset-0 sm:inset-x-0 sm:bottom-0 sm:top-[22vh]"
             interactive
-            poster={<DeckPoster />}
+            poster={
+              // The stage fills the screen on phones so a flying card exits
+              // through the top edge; the static poster must still start below
+              // the heading, or the first card sits under "One practice…".
+              <div className="h-full pt-[24vh] sm:pt-0">
+                <DeckPoster />
+              </div>
+            }
             renderScene={(active) => (
               <FlippingCardsScene
                 active={active}

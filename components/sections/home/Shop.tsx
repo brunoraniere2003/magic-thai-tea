@@ -326,11 +326,9 @@ function Plate({
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-stage/70 via-transparent to-transparent"
         />
       </div>
-      {plate.placeholder ? (
-        <figcaption className="mt-2 font-sans text-[0.55rem] uppercase tracking-[0.2em] text-stone/50">
-          Placeholder photography
-        </figcaption>
-      ) : null}
+      {/* Plates show leaf, steam and liquor, never a product we do not have,
+          so they need no on-page disclaimer; the flag lives in content/shop.ts
+          until Ethan's own photography replaces them (blocker B14). */}
     </figure>
   );
 }

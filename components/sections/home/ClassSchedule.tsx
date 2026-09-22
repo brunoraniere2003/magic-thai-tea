@@ -51,7 +51,6 @@ async function loadSessions(): Promise<ClassSession[]> {
 
 export async function ClassSchedule() {
   const sessions = await loadSessions();
-  const publicUrl = calendarEmbedUrl(CALENDAR_SOURCES.classes);
   const content = HOME.classesCalendar;
 
   return (
@@ -91,18 +90,14 @@ export async function ClassSchedule() {
         </Stagger>
       ) : null}
 
-      {publicUrl ? (
-        <Reveal delay={0.1}>
-          <a
-            href={publicUrl}
-            target="_blank"
-            rel="noreferrer"
-            className={buttonClasses("secondary", "self-start")}
-          >
-            {content.cta}
-          </a>
-        </Reveal>
-      ) : null}
+      {/* Never link to the raw Google calendar: one click there shows the
+          client names, errands and home address this list keeps out. The next
+          step for someone who wants to join is a conversation. */}
+      <Reveal delay={0.1}>
+        <a href="#contact" className={buttonClasses("secondary", "self-start")}>
+          {HOME.hero.secondaryCta.label}
+        </a>
+      </Reveal>
     </div>
   );
 }
