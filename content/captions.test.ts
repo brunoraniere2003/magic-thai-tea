@@ -6,6 +6,7 @@ import {
   isWellFormedCaption,
   type Caption,
 } from "./captions";
+import { HOME } from "./home";
 
 describe("formatCaption", () => {
   it("joins subject, context and note with an em dash separator", () => {
@@ -70,6 +71,34 @@ describe("CAPTIONS", () => {
     for (const key of Object.keys(CAPTIONS)) {
       expect(key).toMatch(/^\/images\//);
     }
+  });
+
+  // A caption only reaches the page through <Figure>, which is fed by
+  // HOME.practices[].image, HOME.practices[].gallery[] and HOME.yinYang.images.
+  // A key pointing anywhere else is written, reviewed, committed - and silently
+  // never rendered. That is how the handoff's "Golden Rooster Stands on One Leg"
+  // line sat unseen: it is keyed to a WebGL deck texture, and the deck draws no
+  // <figcaption>. Every orphan has to be a KNOWN one, listed here with a reason,
+  // so the next one fails the build instead of disappearing.
+  const PENDING_PHOTOS: Record<string, string> = {
+    // Blocker: the file at this path is a stock placeholder (a hand holding a
+    // phone), so the caption cannot be attached to it without captioning a lie.
+    // Ethan owes a photo of the posture; then point this key at it and add the
+    // photo to the Tai Chi gallery in content/home.ts.
+    "/images/worlds/taichi.jpg": "awaiting a real Golden Rooster photo",
+  };
+
+  it("has no UNTRACKED orphan: a caption is rendered, or listed as pending", () => {
+    const rendered = new Set<string>([
+      ...HOME.practices.flatMap((practice) => [
+        practice.image.src,
+        ...(practice.gallery ?? []).map((photo) => photo.src),
+      ]),
+      ...HOME.yinYang.images.map((photo) => photo.src),
+    ]);
+
+    const orphans = Object.keys(CAPTIONS).filter((key) => !rendered.has(key));
+    expect(orphans.sort()).toEqual(Object.keys(PENDING_PHOTOS).sort());
   });
 
   it("returns undefined for an image that has no caption yet", () => {

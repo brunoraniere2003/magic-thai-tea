@@ -117,7 +117,7 @@ export async function Availability() {
             key={day.key}
             className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-stone/15 py-3 last:border-b-0"
           >
-            <span className="w-28 shrink-0 font-sans text-[0.7rem] uppercase tracking-[0.25em] text-stone/70">
+            <span className="w-28 shrink-0 font-sans text-[0.7rem] uppercase tracking-[0.25em] text-stone/80">
               {day.label}
             </span>
 

@@ -327,6 +327,15 @@ export const HOME: HomeContent = {
           src: "/images/tai-chi/master-and-ethan.jpg",
           alt: "Ethan Holtzman standing together with his tai chi master",
         },
+        // NOTE (blocker: photo needed from Ethan). The handoff's 4th starter
+        // caption, "Golden Rooster Stands on One Leg", is written and correct in
+        // content/captions.ts but reaches no <figcaption>, because it is keyed
+        // to /images/worlds/taichi.jpg - a WebGL deck texture that is a stock
+        // placeholder of a hand holding a phone. Hanging a posture caption on
+        // that photo would caption a lie, so the slot stays empty until Ethan
+        // sends a frame that actually shows the posture; then add it here and
+        // rekey the caption to the new path. Tracked by the pending-photo list
+        // in content/captions.test.ts.
       ],
       cta: { label: "Begin your practice", href: "#contact" },
     },
@@ -556,8 +565,12 @@ export const HOME: HomeContent = {
         // layout. The card is labelled so no visitor mistakes it for his.
         // To go live: swap the list id for UUbXEDU56uNY-IeExVh1gEeA (his own
         // uploads playlist) and drop `placeholder`.
+        // youtube-nocookie.com, not youtube.com: the regular host pulls in
+        // Google's ad stack (googleads.g.doubleclick.net, ad_status.js) on load,
+        // and the page carries no consent banner. Same path, same params, same
+        // player.
         embed: {
-          url: "https://www.youtube.com/embed/videoseries?list=UUg_-d3VHLMGiM6fuGRB0FtA&rel=0",
+          url: "https://www.youtube-nocookie.com/embed/videoseries?list=UUg_-d3VHLMGiM6fuGRB0FtA&rel=0",
           frameTitle: "Sample gongfu tea conversation, standing in for The Third Steep",
           placeholder: true,
         },

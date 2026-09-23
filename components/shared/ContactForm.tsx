@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent, type ReactNode } from "react";
 import PhoneInput from "react-phone-number-input";
+import flags from "react-phone-number-input/flags";
 import "react-phone-number-input/style.css";
 import { SITE } from "@/content/site";
 import { buttonClasses } from "@/components/ui/Button";
@@ -140,10 +141,22 @@ export function ContactForm() {
 
         <Field id="phone" label="Phone" error={errors.phone}>
           {/* Country-aware phone mask: pick a country (flag dropdown), and the
-              number formats as you type for THAT country. Defaults to US (+1). */}
+              number formats as you type for THAT country. Defaults to US (+1).
+
+              countryCallingCodeEditable={false} pins that "+1": without it, a
+              visitor who clears the field by reflex and retypes "(415) 699-1715"
+              silently gets "+41 56 991 71 5" - a Swiss number that still has 10
+              digits, so validation waves it through and the lead arrives wrong.
+              The country now changes only through the flag dropdown.
+
+              flags={flags} serves the flag artwork from the package instead of
+              the library's default CDN (a personal GitHub Pages host), so the
+              page makes no third-party request - same rule the shop follows. */}
           <PhoneInput
             id="phone"
             international
+            countryCallingCodeEditable={false}
+            flags={flags}
             defaultCountry="US"
             value={values.phone || undefined}
             onChange={(value) => update("phone", value ?? "")}
@@ -207,7 +220,7 @@ export function ContactForm() {
 
       {smsHref ? (
         <div className="flex flex-col items-center gap-2">
-          <span className="font-sans text-xs uppercase tracking-[0.3em] text-stone/70">
+          <span className="font-sans text-xs uppercase tracking-[0.3em] text-stone/80">
             Prefer to text?
           </span>
           <a href={smsHref} className={buttonClasses("secondary")}>

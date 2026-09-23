@@ -11,7 +11,16 @@ export interface PricingTableProps {
 }
 
 const HEAD_CLASSES =
-  "font-sans text-xs uppercase tracking-[0.2em] text-stone/70 pb-3";
+  "font-sans text-xs uppercase tracking-[0.2em] text-stone/80 pb-3";
+
+/**
+ * Both tables quote bands, never a single figure, and the handoff names the
+ * column "Price range" in both. One constant so the <thead> and the data-label
+ * the stacked mobile layout prints in its place can never drift apart - they
+ * had, the Magic table reading "Price" on desktop and every table reading
+ * "Price" once the header row was dropped below 768px.
+ */
+const PRICE_LABEL = "Price range";
 
 /**
  * Pricing grid used by both the Services table and the smaller Magic one.
@@ -61,7 +70,7 @@ export function PricingTable({
               </th>
             ) : null}
             <th scope="col" className={`${HEAD_CLASSES} px-5 pt-5`}>
-              {showIncluded ? "Price" : "Price range"}
+              {PRICE_LABEL}
             </th>
           </tr>
         </thead>
@@ -86,7 +95,7 @@ export function PricingTable({
               {showDuration ? (
                 <Cell label="Duration">{row.duration ?? ""}</Cell>
               ) : null}
-              <Cell label="Price" emphasis>
+              <Cell label={PRICE_LABEL} emphasis>
                 {row.price}
               </Cell>
             </tr>
@@ -114,7 +123,7 @@ function Cell({
   return (
     <td
       data-label={label}
-      className={`block px-5 pb-4 pt-2 font-sans leading-relaxed md:table-cell md:py-5 md:align-top md:before:hidden before:mb-1 before:block before:font-sans before:text-[0.65rem] before:uppercase before:tracking-[0.2em] before:text-stone/60 before:content-[attr(data-label)] ${
+      className={`block px-5 pb-4 pt-2 font-sans leading-relaxed md:table-cell md:py-5 md:align-top md:before:hidden before:mb-1 before:block before:font-sans before:text-[0.65rem] before:uppercase before:tracking-[0.2em] before:text-stone/80 before:content-[attr(data-label)] ${
         emphasis ? "text-cream" : "text-stone"
       }`}
     >

@@ -47,7 +47,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-stone/10">
-        <p className="mx-auto max-w-7xl px-6 py-6 font-sans text-xs text-stone/60">
+        <p className="mx-auto max-w-7xl px-6 py-6 font-sans text-xs text-stone/80">
           © {new Date().getFullYear()} {SITE.name}. All rights reserved.
         </p>
       </div>

@@ -61,7 +61,7 @@ export function TeaListForm() {
             htmlFor="tea-list-name"
             className="font-sans text-sm text-cream"
           >
-            {copy.nameLabel} <span className="text-stone/70">(optional)</span>
+            {copy.nameLabel} <span className="text-stone/80">(optional)</span>
           </label>
           <input
             id="tea-list-name"

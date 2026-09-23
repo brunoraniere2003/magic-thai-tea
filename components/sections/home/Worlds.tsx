@@ -79,6 +79,22 @@ export function Worlds() {
           then holds briefly before contact. */}
       <div ref={triggerRef} className="relative h-[190vh] md:h-[210vh]">
         <div className="sticky top-0 h-screen overflow-hidden">
+          {/* Heading FIRST in the DOM: the poster's card titles are h3, so the
+              section's h2 has to come before them or the document jumps h1 → h3.
+              Both layers are absolutely positioned and the heading keeps z-10,
+              so reading order changes and the picture does not. It fades out as
+              the cards lock (see effect above), never colliding with them. */}
+          <div
+            ref={headingRef}
+            className="pointer-events-none absolute inset-x-0 top-0 z-10 px-6 pb-12 pt-24 sm:pt-28"
+          >
+            <SectionHeading
+              eyebrow={HOME.worldsHeading.eyebrow}
+              title={HOME.worldsHeading.title}
+              align="center"
+              className="mx-auto max-w-2xl"
+            />
+          </div>
           <Stage3D
             /* Phones: the stage fills the sticky screen, so a card leaving
                slides out through the top edge of the viewport instead of being
@@ -103,19 +119,6 @@ export function Worlds() {
               />
             )}
           />
-          {/* Heading fades out as the cards lock (see effect above), so it never
-              collides and is hidden while the deck is flipping. */}
-          <div
-            ref={headingRef}
-            className="pointer-events-none absolute inset-x-0 top-0 z-10 px-6 pb-12 pt-24 sm:pt-28"
-          >
-            <SectionHeading
-              eyebrow={HOME.worldsHeading.eyebrow}
-              title={HOME.worldsHeading.title}
-              align="center"
-              className="mx-auto max-w-2xl"
-            />
-          </div>
         </div>
       </div>
     </section>

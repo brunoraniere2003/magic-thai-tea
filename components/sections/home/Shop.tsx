@@ -69,7 +69,10 @@ function Counter() {
         </ul>
 
         <details className="group mt-5">
-          <summary className="flex cursor-pointer list-none items-center gap-2 font-sans text-xs text-gold underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-none [&::-webkit-details-marker]:hidden">
+          {/* -my-2 py-2 grows the tap target from a 16px-tall line of text to
+              32px without moving it optically; the gold outline replaces a
+              focus style that was only an underline. */}
+          <summary className="-my-2 flex cursor-pointer list-none items-center gap-2 py-2 font-sans text-xs text-gold underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold [&::-webkit-details-marker]:hidden">
             <span className="group-open:hidden">{SHOP.policy.title}</span>
             <span className="hidden group-open:inline">Close</span>
             <span
@@ -82,7 +85,7 @@ function Counter() {
           <dl className="mt-4 flex flex-col gap-3">
             {SHOP.policy.items.map((item) => (
               <div key={item.label}>
-                <dt className="font-sans text-[0.6rem] uppercase tracking-[0.2em] text-stone/60">
+                <dt className="font-sans text-[0.6rem] uppercase tracking-[0.2em] text-stone/80">
                   {item.label}
                 </dt>
                 <dd className="mt-1 font-sans text-xs leading-relaxed text-stone">
@@ -92,7 +95,7 @@ function Counter() {
             ))}
             {SHOP.turnaround ? (
               <div>
-                <dt className="font-sans text-[0.6rem] uppercase tracking-[0.2em] text-stone/60">
+                <dt className="font-sans text-[0.6rem] uppercase tracking-[0.2em] text-stone/80">
                   Dispatch
                 </dt>
                 <dd className="mt-1 font-sans text-xs leading-relaxed text-stone">
@@ -163,7 +166,12 @@ function Drawer({ item }: { item: ShopItem }) {
       href={item.buyUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex items-center gap-4 rounded-sm border border-stone/20 bg-tea-cream px-4 py-4 transition-colors hover:border-gold/60 focus-visible:border-gold/60 focus-visible:outline-none sm:gap-6 sm:px-6"
+      /* The price lives on the shelf rule, visually beside the drawer but
+         outside the link, so without this the accessible name was "Bao Zhong
+         15g pack Buy on Stripe" - no price. buyLabelFor() resolves it from the
+         shelf, exactly as the three boxes already do. */
+      aria-label={buyLabelFor(item)}
+      className="group flex items-center gap-4 rounded-sm border border-stone/20 bg-tea-cream px-4 py-4 transition-colors hover:border-gold/60 focus-visible:border-gold/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold sm:gap-6 sm:px-6"
     >
       <span className="min-w-0 flex-1">
         <span
@@ -277,7 +285,7 @@ function BoxCaption({ box, large = false }: { box: ShopBox; large?: boolean }) {
         target="_blank"
         rel="noopener noreferrer"
         aria-label={buyLabelFor(box)}
-        className="group mt-4 inline-flex items-center gap-3 self-start rounded-sm border border-stone/25 bg-tea-cream px-4 py-2.5 transition-colors hover:border-gold/60 focus-visible:border-gold/60 focus-visible:outline-none"
+        className="group mt-4 inline-flex items-center gap-3 self-start rounded-sm border border-stone/25 bg-tea-cream px-4 py-2.5 transition-colors hover:border-gold/60 focus-visible:border-gold/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
       >
         <span
           aria-hidden

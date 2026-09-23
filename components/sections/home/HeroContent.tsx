@@ -63,7 +63,7 @@ export function HeroContent() {
         </a>
       </div>
 
-      <span className="absolute bottom-8 hidden font-sans text-[0.65rem] uppercase tracking-[0.3em] text-stone/70 sm:block">
+      <span className="absolute bottom-8 hidden font-sans text-[0.65rem] uppercase tracking-[0.3em] text-stone/80 sm:block">
         {scrollCue}
       </span>
     </div>

@@ -93,7 +93,7 @@ function ChannelCard({ link }: { link: ConnectLink }) {
         >
           <span className="flex items-center gap-2 text-gold">
             {ICONS[link.label] ?? ICONS.Email}
-            <span className="font-sans text-[0.65rem] uppercase tracking-[0.3em] text-stone/70">
+            <span className="font-sans text-[0.65rem] uppercase tracking-[0.3em] text-stone/80">
               {link.label}
             </span>
           </span>

@@ -53,6 +53,23 @@ describe("SHOP content", () => {
     expect(flight?.price).toBe("$38");
   });
 
+  // Both boxes describe a set of six teas; only one of them contains the
+  // Ginger Elixir, and the price gap is $5. If the Sampler ever stops saying so,
+  // a $74 buyer has every reason to expect the Elixir in the parcel.
+  it("tells the two six-tea boxes apart by whether the Elixir is inside", () => {
+    const sampler = SHOP.boxes.items.find((b) => b.id === "six-tea-sampler");
+    const feast = SHOP.boxes.items.find((b) => b.id === "dragons-feast");
+
+    expect(sampler?.note).toMatch(/not included/i);
+    expect(sampler?.note).toMatch(/Ginger Elixir/);
+    expect(feast?.note).toMatch(/plus the Ginger Elixir/i);
+  });
+
+  it("keeps the handoff's name for the pick-your-own box", () => {
+    const flight = SHOP.boxes.items.find((b) => b.id === "tasting-flight");
+    expect(flight?.name).toBe("Tasting Flight — Pick Any 3");
+  });
+
   it("states the shipping rule, including that items ship separately", () => {
     const counter = SHOP.counter.join(" ");
     expect(counter).toContain("$8.95");

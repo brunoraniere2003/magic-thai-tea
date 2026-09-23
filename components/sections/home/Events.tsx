@@ -30,7 +30,7 @@ export function Events() {
             key={`${event.date}-${event.title}`}
             className="rounded-2xl border border-stone/20 px-5 py-5"
           >
-            <p className="font-sans text-xs uppercase tracking-[0.2em] text-stone/70">
+            <p className="font-sans text-xs uppercase tracking-[0.2em] text-stone/80">
               <time dateTime={event.date}>{formatEventDate(event.date)}</time>
               {" · "}
               {event.location}

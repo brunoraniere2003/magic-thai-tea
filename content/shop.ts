@@ -214,14 +214,23 @@ export const SHOP: ShopContent = {
         id: "six-tea-sampler",
         name: "Six-Tea Sampler",
         hanzi: "六品",
-        note: "One 15g pack of all six teas.",
+        // The handoff's "(not Ginger Elixir)" has to survive: the Elixir is on
+        // sale a few centimetres above, and the $79 box right beside this one is
+        // described as "all six teas plus the Ginger Elixir" - so "all six teas"
+        // on its own invites a $74 buyer to expect the Elixir in the parcel.
+        // Our sentence, not Ethan's copy, so no em dash (ADR 0014).
+        note: "One 15g pack of all six teas. The Ginger Elixir is not included.",
         price: "$74",
         weight: "plain",
         buyUrl: "https://buy.stripe.com/00w9AMbWe9QL2KM54meEo0n",
       },
       {
         id: "tasting-flight",
-        name: "Tasting Flight",
+        // Ethan's own name for it in the handoff, em dash included (ADR 0014
+        // allows the dash inside his copy). "Pick Any 3" is the part that says
+        // the choice is the buyer's, so it belongs in the name, not only in the
+        // note underneath.
+        name: "Tasting Flight — Pick Any 3",
         hanzi: "三選",
         note: "Any three teas, 15g each. You note your picks at checkout.",
         price: "$38",

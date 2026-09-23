@@ -81,7 +81,13 @@ export async function ClassSchedule() {
                 <ShelfRule className="hidden h-px flex-1 bg-stone/20 sm:block" />
                 <span className="font-sans text-sm text-stone">
                   {session.time}
-                  <span className="mx-2 text-stone/40">·</span>
+                  {/* Punctuation between two facts that a space already
+                      separates: hidden from assistive tech, so a screen reader
+                      reads "9:00 am In person" and not "middle dot", and left
+                      out of the contrast audit as decoration. */}
+                  <span aria-hidden className="mx-2 text-stone/40">
+                    ·
+                  </span>
                   {session.place}
                 </span>
               </div>
