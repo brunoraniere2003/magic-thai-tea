@@ -25,9 +25,15 @@ const symbolGlyph: Record<WorldKey, string> = {
 export function DeckPoster() {
   return (
     <div className="flex h-full w-full items-center justify-center bg-stage px-6">
-      <ul className="grid w-full max-w-5xl gap-6 sm:grid-cols-3">
+      {/* Phones: one card per screen in a snap row, the way the 3D deck shows
+          them. Three stacked cards are taller than the pinned screen and slid
+          up under the heading. Desktop keeps the three-across grid. */}
+      <ul className="-mx-6 flex w-[calc(100%+3rem)] snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:w-full sm:max-w-5xl sm:snap-none sm:grid-cols-3 sm:gap-6 sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
         {HOME.worlds.map((world) => (
-          <li key={world.key}>
+          <li
+            key={world.key}
+            className="w-[78%] shrink-0 snap-center sm:w-auto"
+          >
             <details className="group block overflow-hidden rounded-2xl border-2 border-gold/50 bg-gradient-to-b from-crimson to-stage transition-colors duration-500 open:border-gold">
               <summary className="flex cursor-pointer list-none flex-col items-center justify-center gap-3 p-6 text-center [&::-webkit-details-marker]:hidden">
                 <span

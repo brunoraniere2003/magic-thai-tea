@@ -1,0 +1,109 @@
+# Changelog
+
+> Doc **viva**: toda alteração entra aqui no dia em que acontece (§9 da constituição). Formato: data · escopo · o quê · por quê.
+
+## 2026-09-05
+
+- **docs(033)** — Criada a spec **033 — content handoff (8/20/26)** (tríade `requirements` + `design` + `tasks`) a partir do documento do Ethan `redflyingdragondevhandoff.md`. Índice de specs atualizado. Branch `feat/033-content-handoff`.
+- **docs(processo)** — Criados `docs/methodology.md` (as 12 práticas e o ciclo de mudança), `docs/blockers.md` (pendências externas, B1–B6) e este `docs/CHANGELOG.md`, que a constituição exigia (§9) e não existia.
+- **docs(adr)** — Aberto **ADR 0012** (proposto): Magic volta à LP e a página cresce para ~10 seções — reverte parcialmente o ADR 0009. **Aguardando aprovação do dono.**
+- **docs(adr)** — Aberto **ADR 0013** (proposto): registra que o contato hoje roda em **FormSubmit**, não em Resend como diz o ADR 0010 — a doc estava mentindo sobre o código.
+- **docs(033)** — Arquivada a cópia integral do handoff em `docs/specs/033-content-handoff-2026-08/source-handoff.md` como fonte da verdade da copy.
+
+### Implementação da spec 033 (mesma data)
+
+- **feat(033) — conteúdo**: `content/home.ts` reescrito com a copy verbatim do handoff (Tea Ceremony, Tai Chi, Yin & Yang, About, Services, Booking Policy, Magic, Connect, Tea List, calendários, eventos). `opportunities` virou `practices`, com `short` + `body`. Novo `content/captions.ts` (formato de legenda + as 6 legendas iniciais).
+- **feat(033) — seções**: novas `Practice`, `YinYang`, `Services`, `About`, `Magic`, `Connect`, `TeaList`, `Availability`, `Events`; novos compartilhados `PricingTable`, `CalendarEmbed`, `Figure`, `TeaListForm`. `Opportunities.tsx` removido (virou `Practice`). `app/page.tsx` reordenado para a ordem do handoff.
+- **feat(033) — tea list**: `lib/newsletter/{validateSignup,subscribe}.ts` com destino trocável por env e fallback para a caixa do dono; honeypot; falhas tipadas.
+- **feat(033) — calendários e eventos**: `lib/calendar/{embedUrl,sources}.ts` e `lib/events/formatEventDate.ts`; as seções não renderizam enquanto os dados do Ethan não chegam (B1, B5).
+- **docs(adr)**: **0012 aceito** pelo dono (Magic volta). Novo **0014**: travessão passa a ser proibido só na copy autoral — a copy do cliente entra verbatim. Constituição §0 atualizada.
+- **fix(qualidade)** — consertados gates que **já estavam vermelhos antes desta spec**: 4 erros de lint em `webgl/cards/` (texture de detalhe saiu do `useMemo` para um cache de módulo; `prefer-const`) e 4 testes E2E presos em copy antiga do hero ("Wonder, in three forms.").
+- **Verificação**: lint ✅ · typecheck ✅ · 147 testes unitários ✅ · build ✅ · 11 E2E ✅ · LCP 232 ms desktop / 132 ms mobile, CLS 0 (build de produção, §3).
+- **Ferramentas**: navegadores do Playwright instalados em `D:\ms-playwright` (`PLAYWRIGHT_BROWSERS_PATH` no ambiente do usuário), seguindo a regra de manter instalações fora do C:.
+- **docs(adr) — decisão do dono**: **ADR 0013 aceito** — o contato **fica no FormSubmit por tempo indeterminado** e isso **não é um problema**. O ADR 0010 (Resend) vira **superado**, não pendência; constituição §2 e §10 atualizadas (FormSubmit + honeypot, sem Turnstile). Blocker B7 encerrado.
+- **feat(033) — presença visual** (pedido do dono ao ver no ar): **Yin & Yang** ganha o par de fotos (chá + tai chi) e os dados do pacote puxados da tabela (`PricingRow.id`); **Connect** vira três cartões com ícones de line-art dourado e lift no hover/foco; **Tea List** vira painel com selo 茶 e brasa dourada atrás. Só `transform`/`opacity` animam (§5); sem overflow horizontal a 390px.
+- **feat(033) — rodada visual 2** (pedido do dono, "quero extraordinário"):
+  - **Magic** ganha um leque de cartas em line-art dourado (não há foto de mágica no projeto — blocker B9) e layout em duas colunas.
+  - **Connect** vira três cartões com preview real (mini-feed do Instagram, retrato no e-mail, foto do podcast), inclinação 3D no cursor (`TiltCard`, só mouse, desligada no toque e no reduced-motion) e caminho pronto para o embed do YouTube.
+  - **Tea List** vira faixa full-bleed: foto da cerimônia ao fundo, vapor subindo em SVG (`@keyframes steam-rise`, transform/opacity), painel de vidro e selo 茶.
+  - **Booking policy** vira `<details>` minimalista ("+" que expande), reusado também na seção **Magic**.
+- **Achado**: o canal **The Third Steep não tem nenhum vídeo publicado** (feed vazio, canal de 22/07/2026) — por isso o embed do YouTube dá erro 153. O código está pronto: basta preencher `connect.links[].embed` quando ele publicar (blocker B8).
+- **Responsividade verificada** a 320, 360, 390, 414, 768 e 1440 px: **0 px de overflow horizontal** em todas.
+- **feat(033) — embeds reais no Connect** (ADR 0015): post do Instagram embutido de verdade (com o cabeçalho branco do IG recortado), player do YouTube embutido **rotulado como placeholder** (canal Tea House Ghost, já que The Third Steep não publicou nada), e o card de e-mail virou painel desenhado (envelope + selo) para casar com o resto da página.
+- **Correção de um diagnóstico meu**: o erro 153 do player vinha do navegador de preview, não do canal vazio. O que comprova o canal vazio é o feed RSS sem entradas. No localhost os dois embeds carregam.
+- **feat(033) — Connect vira bento grid**: os três tiles tinham alturas desalinhadas (lia como quebrado). Agora o Instagram é o tile alto (2 linhas, é o feed que se move) e podcast + e-mail são tiles largos ao lado; cada mídia preenche a célula (`auto-rows-fr` + `flex-1`) em vez de ditar a altura, e o cabeçalho/rodapé branco do Instagram é recortado em cima e embaixo (`cropTop`/`cropBottom`). Verificado a 390, 820 e 1440 px, 0 px de overflow.
+- **fix(033) — Tea List refeita**: a versão anterior estava desalinhada (texto centralizado, campos à esquerda, botão centralizado) e empilhava efeitos sobre um formulário de dois campos. Agora são duas colunas: foto legível de um lado, e do outro o selo, o eyebrow, o título, a copy, os campos e o botão **todos na mesma margem esquerda** (verificado: 5 blocos com o mesmo `left`, no desktop e no celular). Fora: o vapor SVG (esticava e virava borrão) e o painel de vidro; os campos ganharam borda visível.
+- **fix(033) — booking policy ganha "Read more"**: o "+" sozinho não dizia que abria. Agora o controle é `Read more` / `Read less` em dourado, com o "+" girando ao lado, nas duas tabelas (Services e Magic).
+- **fix(033) — cartas cortadas no celular**: no mobile o palco 3D começava em `top-[24vh]`, então a carta que saía era **decepada por uma linha no meio da tela** e sobrava um bloco preto onde o título já tinha sumido (ele desaparece de propósito conforme o baralho trava). Agora, abaixo de 640 px, o palco preenche a tela travada (`inset-0`) e a carta sai pela borda de cima. Desktop intacto (`sm:top-[22vh]`).
+
+## 2026-09-07
+
+- **deploy(vps)** — produção migrada da Vercel (conta pausada) para a **VPS Hostinger** `72.61.59.26`, onde o site já estava servido desde julho. Atualizado `/var/www/magic-thai-tea` para a branch `feat/033-content-handoff`, `npm ci` + build (2 min) e `pm2 restart tai-tea`. **https://theredflyingdragon.com no ar com o conteúdo novo** (200, ~0,68 s).
+- **Nenhum dos 9 containers vizinhos foi tocado** (banco-horas, crm, n8n, caddy, frases-api, estudo-c1, matrizes-logicas, deploy-web, deploy-redirector) — uptimes intactos, conferidos depois do deploy.
+- **Segurança do deploy**: commit anterior salvo em `/root/tai-tea-rollback-commit.txt` e build anterior em `.next.bak`; o build roda **antes** do restart, então uma falha não derruba o site.
+- **docs**: novo **ADR 0016** (hospedagem na VPS), runbook `docs/deploy-vps.md` (deploy, rollback, mapa de portas) e `docs/handoff/mensagem-ethan-dns.md` (mensagem pronta pro Ethan, no tom do dono).
+- **Achado**: `http://theredflyingdragon.com` **sem HTTPS cai no app `banco-horas`** — a porta 80 da VPS é dele. HTTPS está correto. Correção proposta e **não executada** (mexe em app de terceiro): blocker B11.
+- **Achado**: o DNS da Namecheap **já aponta** para a VPS (A de `@` e `www` → 72.61.59.26), com certificado Let's Encrypt válido. A mensagem pro Ethan virou conferência, não setup.
+
+## 2026-09-20
+
+- **Handoff v2 do Ethan** (doc de 3/9) capturado, com as 17 URLs da Stripe extraídas do DOM (10 "Buy" públicas, 7 "Book" privadas) e arquivado em `docs/specs/034-handoff-v2-loja-e-precos/source-handoff-v2.md`.
+- **ADR 0017** — a loja entra e os serviços seguem pessoais; reverte o ADR 0012 no ponto "conversão única" e atualiza a constituição §0.
+- **Spec 034** aberta (tríade) com R1–R20 e os bloqueios B13–B17.
+- **feat(shop)** — seção "Shop the Tea" entre Testimonials e Connect: prateleiras por faixa com o preço na régua, gavetas de papel creme com carimbo 買 e "Buy on Stripe" visível, 5 pranchas de foto placeholder (Unsplash, baixadas), balcão fixo com a regra de frete antes do primeiro clique e o bloco de combos com a aritmética real ($26,85 em três avulsos). Nova animação-assinatura `ShelfRule`.
+- **Desenho escolhido por painel**: 3 direções independentes (editorial, apotecário, galeria) julgadas por 3 critérios (marca, conversão, execução). A primeira versão (grid de cards com `hover:scale`) foi descartada por ser exatamente o vício que o dono apontou.
+- **Testes** — `content/shop.test.ts` (9) e `e2e/shop.spec.ts` (4), incluindo o **guard que falha se `book.stripe.com` aparecer** em qualquer lugar do site. Total: 156 unitários + 15 E2E.
+- **Achados registrados**: cada link da Stripe é um pedido separado (3 chás = 3 fretes); prazo de envio é exigência legal antes da compra; 10 botões "Buy" idênticos quebram leitor de tela; `NEXT_PUBLIC_*` é inlinado no build, então ligar calendário exige rebuild.
+- **feat(034) — resto do handoff v2 aplicado**: tabela de serviços virou 5 faixas (nome + preço, sem colunas), "Extended Workshop" apagado de copy/testes/docs, Magic vira $400–$1,200 e $150–$300 (sem /hr e /session), política passa a **pagamento integral na confirmação** e aparece **aberta** perto dos preços **e** de novo perto do contato, About e Magic com a copy encurtada da v2.
+- **B15 resolvido sem perguntar ao Ethan**: abri a página da Stripe do Tasting Flight — **US$ 38,00** fixo (frete 8,95, total 46,95). O "$30–$45" do doc era rascunho.
+- **B1 e B16 resolvidos do mesmo jeito**: abri as duas agendas. `ce9beb1c…` é "TAI CHI ARMBRIDGE FAMILY CLASSES" (aulas recorrentes) e `8c1caa62…` é "RED FLYING DRAGON BUSINESS" (blocos "ocupado"). Os dois calendários estão **ligados**, com os ids como padrão no código (são públicos) e env como override.
+- **PricingTable** passa a renderizar só a coluna que existe; `YinYang` cita só a faixa, já que grupo e duração saíram da tabela.
+- **Verificação**: lint ✅ typecheck ✅ **160 unitários** ✅ build ✅ **15 E2E** ✅ · overflow 0 px em 320/390/1440 · **LCP 248 ms desktop / 220 ms mobile, CLS 0** medidos no build de produção **com** loja e os dois calendários ligados.
+- **fix(034) — política de reserva sobe para antes do formulário**: estava depois do botão de enviar, onde ninguém lê, e a cobrança agora é integral na confirmação.
+- **fix(034) — nome de cliente exposto**: o calendário público de Tai Chi lista reservas privadas por nome ("Private training with Wayne"). O `CalendarEmbed` ganhou `linkOnly`: o site mostra título, texto e botão, mas **não republica a grade** até o Ethan mover esses eventos (blocker B18). O calendário de disponibilidade continua embutido, porque só mostra "ocupado".
+- **feat(034) — a grade de aulas passa a ser nossa, não um iframe do Google**: o embed republicava a agenda inteira do Ethan, e o Google não tem parâmetro para esconder título de evento. Agora lemos o feed `.ics` público e desenhamos a lista no layout do site (`lib/calendar/parseSchedule.ts` + `ClassSchedule.tsx`), revalidando de hora em hora.
+- **O parser trabalha por allowlist**: só publica o que parece uma aula dele (Tai Chi, Song Gong, Qigong, Cultivation, Meditation) e nunca o que parece privado. Aquela agenda contém, de verdade, **reservas por nome de cliente** ("Private training with Wayne"), **recados pessoais** ("Handyman comes to fix the locks") e **o endereço residencial dele** no campo de local — nada disso chega ao site. Local vira "Online", "In person" ou o nome do espaço público; endereço de rua nunca é publicado.
+- 14 testes novos sobre um recorte real da agenda, incluindo um que falha se "Wayne", o endereço ou o link do Zoom aparecerem na saída.
+- **feat(034) — "See When I'm Free" também deixa de ser iframe**: o embed usava só a agenda "BUSINESS", mas as reservas privadas do Ethan vivem na agenda de **aulas** — então quinta 11h aparecia livre enquanto ele dava aula. Agora o site lê **as duas agendas**, marca ocupado sem dizer com quem, e não conta aula aberta como ocupado (dá pra entrar nela). 14 dias à frente, revalidado de hora em hora.
+- `lib/calendar/parseBusy.ts`: expande recorrência semanal, respeita cancelamento (EXDATE), junta blocos sobrepostos e devolve **só dia, início e fim** — o tipo de saída não tem onde guardar nome, local ou convidado. 9 testes, incluindo um que falha se "Wayne", o endereço ou o Zoom aparecerem.
+- O botão "View availability" virou "Talk to Ethan": o calendário agora está na própria página, então o próximo passo é a conversa.
+
+
+## 2026-09-21
+
+- **Auditoria pré-entrega** (5 agentes: copy, privacidade, visual, links, veredito). Reprovou o site com dois bloqueios e quatro importantes. Corrigido:
+  - **"View the schedule" levava à agenda crua do Google** — com nome de cliente, endereço residencial e link do Zoom a um clique. Agora o botão é "Talk to Ethan" → `#contact`. A lista continua saneada.
+  - **Player do podcast achatado (449×141) e dentro de um link** — clicar no play navegava pra fora. O card deixou de ser `<a>`: só a legenda é link, e cada mídia tem a proporção dela (vídeo 16:9, post do Instagram 4:5). O rodapé branco do Instagram sumiu.
+  - **Connect encolhia pra largura do conteúdo** (`mx-auto` dentro de `flex-col`); ganhou `w-full`.
+  - **Cartas no celular sob o título** (fallback estático, reduced-motion): o `DeckPoster` vira carrossel horizontal no celular — uma carta por tela, como no 3D. Medido: a carta começa 170 px abaixo do título em 390 e 46 px em 320.
+  - **Loja**: legenda "Placeholder photography" (8,8 px, contraste 2,6:1) removida — as pranchas não mostram produto, então não precisam de aviso; o marcador fica no código. Ginger Elixir passa de "/ serving" para "/ pack".
+  - **"Shop" no menu**, entre "The practice" e "Talk to Ethan".
+- **Preços conferidos na Stripe, os 10**: cada página cobra exatamente o preço do site + $8,95 de frete.- **ops — porta 80**: `http://theredflyingdragon.com` abria o **Banco de Horas, com a API dele sem senha** (auditoria confirmou 5 KB de JSON em `/api/state`). O Caddy assumiu a porta 80: nosso domínio responde **301 → https**; qualquer outro acesso http, inclusive `http://72.61.59.26`, vai pro banco-horas como antes, agora na 8081. Backup dos três arquivos antes, rollback automático preparado, os 5 sites HTTPS conferidos antes e depois, dados do banco-horas intactos.
+- **ops — fuso**: build e processo com `TZ=America/Los_Angeles`. A disponibilidade começava em "amanhã" à noite porque o servidor roda em UTC; conferido ao vivo que agora começa em "hoje" em LA.
+- **Verificação final ao vivo** (desktop e celular): nenhum nome de cliente, endereço ou Zoom; nenhum link para a agenda crua; 0 links de reserva privada; 10 de compra; nenhum player dentro de link; "Shop" no menu; 0 px de overflow.
+
+## 2026-09-23
+
+- **feat(shop) — notas de degustação do Ethan** (commit 5511ce4, de 22/09, que faltava registrar aqui): as 7 gavetas trocam o genérico "15g pack" pelas notas que ele mesmo escreveu nas páginas da Stripe ("Floral, umami.", "Vintage style, roasted.", "Rare varietal. Honey, citrus."…). É copy dele que só existia no checkout.
+
+### Auditoria de QA final (site ao vivo + repositório)
+
+Conferido ao vivo com Playwright em 1440px e em iPhone 13, nos dois caminhos de animação (WebGL e `reducedMotion`).
+
+- **fix(a11y) — a seção das cartas era invisível para leitor de tela.** No caminho 3D (a maioria dos visitantes) o `Stage3D` só renderizava o poster acessível quando o 3D estava **desligado**, e embrulhava a cena em `aria-hidden`. Resultado medido: o texto acessível de `#worlds` era só "Three forms", e o Tab pulava a seção inteira. Agora o poster fica sempre no DOM — `sr-only` quando o 3D está ligado, com `focus-within:not-sr-only` para nunca virar parada de Tab invisível. Medido depois: 3 `<details>`, os três títulos e os três "Book" acessíveis, e o desenho não mudou um pixel.
+- **fix(contact) — o campo de telefone trocava o país em silêncio.** Quem limpasse o campo por reflexo e digitasse "(415) 699-1715" como o placeholder mostra acabava com "+41 56 991 71 5" — **Suíça**. São 10 dígitos, então passava em `validateContactForm` e o lead chegava errado na caixa do Ethan, sem aviso. `countryCallingCodeEditable={false}` prende o "+1"; o país só muda pela bandeirinha. Medido depois: limpar e redigitar devolve "+1 415 699 1715".
+- **fix(privacidade) — o player do podcast virou `youtube-nocookie.com`.** O host normal puxa a stack de anúncios do Google (`googleads.g.doubleclick.net`, `ad_status.js`) no carregamento, e a página não tem banner de consentimento nenhum. Mesmo caminho, mesmos parâmetros, mesmo player.
+- **fix(privacidade) — a bandeira do telefone deixa de vir de um terceiro.** O `react-phone-number-input` buscava `purecatamphetamine.github.io/country-flag-icons` (um GitHub Pages pessoal) em todo visitante que chegava ao formulário. Agora usa os SVGs do próprio pacote (`flags={flags}`). Medido depois: **zero** requisições a terceiros fora dos embeds do Instagram e do YouTube.
+- **fix(a11y) — os 7 links de compra de chá não diziam o preço.** O preço mora na régua da prateleira, visualmente ao lado mas fora do link, então o leitor de tela ouvia "Bao Zhong 15g pack Buy on Stripe" e clicava sem saber se era o de $10 ou o de $15. Agora usam o mesmo `buyLabelFor()` que as três caixas já usavam: "Buy on Stripe: Bao Zhong, $10".
+- **fix(handoff) — a coluna de preço volta a se chamar "Price range" nas duas tabelas.** A do Magic dizia "PRICE" no desktop, e abaixo de 768px (onde o `<thead>` some) **as duas** empilhavam com o rótulo "Price". Uma constante única, `PRICE_LABEL`, agora alimenta o cabeçalho e o `data-label` do empilhamento, que não podem mais divergir.
+- **fix(loja) — o Six-Tea Sampler recupera a ressalva do handoff.** O doc diz "One 15g pack of all six teas **(not Ginger Elixir)**" e o site tinha cortado o parêntese. Com o Elixir à venda logo acima e a caixa de $79 ao lado descrita como "all six teas plus the Ginger Elixir", um comprador de $74 tinha motivo de sobra para esperar o elixir no pacote. Agora: "One 15g pack of all six teas. The Ginger Elixir is not included."
+- **fix(loja) — o combo volta a se chamar "Tasting Flight — Pick Any 3"**, o nome do Ethan no handoff. "Pick Any 3" é a parte que diz que a escolha é do comprador.
+- **fix(a11y) — alvo de toque e foco da gaveta "Shipping & orders"**: 16px de altura viraram 32 (`-my-2 py-2`, sem mover nada opticamente), e o foco deixou de ser só um sublinhado.
+- **fix(a11y) — o separador "·" da grade de aulas ganhou `aria-hidden`**: é pontuação entre dois dados que um espaço já separa, media 2,04:1 e era lido em voz alta.
+- **Blindagem contra o buraco que escondeu a legenda do Golden Rooster**: `content/captions.test.ts` passa a cruzar as chaves de `CAPTIONS` com todos os `src` que a página de fato renderiza. Uma legenda nova que não caia em nenhuma foto agora **quebra o build**, em vez de sumir. A única órfã conhecida está listada e explicada (blocker B20).
+- **Não mexido de propósito**: a foto `/images/worlds/taichi.jpg` é um placeholder de banco de imagens (uma mão segurando um celular). Pendurar nela a legenda "Golden Rooster Stands on One Leg" seria legendar uma mentira — fica esperando a foto do Ethan (B20).
+- **Verificação**: lint ✅ typecheck ✅ **188 unitários** ✅ build ✅ **15 E2E** ✅ · contraste: **0 reprovações** em texto informativo (o "·" decorativo saiu por ser `aria-hidden`) · hierarquia de headings sem pular nível nos **dois** caminhos de animação · 0 px de overflow horizontal em 390px · anel de foco medido em `rgb(224,160,64) solid 2px`, offset 2px.
+- **Continua pendente de deploy**: nada disso, nem o commit 5511ce4, está no ar. Produção serve o build de 362c401. Ver `docs/deploy-vps.md` — `NEXT_PUBLIC_*` é inlinado no build, então `pm2 restart` sozinho não basta.
+- **Revisão das correções do QA (feita por mim, não aceita no escuro)**: li o diff inteiro (260 linhas em 22 arquivos) antes de commitar. Confirmei pessoalmente o achado mais sério — `public/images/worlds/taichi.jpg` **é uma foto de banco de imagens de uma mão segurando um celular**, e a legenda "Golden Rooster Stands on One Leg" estava chaveada nela desde a spec 033. Nenhuma legenda foi remendada numa foto errada; virou o blocker B20 e um teste que falha se aparecer outra legenda órfã.
+- **Custo medido do `flags={flags}`** (bandeiras locais em vez do CDN pessoal de terceiro): +200 KB de chunks. Aceito — no build de produção deu **LCP 300 ms desktop / 184 ms mobile, CLS 0, 576 KB de JS transferido**, muito dentro do orçamento (§3), e elimina a única requisição a host de terceiro fora dos embeds.
+- **Conferência dos links da loja produto a produto**: além do preço, o **nome** de cada página da Stripe bate com o do site (Bao Zhong e Jin Xuan custam ambos $10; só o preço não provaria nada). Os dois combos listam os chás dentro, com total $82,95 e $87,95.
