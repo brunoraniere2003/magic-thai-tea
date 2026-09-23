@@ -28,7 +28,10 @@ export interface ShopItem {
   name: string;
   /** The name as it is written in Chinese. Decorative, hidden from AT. */
   hanzi: string;
-  /** What arrives. Kept factual: no invented tasting notes. */
+  /**
+   * Ethan's own tasting note, copied from the Stripe product page — the
+   * authority on what he is selling. Never our invention.
+   */
   note: string;
   buyUrl: string;
 }
@@ -116,14 +119,14 @@ export const SHOP: ShopContent = {
           id: "bao-zhong",
           name: "Bao Zhong",
           hanzi: "包種",
-          note: "15g pack",
+          note: "Floral, umami.",
           buyUrl: "https://buy.stripe.com/7sY00cgcu6Ez4SUgN4eEo0f",
         },
         {
           id: "jin-xuan",
           name: "Jin Xuan",
           hanzi: "金萱",
-          note: "15g pack",
+          note: "Floral, creamy, milky.",
           buyUrl: "https://buy.stripe.com/8x200c7FY0gbbhi1SaeEo0g",
         },
       ],
@@ -139,14 +142,14 @@ export const SHOP: ShopContent = {
           id: "alishan",
           name: "Alishan Oolong",
           hanzi: "阿里山",
-          note: "15g pack",
+          note: "Floral, fruity.",
           buyUrl: "https://buy.stripe.com/4gM00c5xQbYTade7cueEo0h",
         },
         {
           id: "dong-ding",
           name: "Dong Ding",
           hanzi: "凍頂",
-          note: "15g pack",
+          note: "Vintage style, roasted.",
           buyUrl: "https://buy.stripe.com/00wdR27FY1kf4SU9kCeEo0i",
         },
       ],
@@ -162,14 +165,14 @@ export const SHOP: ShopContent = {
           id: "oriental-beauty",
           name: "Oriental Beauty",
           hanzi: "東方美人",
-          note: "15g pack",
+          note: "Rare varietal. Honey, citrus.",
           buyUrl: "https://buy.stripe.com/00wdR23pI9QL0CE1SaeEo0j",
         },
         {
           id: "ruby-oolong",
           name: "Ruby Oolong",
           hanzi: "紅玉",
-          note: "15g pack",
+          note: "Rich, ripe fruit.",
           buyUrl: "https://buy.stripe.com/aFa00c2lEbYT99a9kCeEo0k",
         },
       ],
@@ -185,7 +188,7 @@ export const SHOP: ShopContent = {
           id: "ginger-elixir",
           name: "Ginger Elixir",
           hanzi: "黑糖薑茶",
-          note: "Black sugar, ginger, longan, jujube",
+          note: "Black Sugar, Ginger, Longan Fruit, Jujube (Red Date).",
           buyUrl: "https://buy.stripe.com/7sY14ggcu0gb99adASeEo0l",
         },
       ],

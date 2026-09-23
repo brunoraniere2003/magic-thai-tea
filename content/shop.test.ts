@@ -6,6 +6,17 @@ import { SHOP, allShopItems, priceOf, buyLabelFor } from "./shop";
 const ALL = allShopItems();
 
 describe("SHOP content", () => {
+  it("carries Ethan's own tasting notes, as written on Stripe", () => {
+    // Checked against each Stripe product page on 2026-09-22.
+    const byId = Object.fromEntries(ALL.map((i) => [i.id, i.note]));
+    expect(byId["bao-zhong"]).toBe("Floral, umami.");
+    expect(byId["oriental-beauty"]).toBe("Rare varietal. Honey, citrus.");
+    expect(byId["ginger-elixir"]).toContain("Jujube (Red Date)");
+    for (const item of ALL) {
+      expect(item.note.trim().length).toBeGreaterThan(8);
+    }
+  });
+
   it("ships the seven teas and three boxes from the handoff", () => {
     expect(SHOP.shelves.flatMap((s) => s.items)).toHaveLength(7);
     expect(SHOP.boxes.items).toHaveLength(3);
