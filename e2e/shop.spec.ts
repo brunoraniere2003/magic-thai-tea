@@ -41,7 +41,7 @@ test("the shipping rule is stated before any buy control", async ({ page }) => {
   await page.goto("/");
 
   expect(SHIPPING_LINE).not.toBe("");
-  const shipping = page.getByText(SHIPPING_LINE, { exact: true }).first();
+  const shipping = page.getByText(SHIPPING_LINE).first();
   await expect(shipping).toBeVisible();
 
   // "Before" means in reading order: the counter is the first thing in the

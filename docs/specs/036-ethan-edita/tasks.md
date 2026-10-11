@@ -6,4 +6,5 @@
 - [x] **Deploy sem portão de testes** (decisão do dono): job `checks` removido do `deploy.yml`
 - [x] `AGENTS.md` curto (R5) e `.claude/settings.json` (R6)
 - [x] lint, typecheck, 183 unitários verdes
-- [ ] Deploy do merge do Ethan (PR #3) no ar
+- [x] Deploy do merge do Ethan (PR #3) no ar: run 38182582502, h1 "The Red Flying Dragon", 14 seções, 10 links de compra, 0 `book.stripe.com`, 10 containers de pé
+- [x] 15 E2E verdes lendo de `content/`
