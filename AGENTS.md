@@ -10,8 +10,8 @@ This repo is the live site **theredflyingdragon.com**. Ethan edits it with Claud
 
 ## Publishing
 
-- **Edit on `main`, commit, and `git push origin main`.** That's it: the site updates by itself in about 2 minutes. No branches, no pull requests.
-- If the new version fails to build or start, the server keeps the previous one online. Fix it and push again.
+- **Edit on `main`, commit, and `git push origin main`.** That's it: the site updates by itself in about a minute (at most ~5 if GitHub is slow: the server also checks `main` on its own). No branches, no pull requests.
+- If the new version fails to build or start, the server keeps the previous one online and the error shows in GitHub, Actions, `deploy`. Fix it and push again.
 - To undo something that went live: `git revert <commit>` and push.
 
 ## Where things live

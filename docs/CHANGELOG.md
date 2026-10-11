@@ -131,3 +131,13 @@ Conferido ao vivo com Playwright em 1440px e em iPhone 13, nos dois caminhos de 
 - **Testes reescritos para não brigar com o autor**: E2E leem os textos de `content/` (título, cartas, rótulos, preços); unitários de `home`, `shop` e `site` checam forma (preço legível, link `buy.stripe.com` único, nada de `book.stripe.com`, campos preenchidos), não a frase, a contagem nem o valor. Removidos os pinos de texto do handoff, do "sem magic" (ADR 0009, já superado) e das 5 pranchas placeholder.
 - **Conferência pública do deploy** procura `/_next/static` em vez da frase "Join the Tea List".
 - **`AGENTS.md`** ganha a seção curta "Editing and publishing this site" (editar, commitar, `git push origin main`; onde fica cada conteúdo; não publicar `book.stripe.com` nem dado privado da agenda). **`.claude/settings.json`** versionado com as permissões de push e testes.
+
+### Spec 037: deploy à prova de falha
+
+- **Pedido do dono**: "garanta que vai funcionar 100% ... cubra todos os fallbacks".
+- **Reserva + vigia no servidor**: timer do systemd (`tai-tea-deploy sync`, a cada 5 min) publica a `main` se o site ficou para trás (por exemplo, GitHub Actions fora do ar) e reinicia o site se ele parar de responder; recria o app se o pm2 o perdeu.
+- **Script do servidor v2** (`ops/deploy-vps.sh`): retries em fetch, `npm ci` e build; edição de texto reaproveita o `node_modules` do site no ar (não depende do npm); erro de build mostra as últimas 40 linhas no Actions; o timer desiste de um commit quebrado após 3 tentativas; trava de saída devolve a versão anterior se o script morrer no meio da troca; limpa `index.lock` órfão, recria staging corrompido, confere disco, tem timeout em tudo; só se autoatualiza se o script novo passar no `bash -n`.
+- **`deploy.yml`**: até 4 tentativas de SSH quando a falha for de conexão.
+- **Bug encontrado pelo teste e corrigido**: com a conexão do GitHub caída, um `echo` falhava com EPIPE e o `set -e` matava o deploy **entre a troca e o rollback**; no sandbox, o site ficou fora do ar. Corrigido com saída protegida (`say`) e a trava de saída. Sem esse teste, aconteceria em produção na primeira queda de conexão durante um deploy com falha.
+- **10 cenários testados num sandbox real na VPS** (origem git própria, pm2 próprio, porta 3998; site real intocado o tempo todo). Lista em `docs/specs/037-deploy-a-prova-de-falha/tasks.md`.
+- **Instalado em produção**: script v2 (v1 em `/root/backup-deploy-2026-10-11/`), timer habilitado, logrotate semanal (com `su root syslog`, exigido no Ubuntu). O arquivo de rollback mudou para `/var/lib/tai-tea-deploy/rollback-commit`.

@@ -1,0 +1,14 @@
+# Fallback deploy + watchdog for theredflyingdragon.com (spec 037).
+# Publishes origin/main if the live site is behind it, and restarts the site if
+# it stopped answering. Install: see docs/deploy-vps.md.
+[Unit]
+Description=theredflyingdragon.com: publish origin/main if behind, restart if down
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+Environment=HOME=/root
+ExecStart=/usr/local/sbin/tai-tea-deploy sync
+TimeoutStartSec=45min
+Nice=5

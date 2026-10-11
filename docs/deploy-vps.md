@@ -61,6 +61,32 @@ Rodam ali **9 containers de outros projetos**. Nenhum deles pode ser tocado num 
 
 **Desfazer uma publicação errada:** `git revert <commit>` + push na `main`. O deploy leva o revert para o ar como qualquer outro commit.
 
+## Reserva e vigia: o timer do servidor (spec 037)
+
+`tai-tea-deploy-sync.timer` roda `tai-tea-deploy sync` 2 min após o boot e a cada 5 min:
+
+- se o site não responde em `127.0.0.1:3000`, reinicia (ou recria o app no pm2);
+- se `origin/main` está à frente do que está no ar, publica. **Nada que o Ethan der push fica para trás, mesmo com o GitHub Actions fora do ar**;
+- um commit que falhou 3 vezes não é tentado de novo pelo timer, só por um push novo (memória em `/var/lib/tai-tea-deploy/failed`).
+
+```bash
+systemctl list-timers tai-tea-deploy-sync.timer      # próxima execução
+journalctl -u tai-tea-deploy-sync.service -n 20      # últimas execuções
+tail -50 /var/log/tai-tea-deploy.log                 # o que cada deploy fez (rotação semanal)
+```
+
+Instalação (feita em 2026-10-11; repetir só se recriar a VPS):
+
+```bash
+cd /var/www/magic-thai-tea
+install -m 0755 ops/deploy-vps.sh /usr/local/sbin/tai-tea-deploy
+install -m 0644 ops/systemd/tai-tea-deploy-sync.* /etc/systemd/system/
+install -m 0644 ops/logrotate-tai-tea-deploy /etc/logrotate.d/tai-tea-deploy
+systemctl daemon-reload && systemctl enable --now tai-tea-deploy-sync.timer
+```
+
+**Testar mudanças no script sem tocar no site:** pastas, porta e app do pm2 aceitam override por variável (`TAI_TEA_APP_DIR`, `TAI_TEA_PORT`, `TAI_TEA_PM2_APP`, ...). Foi assim que os 10 cenários da spec 037 rodaram: um clone com origem git local e pm2 próprio na porta 3998. O SSH não repassa variáveis do cliente, então a chave do GitHub não consegue usar isso.
+
 ## Atualizar o site: manual (plano B)
 
 Só se o GitHub Actions estiver fora do ar. Pelo script, igual ao automático:
@@ -76,7 +102,7 @@ Antigo passo a passo, sem staging (o site oscila durante o build):
 ```bash
 ssh -i ~/.ssh/tai_tea_vps root@72.61.59.26
 cd /var/www/magic-thai-tea
-git rev-parse HEAD > /root/tai-tea-rollback-commit.txt   # guarda o commit atual
+git rev-parse HEAD > /var/lib/tai-tea-deploy/rollback-commit   # guarda o commit atual
 rm -rf .next.bak && cp -r .next .next.bak                # guarda o build atual
 git fetch --prune origin
 git checkout <branch> && git reset --hard origin/<branch>
@@ -95,7 +121,7 @@ O caminho normal é `git revert` + push (acima). Rollback manual, sem recompilar
 
 ```bash
 cd /var/www/magic-thai-tea
-git checkout -f -B main $(cat /root/tai-tea-rollback-commit.txt)
+git checkout -f -B main $(cat /var/lib/tai-tea-deploy/rollback-commit)
 rm -rf .next && mv .next.bak .next
 rm -rf node_modules && mv node_modules.bak node_modules
 TZ=America/Los_Angeles pm2 restart tai-tea --update-env

@@ -40,11 +40,26 @@ jobs:
       - name: Deploy ${{ github.sha }}
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
+        # ssh exits 255 only when the connection itself failed: try again. Any
+        # other code is the server's answer (a failed build, say) and is final.
+        # A retry after a drop is safe: the server finishes a deploy even when
+        # nobody is connected, and then answers "already live". If every try
+        # fails, the server's own 5-minute timer publishes this commit (spec 037).
         run: |
-          ssh -i ~/.ssh/deploy_key \
-            -o BatchMode=yes -o StrictHostKeyChecking=yes \
-            -o ServerAliveInterval=30 -o ServerAliveCountMax=10 \
-            "root@$VPS_HOST" "deploy $GITHUB_SHA"
+          for attempt in 1 2 3 4; do
+            set +e
+            ssh -i ~/.ssh/deploy_key \
+              -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20 \
+              -o ServerAliveInterval=30 -o ServerAliveCountMax=10 \
+              "root@$VPS_HOST" "deploy $GITHUB_SHA"
+            code=$?
+            set -e
+            [ "$code" -ne 255 ] && exit "$code"
+            echo "::warning::connection to the server failed (attempt $attempt), retrying"
+            sleep $((attempt * 20))
+          done
+          echo "::warning::could not reach the server; its 5-minute timer will publish this commit"
+          exit 1
 
       - name: Check the public site
         run: |

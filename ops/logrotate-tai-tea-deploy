@@ -1,0 +1,11 @@
+/var/log/tai-tea-deploy.log {
+    weekly
+    rotate 8
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+    # /var/log is group-writable on Ubuntu (syslog); logrotate needs to be told who rotates.
+    su root syslog
+}
