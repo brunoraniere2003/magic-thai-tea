@@ -1,26 +1,27 @@
 import { describe, expect, it } from "vitest";
 import { SHOP, allShopItems, priceOf, buyLabelFor } from "./shop";
 
-// Stripe owns the real prices. Nothing here can catch Ethan changing one on the
-// dashboard, so these numbers must be re-checked by hand before every launch.
+// Ethan owns the teas, the boxes, the notes and the prices (spec 036): adding a
+// tea or changing a price must not break a test. What stays guarded is what
+// costs money or trust when it breaks: where each buy control goes, that it
+// says so, that it is unique, and that a private booking link never leaks.
 const ALL = allShopItems();
 
+/** "$10", "$38", "$1,200". */
+const PRICE = /^\$[\d,]+$/;
+
 describe("SHOP content", () => {
-  it("carries Ethan's own tasting notes, as written on Stripe", () => {
-    // Checked against each Stripe product page on 2026-09-22.
-    const byId = Object.fromEntries(ALL.map((i) => [i.id, i.note]));
-    expect(byId["bao-zhong"]).toBe("Floral, umami.");
-    expect(byId["oriental-beauty"]).toBe("Rare varietal. Honey, citrus.");
-    expect(byId["ginger-elixir"]).toContain("Jujube (Red Date)");
+  it("has at least one item, each with a name and a note", () => {
+    expect(ALL.length).toBeGreaterThan(0);
     for (const item of ALL) {
-      expect(item.note.trim().length).toBeGreaterThan(8);
+      expect(item.name.trim()).toBeTruthy();
+      expect(item.note.trim()).toBeTruthy();
     }
   });
 
-  it("ships the seven teas and three boxes from the handoff", () => {
-    expect(SHOP.shelves.flatMap((s) => s.items)).toHaveLength(7);
-    expect(SHOP.boxes.items).toHaveLength(3);
-    expect(ALL).toHaveLength(10);
+  it("gives every item a unique id", () => {
+    const ids = ALL.map((item) => item.id);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 
   it("gives every item a live Stripe page, used exactly once", () => {
@@ -32,50 +33,26 @@ describe("SHOP content", () => {
   });
 
   it("never points a public control at a private booking link", () => {
-    // The 7 book.stripe.com links are Ethan's to send after a conversation. One
+    // The book.stripe.com links are Ethan's to send after a conversation. One
     // of them on the page would let a stranger pay for a service unbooked.
     expect(JSON.stringify(SHOP)).not.toContain("book.stripe.com");
   });
 
-  // Checked against the live Stripe page on 2026-09-20: Tasting Flight is a
-  // flat $38 (+$8.95 shipping = $46.95), not the "$30-$45" the handoff drafted.
   it("prices every shelf once, and every box on its own", () => {
     for (const shelf of SHOP.shelves) {
-      expect(shelf.price).toMatch(/^\$\d+$/);
-      expect(shelf.items.length).toBeGreaterThan(0);
+      expect(shelf.price).toMatch(PRICE);
     }
     for (const box of SHOP.boxes.items) {
-      expect(box.price).toMatch(/^\$\d+$/);
+      expect(box.price).toMatch(PRICE);
     }
-    expect(priceOf(SHOP.shelves[1].items[0])).toBe("$12");
-    expect(priceOf(SHOP.boxes.items[0])).toBe("$79");
-    const flight = SHOP.boxes.items.find((b) => b.id === "tasting-flight");
-    expect(flight?.price).toBe("$38");
+    for (const item of ALL) {
+      expect(priceOf(item)).toMatch(PRICE);
+    }
   });
 
-  // Both boxes describe a set of six teas; only one of them contains the
-  // Ginger Elixir, and the price gap is $5. If the Sampler ever stops saying so,
-  // a $74 buyer has every reason to expect the Elixir in the parcel.
-  it("tells the two six-tea boxes apart by whether the Elixir is inside", () => {
-    const sampler = SHOP.boxes.items.find((b) => b.id === "six-tea-sampler");
-    const feast = SHOP.boxes.items.find((b) => b.id === "dragons-feast");
-
-    expect(sampler?.note).toMatch(/not included/i);
-    expect(sampler?.note).toMatch(/Ginger Elixir/);
-    expect(feast?.note).toMatch(/plus the Ginger Elixir/i);
-  });
-
-  it("keeps the handoff's name for the pick-your-own box", () => {
-    const flight = SHOP.boxes.items.find((b) => b.id === "tasting-flight");
-    expect(flight?.name).toBe("Tasting Flight — Pick Any 3");
-  });
-
-  it("states the shipping rule, including that items ship separately", () => {
-    const counter = SHOP.counter.join(" ");
-    expect(counter).toContain("$8.95");
-    expect(counter).toMatch(/U\.S\. only/);
-    expect(counter).toMatch(/one order/i);
-    expect(SHOP.boxes.arithmetic).toContain("$26.85");
+  it("states a shipping rule on the counter, before any buy control", () => {
+    // The e2e checks the reading order; here, only that the line exists.
+    expect(SHOP.counter.some((line) => /shipping/i.test(line))).toBe(true);
   });
 
   it("says out loud that the buy control leaves for Stripe", () => {
@@ -85,24 +62,19 @@ describe("SHOP content", () => {
   it("names every buy control after what it buys", () => {
     const labels = ALL.map(buyLabelFor);
     expect(new Set(labels).size).toBe(labels.length);
-    expect(buyLabelFor(SHOP.shelves[1].items[0])).toBe(
-      "Buy on Stripe: Alishan Oolong, $12",
-    );
-  });
-
-  it("uses five local plates, all flagged as stand-ins", () => {
-    const plates = [...SHOP.shelves.map((s) => s.plate), SHOP.boxes.plate];
-    expect(plates).toHaveLength(5);
-    for (const plate of plates) {
-      expect(plate.src).toMatch(/^\/images\/shop\/plate-/);
-      expect(plate.alt).toBeTruthy();
-      expect(plate.placeholder).toBe(true);
+    for (const item of ALL) {
+      const label = buyLabelFor(item);
+      expect(label).toContain(item.name);
+      expect(label).toContain(priceOf(item));
+      expect(label).toContain(SHOP.buyLabel);
     }
   });
 
-  it("never describes a plate as packaging we do not have", () => {
-    for (const shelf of SHOP.shelves) {
-      expect(shelf.plate.alt).not.toMatch(/pack|packet|box|label/i);
+  it("gives every plate a local image and a description", () => {
+    const plates = [...SHOP.shelves.map((s) => s.plate), SHOP.boxes.plate];
+    for (const plate of plates) {
+      expect(plate.src).toMatch(/^\/images\//);
+      expect(plate.alt).toBeTruthy();
     }
   });
 });

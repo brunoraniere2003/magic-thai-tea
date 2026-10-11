@@ -26,3 +26,7 @@
 - **Risco aceito:** qualquer commit na `main` que passe nos testes vai para o ar, inclusive um texto errado. O rollback é um `git revert` + push.
 - **Atenção:** o `npm run build` roda como root na VPS, então quem pode dar push na `main` executa código no servidor. Quem recebe escrita no repo precisa ser de confiança. Rodar o app com um usuário sem privilégio fica como melhoria futura.
 - **Secrets:** `VPS_HOST`, `VPS_DEPLOY_KEY`, `VPS_KNOWN_HOSTS`. Colaborador com escrita **não** consegue ler o valor de um secret.
+
+## Emenda (2026-10-11, spec 036)
+
+O dono mandou tirar a burocracia do caminho do Ethan: **o deploy não espera mais lint, testes e E2E.** O primeiro merge real dele (título do hero, PR #3) ficou travado num E2E que conferia o título antigo. O que protege o site agora é o servidor: build em staging (falhou → nada muda) e health check com rollback. Risco aceito: um link `book.stripe.com` ou um texto quebrado vai para o ar se o build passar; os testes seguem rodando nos PRs para quem quiser olhar.

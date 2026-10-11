@@ -123,3 +123,11 @@ Conferido ao vivo com Playwright em 1440px e em iPhone 13, nos dois caminhos de 
 - **Decisão do dono**: a `main` **não** exige PR. O push do Ethan vai direto para o ar, passando só pelos testes.
 - **PR #2 mergeado na `main`** (handoffs v1 e v2, loja, agendas, deploy automático). A produção deixa de rodar de `feat/033-content-handoff`: a VPS agora está na `main`.
 - **Primeiro deploy automático verde** (run 38180099556): gates 1m16s, servidor 44 s, troca 2,5 s. Conferido: https 200, www 200, http 301, 14 seções, 10 links de compra, 0 links de reserva, 0 vazamento, pm2 com fuso de LA, 10 containers de pé. Disparo manual no mesmo commit respondeu "already live".
+
+### Spec 036: o Ethan edita sozinho, sem burocracia
+
+- **Primeiro merge real do Ethan** (PR #3, título do hero): o deploy travou porque 3 E2E conferiam o título antigo escrito à mão. E o modo "Auto" do Claude Code dele barrou o merge (ele fez pelo navegador).
+- **Decisão do dono: "remova todas essas burocracias".** O `deploy.yml` não espera mais os testes: push na `main` vai direto para o servidor. A proteção que fica é a do servidor (build em staging + rollback). ADR 0018 emendado.
+- **Testes reescritos para não brigar com o autor**: E2E leem os textos de `content/` (título, cartas, rótulos, preços); unitários de `home`, `shop` e `site` checam forma (preço legível, link `buy.stripe.com` único, nada de `book.stripe.com`, campos preenchidos), não a frase, a contagem nem o valor. Removidos os pinos de texto do handoff, do "sem magic" (ADR 0009, já superado) e das 5 pranchas placeholder.
+- **Conferência pública do deploy** procura `/_next/static` em vez da frase "Join the Tea List".
+- **`AGENTS.md`** ganha a seção curta "Editing and publishing this site" (editar, commitar, `git push origin main`; onde fica cada conteúdo; não publicar `book.stripe.com` nem dado privado da agenda). **`.claude/settings.json`** versionado com as permissões de push e testes.

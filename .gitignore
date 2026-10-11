@@ -35,7 +35,9 @@ test-results/
 *.pem
 
 # === Local tooling (preview launch config) ===
-.claude/
+.claude/*
+# shared with everyone who edits this repo with Claude Code (spec 036)
+!.claude/settings.json
 
 # === Logs ===
 *.log

@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { HOME } from "../content/home";
 
 test("header and footer render with navigation", async ({ page }) => {
   await page.goto("/");
@@ -16,8 +17,6 @@ test("header and footer render with navigation", async ({ page }) => {
 
   // Hero is still intact under the fixed header.
   await expect(
-    page.getByRole("heading", {
-      name: "Tea, tai chi, and the calm in between.",
-    }),
+    page.getByRole("heading", { name: HOME.hero.title, level: 1 }),
   ).toBeVisible();
 });

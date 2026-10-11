@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { HOME } from "../content/home";
 
 test("under reduced motion: smooth scroll is OFF and content is reachable", async ({
   page,
@@ -11,6 +12,6 @@ test("under reduced motion: smooth scroll is OFF and content is reachable", asyn
 
   // Content is still present and the page is navigable.
   await expect(
-    page.getByRole("heading", { name: "Tea, tai chi, and the calm in between." }),
+    page.getByRole("heading", { name: HOME.hero.title, level: 1 }),
   ).toBeVisible();
 });

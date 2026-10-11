@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { HOME } from "../content/home";
 
 test("home responds 200 and renders the hero shell", async ({ page }) => {
   const response = await page.goto("/");
@@ -6,12 +7,12 @@ test("home responds 200 and renders the hero shell", async ({ page }) => {
 
   await expect(page.getByRole("main")).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "Tea, tai chi, and the calm in between." }),
+    page.getByRole("heading", { name: HOME.hero.title, level: 1 }),
   ).toBeVisible();
 
   // The two CTAs must be present and clickable from the first paint.
   await expect(
-    page.getByRole("link", { name: "See the practice" }),
+    page.getByRole("link", { name: HOME.hero.primaryCta.label }),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Talk to Ethan" }).first(),

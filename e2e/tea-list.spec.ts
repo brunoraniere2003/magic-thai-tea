@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { HOME } from "../content/home";
 
 // The tea list is the second conversion path (spec 033 / R7) → money-flow E2E.
 test("tea list accepts a signup and confirms it", async ({ page }) => {
@@ -16,10 +17,10 @@ test("tea list accepts a signup and confirms it", async ({ page }) => {
   await page.goto("/");
 
   const form = page.locator("#tea-list");
-  await form.getByLabel("Email").fill("jane@example.com");
-  await form.getByRole("button", { name: "Join the list" }).click();
+  await form.getByLabel(HOME.teaList.emailLabel).fill("jane@example.com");
+  await form.getByRole("button", { name: HOME.teaList.buttonLabel }).click();
 
-  await expect(page.getByText(/You're on the list/i)).toBeVisible();
+  await expect(page.getByText(HOME.teaList.successMessage)).toBeVisible();
 });
 
 test("tea list refuses a malformed email and asks again", async ({ page }) => {
@@ -27,8 +28,8 @@ test("tea list refuses a malformed email and asks again", async ({ page }) => {
   await page.goto("/");
 
   const form = page.locator("#tea-list");
-  await form.getByLabel("Email").fill("not-an-email");
-  await form.getByRole("button", { name: "Join the list" }).click();
+  await form.getByLabel(HOME.teaList.emailLabel).fill("not-an-email");
+  await form.getByRole("button", { name: HOME.teaList.buttonLabel }).click();
 
   await expect(page.getByText("Please enter a valid email.")).toBeVisible();
 });
@@ -66,12 +67,14 @@ test("magic is back with its inquiry CTA and its own prices", async ({
   await page.goto("/");
 
   await expect(
-    page.getByRole("heading", { name: "Also: Wonder, on Request" }),
+    page.getByRole("heading", { name: HOME.magic.title }),
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "Inquire about magic" }),
+    page.getByRole("link", { name: HOME.magic.cta.label }),
   ).toBeVisible();
-  await expect(page.getByText("$150–$300", { exact: true })).toBeVisible();
+  for (const offering of HOME.magic.offerings) {
+    await expect(page.getByText(offering.price, { exact: true })).toBeVisible();
+  }
 });
 
 test("pricing and booking policy are readable on a phone", async ({ page }) => {
@@ -85,7 +88,9 @@ test("pricing and booking policy are readable on a phone", async ({ page }) => {
   // block next to the prices starts open.
   const policy = page.locator("#services details");
   await expect(policy).toHaveAttribute("open", "");
-  await expect(policy.getByText(/full amount is charged/)).toBeVisible();
+  // Whatever the payment term says, it is visible without a click.
+  const paymentTerm = HOME.bookingPolicy.items[0].text.slice(0, 40);
+  await expect(policy.getByText(paymentTerm)).toBeVisible();
 
   // Nothing may push the page sideways (§4).
   const overflow = await page.evaluate(

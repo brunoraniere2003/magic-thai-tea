@@ -1,10 +1,10 @@
 /**
  * Landing page copy for The Red Flying Dragon. English (US audience).
  *
- * Sections marked "handoff" carry copy transcribed verbatim from Ethan's
- * `redflyingdragondevhandoff.md` (8/20/26) — the archived source of truth lives
- * in `docs/specs/033-content-handoff-2026-08/source-handoff.md`. Do not
- * paraphrase it here; edit the doc, re-archive, then update this file.
+ * Sections marked "handoff" started as copy transcribed from Ethan's
+ * `redflyingdragondevhandoff.md` (8/20/26), archived in
+ * `docs/specs/033-content-handoff-2026-08/source-handoff.md`. Since 2026-10-11
+ * Ethan edits this file directly (spec 036): this file is the source of truth.
  */
 
 export interface HeroCta {

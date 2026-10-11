@@ -2,6 +2,9 @@ import { describe, it, expect } from "vitest";
 import { HOME } from "@/content/home";
 
 /**
+ * What these tests guard is structure, safety and the house rules, not wording:
+ * since 2026-10-11 Ethan edits his own copy, prices and lists (spec 036).
+ *
  * Copy we authored ourselves. The handoff copy (practices, yin & yang, about,
  * magic, services rows, booking policy, connect, tea list, calendars) is
  * Ethan's own writing and keeps his punctuation verbatim (ADR 0014).
@@ -23,11 +26,14 @@ const AUTHORED = JSON.stringify([
   HOME.teaList.errorMessage,
 ]);
 
+/** "$150" or "$150–$350" (en dash), commas allowed: "$400–$1,200". */
+const PRICE = /^\$[\d,]+(–\$[\d,]+)?$/;
+
 describe("HOME content", () => {
   // Deck order was swapped in af3d8a3 (Yin & Yang moved after Tai Chi); this
   // expectation had been stale ever since.
+  // The 3D deck is built for exactly these three cards and symbols.
   it("has exactly the three cards (tea, tai chi, yin-yang) with drawn symbols", () => {
-    expect(HOME.worlds).toHaveLength(3);
     expect(HOME.worlds.map((w) => w.key)).toEqual(["tea", "taichi", "yinyang"]);
     for (const world of HOME.worlds) {
       expect(world.title).toBeTruthy();
@@ -45,17 +51,12 @@ describe("HOME content", () => {
     expect(AUTHORED).not.toContain("—");
   });
 
-  it("has two practices, tea and tai chi, each with handoff copy and a real photo", () => {
-    expect(HOME.practices).toHaveLength(2);
-    expect(HOME.practices.map((p) => p.key)).toEqual(["tea", "taichi"]);
-    expect(HOME.practices.map((p) => p.id)).toEqual([
-      "tea-ceremony",
-      "tai-chi",
-    ]);
+  it("has two practices, tea and tai chi, each with copy and a real photo", () => {
+    expect(HOME.practices.map((p) => p.id)).toEqual(["tea-ceremony", "tai-chi"]);
     for (const practice of HOME.practices) {
       expect(practice.title).toBeTruthy();
-      expect(practice.short.length).toBeGreaterThan(40);
-      expect(practice.body.length).toBeGreaterThan(40);
+      expect(practice.short).toBeTruthy();
+      expect(practice.body).toBeTruthy();
       expect(practice.formats.length).toBeGreaterThan(0);
       expect(practice.image.src).toMatch(/^\/images\//);
       expect(practice.image.alt).toBeTruthy();
@@ -67,18 +68,9 @@ describe("HOME content", () => {
     }
   });
 
-  it("carries the gongfu and Sifu Chen lines from the handoff verbatim", () => {
-    const [tea, taichi] = HOME.practices;
-    expect(tea.body).toContain("Gongfu cha is Taiwan's tradition");
-    expect(taichi.body).toContain(
-      "passed down by my teacher, Sifu Chen, in Taipei",
-    );
-  });
-
-  it("combines both practices in the yin & yang block", () => {
-    expect(HOME.yinYang.body).toContain("Tea slows you down");
+  it("gives the yin & yang block two captioned photos and a tier that exists", () => {
+    expect(HOME.yinYang.body).toBeTruthy();
     expect(HOME.yinYang.cta.href).toBe("#contact");
-    // One photo per half, and the block quotes a tier that really exists.
     expect(HOME.yinYang.images).toHaveLength(2);
     for (const image of HOME.yinYang.images) {
       expect(image.src).toMatch(/^\/images\//);
@@ -89,98 +81,86 @@ describe("HOME content", () => {
     ).toBe(true);
   });
 
-  it("prices the five service ranges of the v2 handoff", () => {
-    expect(HOME.services.tiers).toHaveLength(5);
+  // Ethan owns the wording, the number of rows and the prices. The tests only
+  // keep the table well formed: a name, a readable price, a unique id.
+  it("prices every service tier in a readable range", () => {
+    expect(HOME.services.tiers.length).toBeGreaterThan(0);
     const ids = HOME.services.tiers.map((tier) => tier.id);
     expect(new Set(ids).size).toBe(ids.length);
     for (const tier of HOME.services.tiers) {
       expect(tier.name).toBeTruthy();
-      expect(tier.price).toMatch(/^\$\d+–\$\d+$/);
-      // The v2 table is name + range only: no included/group/duration columns.
-      expect(tier.included).toBeUndefined();
-      expect(tier.groupSize).toBeUndefined();
-      expect(tier.duration).toBeUndefined();
+      expect(tier.price).toMatch(PRICE);
     }
   });
 
-  it("drops the Extended Workshop tier everywhere (v2)", () => {
-    const copy = JSON.stringify(HOME);
-    expect(copy).not.toContain("Extended Workshop");
-    expect(copy).not.toContain("1,500");
-  });
-
-  it("charges in full on confirmation, not a deposit (v2)", () => {
-    expect(HOME.bookingPolicy.items.map((item) => item.label)).toEqual([
-      "Payment",
-      "Cancellation",
-      "Weather (outdoor Tai Chi)",
-    ]);
+  it("keeps the booking policy visible and filled in", () => {
     expect(HOME.bookingPolicy.teaser).toBeTruthy();
-    expect(HOME.bookingPolicy.items[0].text).toMatch(/full amount is charged/i);
-    expect(HOME.bookingPolicy.items[0].text).not.toMatch(/deposit is|50%/);
-    expect(HOME.bookingPolicy.items[1].text).toContain("72+ hours");
+    expect(HOME.bookingPolicy.items.length).toBeGreaterThan(0);
+    for (const item of HOME.bookingPolicy.items) {
+      expect(item.label).toBeTruthy();
+      expect(item.text).toBeTruthy();
+    }
   });
 
-  it("tells Ethan's story in three paragraphs, magic first", () => {
-    expect(HOME.about.paragraphs).toHaveLength(3);
-    expect(HOME.about.paragraphs[0]).toContain("family of magicians");
-    // v2 cut the lineage boast and the "specialist" title.
-    expect(HOME.about.paragraphs[0]).not.toMatch(/generations|well known/);
-    expect(HOME.about.paragraphs[1]).toContain("Taiwan and Los Angeles");
-    expect(HOME.about.paragraphs[1]).toContain("gongfu tea apprentice");
-    expect(HOME.magic.body).toMatch(/^Magic runs in my family\./);
-    expect(HOME.about.paragraphs[2]).toContain("Three crafts, one thread");
+  it("tells Ethan's story in at least one paragraph", () => {
+    expect(HOME.about.paragraphs.length).toBeGreaterThan(0);
+    for (const paragraph of HOME.about.paragraphs) {
+      expect(paragraph.trim()).toBeTruthy();
+    }
   });
 
-  it("brings magic back with its own compact price list (ADR 0012)", () => {
-    expect(HOME.magic.title).toBe("Also: Wonder, on Request");
-    expect(HOME.magic.cta.label).toBe("Inquire about magic");
+  it("gives magic a price list and an inquiry that goes to the contact form", () => {
+    expect(HOME.magic.title).toBeTruthy();
+    expect(HOME.magic.cta.label).toBeTruthy();
+    // Services are closed in a conversation, never on a checkout (ADR 0017).
     expect(HOME.magic.cta.href).toBe("#contact");
-    expect(HOME.magic.offerings).toHaveLength(2);
+    expect(HOME.magic.offerings.length).toBeGreaterThan(0);
     for (const offering of HOME.magic.offerings) {
-      // The compact table has no group-size column.
-      expect(offering.groupSize).toBeUndefined();
-      expect(offering.price).toMatch(/^\$\d+–\$[\d,]+$/);
-      // v2 dropped the per-hour and per-session qualifiers.
-      expect(offering.price).not.toMatch(/\/hr|\/session/);
+      expect(offering.name).toBeTruthy();
+      expect(offering.price).toMatch(PRICE);
     }
-    expect(HOME.magic.offerings[0].price).toBe("$400–$1,200");
   });
 
-  it("links email, Instagram and the live podcast", () => {
-    const byLabel = Object.fromEntries(
-      HOME.connect.links.map((link) => [link.label, link]),
-    );
-    expect(byLabel.Email.href).toBe("mailto:flyingdragontea@gmail.com");
-    expect(byLabel.Instagram.value).toBe("@theredflyingdragon");
-    expect(byLabel.Podcast.href).toBe("https://www.youtube.com/@TheThirdSteep");
+  it("links every connect card to a real address", () => {
+    expect(HOME.connect.links.length).toBeGreaterThan(0);
     for (const link of HOME.connect.links) {
-      expect(link.href).toMatch(/^(https:\/\/|mailto:)/);
+      expect(link.label).toBeTruthy();
+      expect(link.href).toMatch(/^(https:\/\/|mailto:\S+@\S+\.\S+)/);
     }
   });
 
-  it("labels the tea list form exactly as the handoff asks", () => {
-    expect(HOME.teaList.title).toBe("Join the Tea List");
-    expect(HOME.teaList.buttonLabel).toBe("Join the list");
-    expect(HOME.teaList.nameLabel).toBe("Name");
-    expect(HOME.teaList.emailLabel).toBe("Email");
+  it("labels every field of the tea list form", () => {
+    expect(HOME.teaList.title).toBeTruthy();
+    expect(HOME.teaList.buttonLabel).toBeTruthy();
+    expect(HOME.teaList.nameLabel).toBeTruthy();
+    expect(HOME.teaList.emailLabel).toBeTruthy();
+    expect(HOME.teaList.successMessage).toBeTruthy();
   });
 
   it("names both calendars and gives each an accessible frame title", () => {
-    expect(HOME.classesCalendar.title).toBe("Upcoming Tai Chi Sessions");
-    expect(HOME.availabilityCalendar.title).toBe("See When I'm Free");
+    expect(HOME.classesCalendar.title).toBeTruthy();
+    expect(HOME.availabilityCalendar.title).toBeTruthy();
     expect(HOME.classesCalendar.frameTitle).toBeTruthy();
     expect(HOME.availabilityCalendar.frameTitle).toBeTruthy();
   });
 
-  it("ships zero events at launch (blocker B5)", () => {
-    expect(HOME.events.items).toHaveLength(0);
+  it("never sends a service CTA to a checkout", () => {
+    // book.stripe.com links are sent by Ethan after a conversation (ADR 0017).
+    expect(JSON.stringify(HOME)).not.toContain("book.stripe.com");
   });
 
-  it("has at least five real, credited reviews", () => {
-    expect(HOME.reviews.length).toBeGreaterThanOrEqual(5);
+  it("gives every event a title, a place and an ISO date", () => {
+    for (const event of HOME.events.items) {
+      expect(event.title).toBeTruthy();
+      expect(event.location).toBeTruthy();
+      // YYYY-MM-DD, so the list can sort and format it.
+      expect(event.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+  });
+
+  it("credits every review", () => {
     for (const review of HOME.reviews) {
-      expect(review.quote.length).toBeGreaterThan(20);
+      expect(review.quote.trim()).toBeTruthy();
       expect(review.name).toBeTruthy();
     }
   });

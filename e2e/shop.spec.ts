@@ -1,4 +1,10 @@
 import { test, expect } from "@playwright/test";
+import { SHOP, allShopItems, buyLabelFor } from "../content/shop";
+
+const ITEMS = allShopItems();
+// The counter line about shipping, whatever its wording or price.
+const SHIPPING_LINE =
+  SHOP.counter.find((line) => /shipping/i.test(line)) ?? "";
 
 // The shop is the site's second money path: every control must reach Stripe.
 test("every shop item links to its own Stripe page, in a new tab", async ({
@@ -8,12 +14,12 @@ test("every shop item links to its own Stripe page, in a new tab", async ({
   await page.goto("/");
 
   const links = page.locator('#shop a[href*="buy.stripe.com"]');
-  await expect(links).toHaveCount(10);
+  await expect(links).toHaveCount(ITEMS.length);
 
   const hrefs = await links.evaluateAll((els) =>
     els.map((el) => (el as HTMLAnchorElement).href),
   );
-  expect(new Set(hrefs).size).toBe(10);
+  expect(new Set(hrefs).size).toBe(ITEMS.length);
 
   for (const attr of ["target", "rel"]) {
     const values = await links.evaluateAll(
@@ -34,14 +40,15 @@ test("the shipping rule is stated before any buy control", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
 
-  const shipping = page.getByText(/\$8\.95 flat shipping/).first();
+  expect(SHIPPING_LINE).not.toBe("");
+  const shipping = page.getByText(SHIPPING_LINE, { exact: true }).first();
   await expect(shipping).toBeVisible();
 
   // "Before" means in reading order: the counter is the first thing in the
   // section, so the rule is read (and announced) ahead of every buy control.
-  const precedes = await page.evaluate(() => {
+  const precedes = await page.evaluate((line) => {
     const note = [...document.querySelectorAll("#shop li")].find((el) =>
-      el.textContent?.includes("$8.95 flat shipping"),
+      el.textContent?.includes(line),
     );
     const firstBuy = document.querySelector(
       '#shop a[href*="buy.stripe.com"]',
@@ -51,7 +58,7 @@ test("the shipping rule is stated before any buy control", async ({ page }) => {
       note.compareDocumentPosition(firstBuy) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     );
-  });
+  }, SHIPPING_LINE);
   expect(precedes).toBe(true);
 });
 
@@ -60,17 +67,16 @@ test("each buy control names what it buys, and says where it goes", async ({
 }) => {
   await page.goto("/");
 
-  // Drawers take their accessible name from their own content (no aria-label,
-  // which would erase the pack note for screen readers); boxes carry one.
-  await expect(page.getByRole("link", { name: /Alishan Oolong/ })).toHaveCount(
-    1,
-  );
-  await expect(
-    page.getByRole("link", { name: "Buy on Stripe: Dragon's Feast, $79" }),
-  ).toHaveCount(1);
+  // Every buy control is named after what it buys, its price and where it
+  // goes (buyLabelFor), so ten links never read as ten identical "Buy".
+  for (const item of ITEMS) {
+    await expect(
+      page.getByRole("link", { name: buyLabelFor(item), exact: true }),
+    ).toHaveCount(1);
+  }
 
   const names = await page
     .locator('#shop a[href*="buy.stripe.com"]')
     .evaluateAll((els) => els.map((el) => el.textContent?.trim() ?? ""));
-  expect(names.every((n) => n.includes("Buy on Stripe"))).toBe(true);
+  expect(names.every((n) => n.includes(SHOP.buyLabel))).toBe(true);
 });

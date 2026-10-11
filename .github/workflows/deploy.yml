@@ -1,7 +1,9 @@
 name: deploy
 
-# Every push to main goes live on the VPS (spec 035, ADR 0018), after the same
-# gates as any pull request. The server side is ops/deploy-vps.sh.
+# Every push to main goes live on the VPS (spec 035, ADR 0018). No test gate in
+# front of it (spec 036): the server builds first and keeps the old site up if
+# the build fails, and puts it back if the new one does not answer. The server
+# side is ops/deploy-vps.sh. Tests still run on pull requests (quality.yml).
 on:
   push:
     branches: [main]
@@ -16,11 +18,7 @@ permissions:
   contents: read
 
 jobs:
-  checks:
-    uses: ./.github/workflows/quality.yml
-
   deploy:
-    needs: checks
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -52,7 +50,8 @@ jobs:
         run: |
           for attempt in 1 2 3 4 5 6; do
             body=$(curl -fsS --max-time 20 https://theredflyingdragon.com/ || true)
-            if grep -q "Join the Tea List" <<<"$body"; then
+            # A Next page, whatever its wording: Ethan edits the copy, so no phrase is checked.
+            if grep -q "/_next/static" <<<"$body"; then
               echo "theredflyingdragon.com is up"
               exit 0
             fi
