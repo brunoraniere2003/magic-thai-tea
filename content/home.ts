@@ -232,7 +232,7 @@ export const HOME: HomeContent = {
     eyebrow: "The Red Flying Dragon",
     title: "The Red Flying Dragon",
     subtitle:
-      "Ethan Holtzman pours the Chinese art of tea and teaches the moving meditation of tai chi, a ceremony that slows the whole room down.",
+      "Ethan Holtzman honors the Taiwanese art of tea and teaches the moving meditation of tai chi, a ceremony that helps us reconnect with our mind, body and spirit.",
     primaryCta: { label: "See the practice", href: "#worlds" },
     secondaryCta: { label: "Talk to Ethan", href: "#contact" },
     scrollCue: "Scroll to enter",
@@ -559,20 +559,12 @@ export const HOME: HomeContent = {
             },
           ],
         },
-        // PLACEHOLDER (blocker B8). Ethan's channel has no published episode
-        // yet, so this plays "Gong Fu Tea|chA" by Tea House Ghost, another
-        // gongfu-tea conversation show, only to prove the player and the
-        // layout. The card is labelled so no visitor mistakes it for his.
-        // To go live: swap the list id for UUbXEDU56uNY-IeExVh1gEeA (his own
-        // uploads playlist) and drop `placeholder`.
         // youtube-nocookie.com, not youtube.com: the regular host pulls in
         // Google's ad stack (googleads.g.doubleclick.net, ad_status.js) on load,
-        // and the page carries no consent banner. Same path, same params, same
-        // player.
+        // and the page carries no consent banner.
         embed: {
-          url: "https://www.youtube-nocookie.com/embed/videoseries?list=UUg_-d3VHLMGiM6fuGRB0FtA&rel=0",
-          frameTitle: "Sample gongfu tea conversation, standing in for The Third Steep",
-          placeholder: true,
+          url: "https://www.youtube-nocookie.com/embed/2aR6WcCRUPk?rel=0",
+          frameTitle: "The Third Steep podcast episode",
         },
       },
     ],
