@@ -224,19 +224,6 @@ export const SHOP: ShopContent = {
         weight: "plain",
         buyUrl: "https://buy.stripe.com/00w9AMbWe9QL2KM54meEo0n",
       },
-      {
-        id: "tasting-flight",
-        // Ethan's own name for it in the handoff, em dash included (ADR 0014
-        // allows the dash inside his copy). "Pick Any 3" is the part that says
-        // the choice is the buyer's, so it belongs in the name, not only in the
-        // note underneath.
-        name: "Tasting Flight — Pick Any 3",
-        hanzi: "三選",
-        note: "Any three teas, 15g each. You note your picks at checkout.",
-        price: "$38",
-        weight: "plain",
-        buyUrl: "https://buy.stripe.com/00w3co9O6aUP99a7cueEo0m",
-      },
     ],
   },
 };
