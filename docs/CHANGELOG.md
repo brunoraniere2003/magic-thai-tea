@@ -121,3 +121,5 @@ Conferido ao vivo com Playwright em 1440px e em iPhone 13, nos dois caminhos de 
 - **`quality.yml`** passa a ser chamável (`workflow_call`) e deixa de rodar sozinho na `main`, para os gates não rodarem duas vezes.
 - **docs**: spec 035 (tríade), ADR 0018, `docs/deploy-vps.md` (automático é o caminho normal; manual vira plano B; rollback por `git revert`), ADR 0016 aponta para o 0018.
 - **Decisão do dono**: a `main` **não** exige PR. O push do Ethan vai direto para o ar, passando só pelos testes.
+- **PR #2 mergeado na `main`** (handoffs v1 e v2, loja, agendas, deploy automático). A produção deixa de rodar de `feat/033-content-handoff`: a VPS agora está na `main`.
+- **Primeiro deploy automático verde** (run 38180099556): gates 1m16s, servidor 44 s, troca 2,5 s. Conferido: https 200, www 200, http 301, 14 seções, 10 links de compra, 0 links de reserva, 0 vazamento, pm2 com fuso de LA, 10 containers de pé. Disparo manual no mesmo commit respondeu "already live".
