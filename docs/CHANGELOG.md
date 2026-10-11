@@ -107,3 +107,17 @@ Conferido ao vivo com Playwright em 1440px e em iPhone 13, nos dois caminhos de 
 - **Revisão das correções do QA (feita por mim, não aceita no escuro)**: li o diff inteiro (260 linhas em 22 arquivos) antes de commitar. Confirmei pessoalmente o achado mais sério — `public/images/worlds/taichi.jpg` **é uma foto de banco de imagens de uma mão segurando um celular**, e a legenda "Golden Rooster Stands on One Leg" estava chaveada nela desde a spec 033. Nenhuma legenda foi remendada numa foto errada; virou o blocker B20 e um teste que falha se aparecer outra legenda órfã.
 - **Custo medido do `flags={flags}`** (bandeiras locais em vez do CDN pessoal de terceiro): +200 KB de chunks. Aceito — no build de produção deu **LCP 300 ms desktop / 184 ms mobile, CLS 0, 576 KB de JS transferido**, muito dentro do orçamento (§3), e elimina a única requisição a host de terceiro fora dos embeds.
 - **Conferência dos links da loja produto a produto**: além do preço, o **nome** de cada página da Stripe bate com o do site (Bao Zhong e Jin Xuan custam ambos $10; só o preço não provaria nada). Os dois combos listam os chás dentro, com total $82,95 e $87,95.
+
+## 2026-10-11
+
+### Spec 035: deploy automático pela main (ADR 0018)
+
+- **Pedido do dono**: o Ethan vai ganhar escrita no repositório e editar o site com o Claude dele; tudo que entrar na `main` tem que ir sozinho para a VPS.
+- **feat(ci) — `.github/workflows/deploy.yml`**: push na `main` (ou disparo manual) → mesmos gates do PR (lint, typecheck, unitários, build, E2E) → SSH na VPS → conferência pública de `theredflyingdragon.com`. Fila única, nunca cancela um deploy no meio.
+- **feat(ops) — `ops/deploy-vps.sh`** (instalado como `/usr/local/sbin/tai-tea-deploy`): build num git worktree de staging com o site no ar intocado, troca em segundos, health check de 60 s com **rollback automático**, `flock`, recusa commit fora da `main`, pula commit mais velho que o que está no ar, reinstala a si mesmo.
+- **Por que staging**: o runbook antigo rodava `npm ci` (apaga o `node_modules`) e o build dentro da pasta que o pm2 serve, ~2 min de site instável. Testado antes: um build feito no staging e servido de outra pasta devolve a mesma página (14 seções, 10 links da Stripe, `/_next/image` 200). O Next grava a pasta do build em 3 campos de `required-server-files.json`; o script reescreve para a pasta do ar.
+- **segurança — chave dedicada e travada**: `restrict,command="/usr/local/sbin/tai-tea-deploy"`. Testada: pedir shell, colar comando depois do sha, pedir sha fora da main e abrir túnel, tudo recusado. A host key da VPS vai fixa num secret (sem `StrictHostKeyChecking=no`), conferida contra a do próprio servidor. A chave privada só existe no secret `VPS_DEPLOY_KEY`.
+- **incidente evitado, registrado**: o `/root/.ssh/authorized_keys` não terminava com quebra de linha, e o primeiro `echo >>` grudou a chave nova na linha da chave do projeto Matrizes, invalidando-a. Detectado na conferência seguinte e restaurado do backup (`/root/backup-deploy-2026-10-11/`) em menos de um minuto; as 5 chaves validadas com `ssh-keygen -lf`. O runbook agora avisa.
+- **`quality.yml`** passa a ser chamável (`workflow_call`) e deixa de rodar sozinho na `main`, para os gates não rodarem duas vezes.
+- **docs**: spec 035 (tríade), ADR 0018, `docs/deploy-vps.md` (automático é o caminho normal; manual vira plano B; rollback por `git revert`), ADR 0016 aponta para o 0018.
+- **Decisão do dono**: a `main` **não** exige PR. O push do Ethan vai direto para o ar, passando só pelos testes.

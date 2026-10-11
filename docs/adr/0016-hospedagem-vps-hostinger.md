@@ -1,6 +1,6 @@
 # ADR 0016 — Hospedagem sai da Vercel e vai para a VPS Hostinger
 
-- **Status:** Aceito
+- **Status:** Aceito · deploy manual substituído pelo automático no **ADR 0018** (2026-10-11)
 - **Data:** 2026-09-07
 - **Contexto:** a conta Vercel do dono foi **pausada** ("Paused — Upgrade to resume service"). O consumo não era o problema — 3,5 K de 1 M de edge requests, 5,98 MB de 100 GB — o que indica bloqueio de plano: site comercial de cliente rodando em conta Hobby. Enquanto isso, **nenhum deploy sai**, e o PR fica sem preview.
 

@@ -5,6 +5,9 @@ node_modules/
 
 # === Next.js / build ===
 .next/
+# previous release kept by ops/deploy-vps.sh for rollback
+.next.bak/
+node_modules.bak/
 out/
 build/
 dist/
