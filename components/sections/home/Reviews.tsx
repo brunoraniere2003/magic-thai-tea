@@ -32,8 +32,12 @@ export function Reviews() {
         align="center"
         className="mx-auto mb-16 max-w-2xl px-6"
       />
+      {/* Chrome makes a horizontal scroller a tab stop so a keyboard can pan it.
+          Unnamed, that stop announces nothing, so the rail carries its own
+          label. */}
       <Stagger
         as="ul"
+        aria-label="Client testimonials"
         className="reviews-rail flex snap-x snap-mandatory gap-6 overflow-x-auto px-6 pb-6 sm:px-[max(1.5rem,calc((100vw-72rem)/2))]"
         start="top 90%"
         onWheel={onWheel}

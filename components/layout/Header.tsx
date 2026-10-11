@@ -144,7 +144,7 @@ export function Header() {
       >
         <Link
           href="/"
-          className="relative z-50 font-display text-lg text-cream"
+          className="relative z-50 -my-2 py-2 font-display text-lg text-cream"
           onClick={onBrandClick}
         >
           {SITE.name}
@@ -174,9 +174,12 @@ export function Header() {
           </Link>
         </div>
 
+        {/* The only navigation control on a phone, so the tap area is padded out
+            to 44px and pulled back with a negative margin: the hit box grows,
+            the header's optical alignment does not move. */}
         <button
           type="button"
-          className="relative z-50 font-sans text-sm text-cream sm:hidden"
+          className="relative z-50 -m-3 p-3 font-sans text-sm text-cream sm:hidden"
           aria-expanded={open}
           aria-controls="mobile-nav"
           onClick={() => setOpen((value) => !value)}

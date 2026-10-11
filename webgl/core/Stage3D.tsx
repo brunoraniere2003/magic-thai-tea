@@ -36,10 +36,22 @@ export function Stage3D({
 
   return (
     <div className={className}>
-      {/* Poster paints when the 3D layer is OFF (no-WebGL / reduced-motion /
-          low-tier). When the 3D is on we hide the poster - otherwise its full-
-          bleed cards bleed past the smaller 3D deck. */}
-      {!enabled ? poster : null}
+      {/* The poster is the accessible layer, so it stays in the DOM either way.
+          With the 3D OFF (no-WebGL / reduced-motion / low-tier) it paints as the
+          visible stage. With the 3D ON it is taken out of the picture visually -
+          otherwise its full-bleed cards bleed past the smaller 3D deck - but
+          kept for assistive tech, because the r3f canvas beside it is
+          aria-hidden and exposes nothing. Without this the whole section reads
+          as an empty heading to a screen reader and is skipped by Tab. */}
+      {enabled ? (
+        /* focus-within brings it back on screen the moment a keyboard reaches
+           one of its cards, so the poster is never an invisible tab stop. */
+        <div className="sr-only focus-within:not-sr-only focus-within:absolute focus-within:inset-0 focus-within:z-20 focus-within:h-full focus-within:overflow-y-auto focus-within:bg-stage">
+          {poster}
+        </div>
+      ) : (
+        poster
+      )}
       {/* The scene mounts from the start on every capable device and stays
           mounted (active=true always) so scrolling away and back never shows a
           mount/unmount gap. */}

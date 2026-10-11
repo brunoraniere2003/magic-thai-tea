@@ -62,8 +62,13 @@ interface FlipCardProps {
   isMobile: boolean;
 }
 
+interface DetailSurface {
+  ctx: CanvasRenderingContext2D | null;
+  texture: CanvasTexture;
+}
+
 /** Per-card mutable canvas + texture for the typed-in "revealed" face. */
-function makeDetailTexture(): { ctx: CanvasRenderingContext2D | null; texture: CanvasTexture } {
+function makeDetailTexture(): DetailSurface {
   const canvas = document.createElement("canvas");
   canvas.width = CARD_ART.W;
   canvas.height = CARD_ART.H;
@@ -73,6 +78,21 @@ function makeDetailTexture(): { ctx: CanvasRenderingContext2D | null; texture: C
   texture.anisotropy = 4;
   texture.minFilter = LinearFilter;
   return { ctx, texture };
+}
+
+const detailCache = new Map<string, DetailSurface>();
+
+/**
+ * The repainted "revealed" face for a card, built once per card and kept
+ * outside React: it is a drawing surface mutated every frame, like the cached
+ * front faces in makeCardFaceTextures, not render state.
+ */
+function getDetailSurface(key: string): DetailSurface {
+  const cached = detailCache.get(key);
+  if (cached) return cached;
+  const created = makeDetailTexture();
+  detailCache.set(key, created);
+  return created;
 }
 
 /**
@@ -98,11 +118,11 @@ function FlipCard({
   const revealAnim = useRef(0);
 
   const words = useMemo(() => card.blurb.split(/\s+/), [card.blurb]);
-  const detail = useMemo(makeDetailTexture, []);
   // Typing pace: ~0.085s per word after a short lead-in.
   const duration = 0.45 + words.length * 0.085;
 
   const paintDetail = (p: number) => {
+    const detail = getDetailSurface(card.symbol);
     if (!detail.ctx) return;
     const shown = Math.floor(Math.min(p / 0.85, 1) * words.length);
     const bookAlpha = Math.max(0, Math.min((p - 0.85) / 0.15, 1));
@@ -165,7 +185,11 @@ function FlipCard({
         rotation={[0, Math.PI, 0]}
       >
         <meshStandardMaterial
-          map={revealed ? detail.texture : getCardFaceTexture(card.symbol, card.title)}
+          map={
+            revealed
+              ? getDetailSurface(card.symbol).texture
+              : getCardFaceTexture(card.symbol, card.title)
+          }
           roughness={0.6}
           metalness={0.1}
         />

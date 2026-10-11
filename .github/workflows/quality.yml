@@ -1,9 +1,9 @@
 name: quality
 
 on:
-  push:
-    branches: [main]
   pull_request:
+  # On main these gates run inside the deploy workflow, before anything goes live.
+  workflow_call:
 
 jobs:
   quality:

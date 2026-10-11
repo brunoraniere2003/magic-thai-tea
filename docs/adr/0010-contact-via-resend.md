@@ -1,5 +1,7 @@
 # ADR 0010 — Contato via Resend (reverte `constitution.md` §2: Formspree → Resend)
 
+> ⚠️ **SUPERADO pelo ADR 0013 (2026-09-05).** Nunca foi implementado: o contato sempre rodou em FormSubmit, e o dono decidiu que fica assim. Mantido só como histórico — não seguir este documento.
+
 - **Status:** Aceito
 - **Data:** 2026-06-26
 - **Contexto:** o formulário de contato é a **única** rota de conversão da nova LP (ver ADR 0009). A stack travada (§2) e o blueprint (§3 item 4/8) previam **Formspree**. O dono pediu envio próprio, sem página/branding de terceiros.

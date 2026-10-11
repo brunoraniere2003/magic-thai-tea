@@ -119,7 +119,7 @@ export function cardTransformMobile(
   // How many cards have ALREADY left the centre (gone upward) by progress t.
   // A card "passes" the centre at the end of its flip segment (the even
   // segments: 0, 2, 4, ...). Between segments the deck shifts up by one PEEK.
-  let cardsPassed = Math.min(count - 1, Math.floor(t / 2));
+  const cardsPassed = Math.min(count - 1, Math.floor(t / 2));
   // The slide between cards happens during the TRANSIT (odd) segments.
   const inSegment = t - cardsPassed * 2;
   let slide = 0;

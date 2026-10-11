@@ -41,10 +41,18 @@ describe("Stage3D", () => {
     renderScene: () => <div>SCENE</div>,
   };
 
-  it("hides the poster when the 3D layer is on (otherwise it bleeds past the scene)", () => {
+  it("hides the poster VISUALLY when the 3D layer is on, never from assistive tech", () => {
+    // The poster is the section's only accessible content: the scene beside it
+    // is aria-hidden, so dropping the poster from the DOM left a screen reader
+    // with a heading and nothing under it, and Tab skipped the whole deck.
+    // It has to stay rendered and merely stop painting over the smaller scene.
     const { queryByText, getByText } = render(<Stage3D {...props} />);
     expect(getByText("SCENE")).toBeInTheDocument();
-    expect(queryByText("POSTER")).toBeNull();
+
+    const poster = getByText("POSTER");
+    expect(poster).toBeInTheDocument();
+    expect(poster.closest(".sr-only")).not.toBeNull();
+    expect(queryByText("POSTER")?.closest("[aria-hidden='true']")).toBeNull();
   });
 
   it("mounts the scene on a capable device (high-tier + WebGL)", () => {
@@ -74,8 +82,13 @@ describe("Stage3D", () => {
   it("keeps the scene mounted on a capable device (no in-view gating)", () => {
     // Scene now mounts from the start and stays mounted on every capable
     // device so scrolling away and back never shows a mount/unmount gap.
-    const { getByText, queryByText } = render(<Stage3D {...props} />);
+    const { getByText } = render(<Stage3D {...props} />);
     expect(getByText("SCENE")).toBeInTheDocument();
-    expect(queryByText("POSTER")).toBeNull();
+  });
+
+  it("paints the poster normally when the 3D layer is off (not sr-only)", () => {
+    h.state.reducedMotion = true;
+    const { getByText } = render(<Stage3D {...props} />);
+    expect(getByText("POSTER").closest(".sr-only")).toBeNull();
   });
 });
