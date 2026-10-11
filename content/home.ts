@@ -230,7 +230,7 @@ export interface HomeContent {
 export const HOME: HomeContent = {
   hero: {
     eyebrow: "The Red Flying Dragon",
-    title: "Tea, tai chi, and the calm in between.",
+    title: "The Red Flying Dragon",
     subtitle:
       "Ethan Holtzman pours the Chinese art of tea and teaches the moving meditation of tai chi, a ceremony that slows the whole room down.",
     primaryCta: { label: "See the practice", href: "#worlds" },
