@@ -22,4 +22,4 @@
 
 ## Produção
 - [x] Script v2 instalado (v1 guardado em `/root/backup-deploy-2026-10-11/tai-tea-deploy.v1`); timer habilitado e rodando; logrotate validado.
-- [ ] Push desta spec na `main` publicado pelo Actions com o script novo.
+- [x] Push desta spec na `main` publicado pelo Actions com o script novo (20b87a1, 46 s, dependências reaproveitadas). Antes dele, o Ethan já tinha publicado sozinho o PR #4 em 54 s.
