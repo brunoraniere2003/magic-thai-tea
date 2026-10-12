@@ -18,9 +18,10 @@ This repo is the live site **theredflyingdragon.com**. Ethan edits it with Claud
 
 | To change | Edit |
 |---|---|
-| Home page text, service prices, booking policy, About, Magic, Connect, Tea List, events | `content/home.ts` |
+| Home page text, the three cards, Tea Temple block, booking policy, About, Connect, Tea List, events | `content/home.ts` |
 | Shop: teas, boxes, notes, prices, Stripe links, shipping lines | `content/shop.ts` |
-| Site name, nav, contact email/SMS, SEO | `content/site.ts` |
+| Site name, header links + phone menu, Tea Temple booking link, contact email/SMS, SEO | `content/site.ts` |
+| Card emblems (teapot, crane, yin-yang) | `webgl/cards/emblems.ts` |
 | Photo captions | `content/captions.ts` |
 | Photos | `public/images/` (then point to them from `content/`) |
 
@@ -28,3 +29,4 @@ This repo is the live site **theredflyingdragon.com**. Ethan edits it with Claud
 
 - Put a `book.stripe.com` link on the site (those are private, sent after a conversation). The shop uses `buy.stripe.com`.
 - Publish anything private from the calendar: client names, private sessions, addresses.
+- Put service prices on the page. The only prices are the teas in `content/shop.ts`; private sessions are priced and booked on https://entertheteatemple.com/.

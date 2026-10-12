@@ -40,6 +40,8 @@ export function DeckDemo() {
   const cards: DeckCard[] = HOME.worlds.map((w) => ({
     symbol: w.symbol,
     title: w.title,
+    subtitle: w.subtitle,
+    bookHref: w.bookHref,
     blurb: w.blurb,
     color: accentColor[w.key],
     label: w.title,

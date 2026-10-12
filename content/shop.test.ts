@@ -42,7 +42,7 @@ describe("SHOP content", () => {
     for (const shelf of SHOP.shelves) {
       expect(shelf.price).toMatch(PRICE);
     }
-    for (const box of SHOP.boxes.items) {
+    for (const box of SHOP.collection) {
       expect(box.price).toMatch(PRICE);
     }
     for (const item of ALL) {
@@ -50,9 +50,16 @@ describe("SHOP content", () => {
     }
   });
 
-  it("states a shipping rule on the counter, before any buy control", () => {
+  it("states a shipping rule in the fine print, before any buy control", () => {
     // The e2e checks the reading order; here, only that the line exists.
-    expect(SHOP.counter.some((line) => /shipping/i.test(line))).toBe(true);
+    expect(SHOP.fineprint.some((line) => /shipping/i.test(line))).toBe(true);
+    expect(SHOP.fineprint.some((line) => /stripe/i.test(line))).toBe(true);
+  });
+
+  it("keeps the shop symmetric: three tiers, then three cards with one featured", () => {
+    expect(SHOP.shelves).toHaveLength(3);
+    expect(SHOP.collection).toHaveLength(3);
+    expect(SHOP.collection.filter((box) => box.featured)).toHaveLength(1);
   });
 
   it("says out loud that the buy control leaves for Stripe", () => {
@@ -71,7 +78,10 @@ describe("SHOP content", () => {
   });
 
   it("gives every plate a local image and a description", () => {
-    const plates = [...SHOP.shelves.map((s) => s.plate), SHOP.boxes.plate];
+    const plates = [
+      ...SHOP.shelves.map((s) => s.plate),
+      ...SHOP.collection.map((b) => b.plate),
+    ];
     for (const plate of plates) {
       expect(plate.src).toMatch(/^\/images\//);
       expect(plate.alt).toBeTruthy();

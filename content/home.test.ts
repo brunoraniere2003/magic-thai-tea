@@ -1,13 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { HOME } from "@/content/home";
+import { SITE } from "@/content/site";
 
 /**
  * What these tests guard is structure, safety and the house rules, not wording:
  * since 2026-10-11 Ethan edits his own copy, prices and lists (spec 036).
  *
  * Copy we authored ourselves. The handoff copy (practices, yin & yang, about,
- * magic, services rows, booking policy, connect, tea list, calendars) is
- * Ethan's own writing and keeps his punctuation verbatim (ADR 0014).
+ * booking policy, connect, tea list, calendars) is Ethan's own writing and
+ * keeps his punctuation verbatim (ADR 0014).
  */
 const AUTHORED = JSON.stringify([
   HOME.hero,
@@ -16,18 +17,19 @@ const AUTHORED = JSON.stringify([
   HOME.reviewsHeading,
   HOME.reviews,
   HOME.contact,
-  HOME.services.intro,
+  HOME.book,
   HOME.events.eyebrow,
   HOME.events.title,
   HOME.practices.map((practice) => [practice.eyebrow, practice.cta.label]),
-  HOME.magic.cta.label,
   HOME.yinYang.cta.label,
   HOME.teaList.successMessage,
   HOME.teaList.errorMessage,
 ]);
 
-/** "$150" or "$150–$350" (en dash), commas allowed: "$400–$1,200". */
-const PRICE = /^\$[\d,]+(–\$[\d,]+)?$/;
+/** On-page anchors every CTA may point at, or the booking site. */
+const ANCHORS = new Set(SITE.menu.map((item) => item.href));
+const isBookingTarget = (href: string) =>
+  ANCHORS.has(href) || href === SITE.booking.url;
 
 describe("HOME content", () => {
   // Deck order was swapped in af3d8a3 (Yin & Yang moved after Tai Chi); this
@@ -37,14 +39,31 @@ describe("HOME content", () => {
     expect(HOME.worlds.map((w) => w.key)).toEqual(["tea", "taichi", "yinyang"]);
     for (const world of HOME.worlds) {
       expect(world.title).toBeTruthy();
+      expect(world.subtitle).toBeTruthy();
       expect(world.essence).toBeTruthy();
       expect(["tea", "yinyang", "taichi"]).toContain(world.symbol);
+      expect(isBookingTarget(world.bookHref)).toBe(true);
     }
   });
 
   it("points the hero CTAs at on-page anchors that exist in the layout", () => {
     expect(HOME.hero.primaryCta.href).toBe("#worlds");
-    expect(HOME.hero.secondaryCta.href).toBe("#contact");
+    expect(ANCHORS.has(HOME.hero.secondaryCta.href)).toBe(true);
+  });
+
+  // The site is tea and tai chi (2026-10-11): no magic, and the only prices on
+  // the page are the teas in the shop (content/shop.ts).
+  it("carries no magic and no service prices", () => {
+    const all = JSON.stringify(HOME);
+    expect(all).not.toMatch(/magic|sleight|magician/i);
+    expect(all).not.toMatch(/\$\s?\d/);
+  });
+
+  it("sends private sessions to the Tea Temple", () => {
+    expect(SITE.booking.url).toBe("https://entertheteatemple.com/");
+    expect(HOME.book.primaryCta.href).toBe(SITE.booking.url);
+    expect(HOME.book.secondaryCta.href).toBe("#contact");
+    expect(HOME.book.steps.length).toBeGreaterThan(0);
   });
 
   it("keeps our own copy free of em dashes (spec 031 R2, narrowed by ADR 0014)", () => {
@@ -60,7 +79,7 @@ describe("HOME content", () => {
       expect(practice.formats.length).toBeGreaterThan(0);
       expect(practice.image.src).toMatch(/^\/images\//);
       expect(practice.image.alt).toBeTruthy();
-      expect(practice.cta.href).toBe("#contact");
+      expect(isBookingTarget(practice.cta.href)).toBe(true);
       for (const photo of practice.gallery) {
         expect(photo.src).toMatch(/^\/images\//);
         expect(photo.alt).toBeTruthy();
@@ -68,28 +87,13 @@ describe("HOME content", () => {
     }
   });
 
-  it("gives the yin & yang block two captioned photos and a tier that exists", () => {
+  it("gives the yin & yang block two captioned photos", () => {
     expect(HOME.yinYang.body).toBeTruthy();
     expect(HOME.yinYang.cta.href).toBe("#contact");
     expect(HOME.yinYang.images).toHaveLength(2);
     for (const image of HOME.yinYang.images) {
       expect(image.src).toMatch(/^\/images\//);
       expect(image.alt).toBeTruthy();
-    }
-    expect(
-      HOME.services.tiers.some((tier) => tier.id === HOME.yinYang.tierId),
-    ).toBe(true);
-  });
-
-  // Ethan owns the wording, the number of rows and the prices. The tests only
-  // keep the table well formed: a name, a readable price, a unique id.
-  it("prices every service tier in a readable range", () => {
-    expect(HOME.services.tiers.length).toBeGreaterThan(0);
-    const ids = HOME.services.tiers.map((tier) => tier.id);
-    expect(new Set(ids).size).toBe(ids.length);
-    for (const tier of HOME.services.tiers) {
-      expect(tier.name).toBeTruthy();
-      expect(tier.price).toMatch(PRICE);
     }
   });
 
@@ -109,18 +113,6 @@ describe("HOME content", () => {
     }
   });
 
-  it("gives magic a price list and an inquiry that goes to the contact form", () => {
-    expect(HOME.magic.title).toBeTruthy();
-    expect(HOME.magic.cta.label).toBeTruthy();
-    // Services are closed in a conversation, never on a checkout (ADR 0017).
-    expect(HOME.magic.cta.href).toBe("#contact");
-    expect(HOME.magic.offerings.length).toBeGreaterThan(0);
-    for (const offering of HOME.magic.offerings) {
-      expect(offering.name).toBeTruthy();
-      expect(offering.price).toMatch(PRICE);
-    }
-  });
-
   it("links every connect card to a real address", () => {
     expect(HOME.connect.links.length).toBeGreaterThan(0);
     for (const link of HOME.connect.links) {
@@ -137,11 +129,9 @@ describe("HOME content", () => {
     expect(HOME.teaList.successMessage).toBeTruthy();
   });
 
-  it("names both calendars and gives each an accessible frame title", () => {
+  it("names the class calendar and gives it an accessible frame title", () => {
     expect(HOME.classesCalendar.title).toBeTruthy();
-    expect(HOME.availabilityCalendar.title).toBeTruthy();
     expect(HOME.classesCalendar.frameTitle).toBeTruthy();
-    expect(HOME.availabilityCalendar.frameTitle).toBeTruthy();
   });
 
   it("never sends a service CTA to a checkout", () => {

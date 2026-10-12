@@ -2,9 +2,9 @@ import { test, expect } from "@playwright/test";
 import { SHOP, allShopItems, buyLabelFor } from "../content/shop";
 
 const ITEMS = allShopItems();
-// The counter line about shipping, whatever its wording or price.
+// The fine-print line about shipping, whatever its wording or price.
 const SHIPPING_LINE =
-  SHOP.counter.find((line) => /shipping/i.test(line)) ?? "";
+  SHOP.fineprint.find((line) => /shipping/i.test(line)) ?? "";
 
 // The shop is the site's second money path: every control must reach Stripe.
 test("every shop item links to its own Stripe page, in a new tab", async ({
@@ -44,8 +44,8 @@ test("the shipping rule is stated before any buy control", async ({ page }) => {
   const shipping = page.getByText(SHIPPING_LINE).first();
   await expect(shipping).toBeVisible();
 
-  // "Before" means in reading order: the counter is the first thing in the
-  // section, so the rule is read (and announced) ahead of every buy control.
+  // "Before" means in reading order: the fine print sits under the title, so
+  // the rule is read (and announced) ahead of every buy control.
   const precedes = await page.evaluate((line) => {
     const note = [...document.querySelectorAll("#shop li")].find((el) =>
       el.textContent?.includes(line),
@@ -78,5 +78,5 @@ test("each buy control names what it buys, and says where it goes", async ({
   const names = await page
     .locator('#shop a[href*="buy.stripe.com"]')
     .evaluateAll((els) => els.map((el) => el.textContent?.trim() ?? ""));
-  expect(names.every((n) => n.includes(SHOP.buyLabel))).toBe(true);
+  expect(names.every((n) => n.includes(SHOP.buyText))).toBe(true);
 });

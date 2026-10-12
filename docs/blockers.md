@@ -33,3 +33,5 @@
 | B15 | Preço do Tasting Flight                       | 2026-09-20   | Lido na própria Stripe: **US$ 38,00** fixo (frete 8,95, total 46,95). O "$30–$45" do doc era rascunho. |
 | B16 | Qual agenda é qual                            | 2026-09-20   | Resolvido junto com B1, pelo título e pelo conteúdo de cada agenda. |
 | B11 | Porta 80 da VPS (`http://` abria o banco-horas, com a API dele exposta) | 2026-09-21 | Caddy assumiu a 80: nosso domínio vai pra https com 301; banco-horas foi pra 8081 e segue em `http://72.61.59.26`. Os 5 sites HTTPS conferidos antes e depois. |
+| B9  | Fotos de mágica                               | 2026-10-11   | Obsoleto: a seção Magic saiu do site (foco em chá e tai chi). |
+| B19 | Auto-agendamento x conversa (`#availability`) | 2026-10-11   | A seção Availability saiu do site. Sessão privada de chá agora se agenda em https://entertheteatemple.com/ (botão no header, seção `#book`, card do chá); eventos e tai chi seguem pelo formulário. |

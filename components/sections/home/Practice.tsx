@@ -103,9 +103,26 @@ export function Practice({
           ) : null}
 
           <Reveal delay={0.15} className="mt-8">
-            <a href={practice.cta.href} className={buttonClasses("secondary")}>
-              {practice.cta.label}
-            </a>
+            {/* An external CTA (the Tea Temple) opens in a new tab and says so
+                with the arrow; in-page anchors glide like the nav. */}
+            {practice.cta.href.startsWith("http") ? (
+              <a
+                href={practice.cta.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={buttonClasses("primary", "gap-2")}
+              >
+                {practice.cta.label}
+                <span aria-hidden>↗</span>
+              </a>
+            ) : (
+              <a
+                href={practice.cta.href}
+                className={buttonClasses("secondary")}
+              >
+                {practice.cta.label}
+              </a>
+            )}
           </Reveal>
         </div>
       </div>

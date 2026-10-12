@@ -2,27 +2,26 @@ import { Hero } from "@/components/sections/home/Hero";
 import { Worlds } from "@/components/sections/home/Worlds";
 import { Practice } from "@/components/sections/home/Practice";
 import { YinYang } from "@/components/sections/home/YinYang";
-import { Services } from "@/components/sections/home/Services";
-import { About } from "@/components/sections/home/About";
-import { Magic } from "@/components/sections/home/Magic";
 import { Reviews } from "@/components/sections/home/Reviews";
+import { TeaTemple } from "@/components/sections/home/TeaTemple";
 import { Shop } from "@/components/sections/home/Shop";
-import { Connect } from "@/components/sections/home/Connect";
+import { About } from "@/components/sections/home/About";
 import { TeaList } from "@/components/sections/home/TeaList";
-import { Availability } from "@/components/sections/home/Availability";
+import { Connect } from "@/components/sections/home/Connect";
 import { Events } from "@/components/sections/home/Events";
 import { Contact } from "@/components/sections/home/Contact";
 import { ClassSchedule } from "@/components/sections/home/ClassSchedule";
 import { HOME } from "@/content/home";
 
 /**
- * Page order from the handoff (spec 033, ADR 0012):
- * Hero > Tea Ceremony > Tai Chi (+ class calendar) > Yin & Yang > Services >
- * About > Magic > Testimonials > Shop the Tea > Connect > Tea List >
- * Availability > Events > Contact.
+ * Page order (2026-10-11 refocus on tea and tai chi):
+ * Hero > the three cards > Tea Ceremony > Tai Chi (+ class schedule) >
+ * Tea + Tai Chi > Reviews > Private sessions (The Tea Temple) > Shop >
+ * About > Tea List > Connect > Events > Contact.
  *
- * Worlds (the card deck) stays right after the hero: it is the landing page's
- * signature animation, and the handoff only reorders the content sections.
+ * The offer comes first, then the proof, then the two ways to say yes: book a
+ * session, or take the tea home. The story and the ways to stay in touch close
+ * the page. Every section is one tap away in the header (SITE.nav / menu).
  */
 export default function Home() {
   const [tea, taichi] = HOME.practices;
@@ -39,14 +38,12 @@ export default function Home() {
         <ClassSchedule />
       </Practice>
       <YinYang />
-      <Services />
-      <About />
-      <Magic />
       <Reviews />
+      <TeaTemple />
       <Shop />
-      <Connect />
+      <About />
       <TeaList />
-      <Availability />
+      <Connect />
       <Events />
       <Contact />
     </main>

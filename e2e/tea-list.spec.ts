@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { HOME } from "../content/home";
+import { SITE } from "../content/site";
 
 // The tea list is the second conversion path (spec 033 / R7) → money-flow E2E.
 test("tea list accepts a signup and confirms it", async ({ page }) => {
@@ -42,53 +43,59 @@ test("the page carries the handoff sections in order", async ({ page }) => {
     sections.map((section) => section.id),
   );
 
-  // Calendars and events are absent until Ethan sends them (B1, B5).
+  // Events are absent until Ethan sends them (B5). Magic, the service price
+  // list and the availability calendar left the page on 2026-10-11.
   expect(ids).toEqual([
     "worlds",
     "tea-ceremony",
     "tai-chi",
     "yin-yang",
-    "services",
-    "about",
-    "magic",
     "reviews",
+    "book",
     "shop",
-    "connect",
+    "about",
     "tea-list",
-    "availability",
+    "connect",
     "contact",
   ]);
 });
 
-test("magic is back with its inquiry CTA and its own prices", async ({
-  page,
-}) => {
+test("no magic and no service prices anywhere on the page", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
 
-  await expect(
-    page.getByRole("heading", { name: HOME.magic.title }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: HOME.magic.cta.label }),
-  ).toBeVisible();
-  for (const offering of HOME.magic.offerings) {
-    await expect(page.getByText(offering.price, { exact: true })).toBeVisible();
-  }
+  const main = page.locator("main");
+  await expect(main).not.toContainText(/magic/i);
+  // The only prices live in the shop.
+  const pricesOutsideShop = await page.evaluate(() =>
+    [...document.querySelectorAll("main > section:not(#shop)")]
+      .map((section) => section.textContent ?? "")
+      .filter((text) => /\$\s?\d/.test(text)),
+  );
+  expect(pricesOutsideShop).toEqual([]);
 });
 
-test("pricing and booking policy are readable on a phone", async ({ page }) => {
+test("the Tea Temple is offered for booking", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  const temple = page.locator("#book").getByRole("link", {
+    name: new RegExp(HOME.book.primaryCta.label),
+  });
+  await expect(temple).toHaveAttribute("href", SITE.booking.url);
+  await expect(temple).toHaveAttribute("target", "_blank");
+});
+
+test("the booking policy is readable on a phone", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/");
   await page.waitForLoadState("networkidle");
 
-  // The terms are a disclosure now: teaser first, full text once opened.
-  // Charging in full on confirmation is a term that must not hide, so the
-  // block next to the prices starts open.
-  const policy = page.locator("#services details");
-  await expect(policy).toHaveAttribute("open", "");
-  // Whatever the payment term says, it is visible without a click.
+  // The terms sit above the contact form as a disclosure: teaser first, the
+  // full text once opened.
+  const policy = page.locator("#contact details");
+  await policy.locator("summary").click();
   const paymentTerm = HOME.bookingPolicy.items[0].text.slice(0, 40);
   await expect(policy.getByText(paymentTerm)).toBeVisible();
 

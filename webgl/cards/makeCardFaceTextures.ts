@@ -2,208 +2,32 @@ import type { CanvasTexture } from "three";
 import type { WorldSymbol } from "@/content/home";
 import {
   CARD_ART,
+  EMBLEM_PALETTE,
   drawDecoFrame,
   drawTitle,
+  drawSubtitle,
   drawButtonBar,
   textureFromDraw,
 } from "./cardArt";
+import { drawEmblem } from "./emblems";
 
 /**
- * The three card FRONTS - drawn in the gold art-deco style (no photos). Each is
- * `drawDecoFrame` + a title (top) + a centred gold line-art symbol + a "Reveal"
- * button bar (bottom). Cached one texture per symbol (title is fixed per symbol).
+ * The three card FRONTS: the shared lacquered frame, a spaced title, the
+ * card's engraved gold emblem in its medallion (see emblems.ts), a small
+ * subtitle, and the "Reveal" button. One texture per symbol, cached.
  */
-const { GOLD, GOLD_HI, BG, W, H } = CARD_ART;
-// Icon centre sits between the title and the button bar.
-const ICON_CY = H / 2 + 10;
+const { W } = CARD_ART;
+/** Emblem centre and size: between the title ornament and the subtitle. */
+const EMBLEM_CY = 404;
+const EMBLEM_SIZE = 392;
+const SUBTITLE_Y = 642;
 
-function strokeStyle(ctx: CanvasRenderingContext2D, width: number): void {
-  ctx.strokeStyle = GOLD;
-  ctx.lineWidth = width;
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-}
-
-/** A steaming teacup on a saucer. */
-function drawTea(ctx: CanvasRenderingContext2D, cx: number, cy: number): void {
-  strokeStyle(ctx, 9);
-
-  const topW = 140;
-  const botW = 90;
-  const topY = cy - 6;
-  const botY = cy + 110;
-
-  ctx.beginPath();
-  ctx.moveTo(cx - topW, topY);
-  ctx.lineTo(cx - botW, botY - 24);
-  ctx.quadraticCurveTo(cx - botW, botY, cx - botW + 24, botY);
-  ctx.lineTo(cx + botW - 24, botY);
-  ctx.quadraticCurveTo(cx + botW, botY, cx + botW, botY - 24);
-  ctx.lineTo(cx + topW, topY);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.ellipse(cx, topY, topW, 20, 0, 0, Math.PI * 2);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.moveTo(cx + topW - 8, topY + 16);
-  ctx.bezierCurveTo(cx + topW + 72, topY + 6, cx + topW + 72, topY + 96, cx + topW - 22, topY + 88);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.ellipse(cx, botY + 28, topW + 28, 24, 0, 0, Math.PI * 2);
-  ctx.stroke();
-
-  strokeStyle(ctx, 6);
-  ctx.strokeStyle = GOLD_HI;
-  for (const dx of [-40, 40]) {
-    ctx.beginPath();
-    ctx.moveTo(cx + dx, topY - 28);
-    ctx.bezierCurveTo(
-      cx + dx - 32, topY - 72,
-      cx + dx + 32, topY - 110,
-      cx + dx, topY - 152,
-    );
-    ctx.stroke();
-  }
-}
-
-/** The taijitu (yin-yang). */
-function drawYinYang(ctx: CanvasRenderingContext2D, cx: number, cy: number): void {
-  const R = 145;
-  ctx.fillStyle = GOLD;
-  ctx.beginPath();
-  ctx.arc(cx, cy, R, -Math.PI / 2, Math.PI / 2, false);
-  ctx.arc(cx, cy + R / 2, R / 2, Math.PI / 2, -Math.PI / 2, true);
-  ctx.arc(cx, cy - R / 2, R / 2, Math.PI / 2, -Math.PI / 2, false);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = BG;
-  ctx.beginPath();
-  ctx.arc(cx, cy - R / 2, R * 0.16, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = GOLD;
-  ctx.beginPath();
-  ctx.arc(cx, cy + R / 2, R * 0.16, 0, Math.PI * 2);
-  ctx.fill();
-
-  strokeStyle(ctx, 5);
-  ctx.beginPath();
-  ctx.arc(cx, cy, R, 0, Math.PI * 2);
-  ctx.stroke();
-}
-
-/**
- * Tai-chi master in "ward-off" (Peng): a bow stance with the front knee bent and
- * the back leg extended, one forearm rounded across the chest and the other hand
- * low. Bare-headed (the conical hat was removed and the figure shifted up so it
- * sits centred between the title and the button band — spec 055).
- */
-function drawTaiChi(ctx: CanvasRenderingContext2D, cx: number, cy: number): void {
-  ctx.save();
-  ctx.lineCap = "round";
-  ctx.lineJoin = "round";
-  ctx.strokeStyle = GOLD;
-  ctx.fillStyle = GOLD;
-  ctx.lineWidth = 8;
-
-  // Shift the figure UP within the icon slot: with the hat removed, the natural
-  // visual centre of the figure (head→feet) sits ~40 below the slot's centre, so
-  // we offset cy here to recentre it (and lift it a touch more, per request).
-  cy -= 50;
-
-  const sh = cy - 58; // shoulder line
-  const hp = cy + 24; // hip line
-  const headY = cy - 92;
-  const fy = cy + 190; // foot line
-
-  const foot = (fx: number, fyy: number, dir: number) => {
-    ctx.beginPath();
-    ctx.moveTo(fx - 18 * dir, fyy + 2);
-    ctx.quadraticCurveTo(fx, fyy + 8, fx + 20 * dir, fyy - 2);
-    ctx.stroke();
-  };
-
-  // Head + neck.
-  ctx.beginPath();
-  ctx.arc(cx, headY, 17, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(cx, headY + 17);
-  ctx.lineTo(cx, sh - 2);
-  ctx.stroke();
-
-  // Torso: shoulder line, spine, hip line.
-  ctx.beginPath();
-  ctx.moveTo(cx - 30, sh + 2);
-  ctx.quadraticCurveTo(cx, sh - 8, cx + 30, sh + 2);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(cx, sh - 2);
-  ctx.quadraticCurveTo(cx + 2, cy - 16, cx, hp);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(cx - 22, hp);
-  ctx.quadraticCurveTo(cx, hp + 8, cx + 22, hp);
-  ctx.stroke();
-
-  // Right arm: rounded "ward-off" (peng) forearm carried across the chest.
-  ctx.beginPath();
-  ctx.moveTo(cx + 28, sh + 2);
-  ctx.quadraticCurveTo(cx + 58, cy - 66, cx + 24, cy - 50);
-  ctx.quadraticCurveTo(cx - 14, cy - 36, cx - 30, cy - 42);
-  ctx.stroke();
-
-  // Left arm low, with an open hand.
-  ctx.beginPath();
-  ctx.moveTo(cx - 28, sh + 4);
-  ctx.quadraticCurveTo(cx - 46, cy - 6, cx - 40, cy + 18);
-  ctx.stroke();
-  ctx.lineWidth = 6;
-  for (const a of [-8, 0, 8]) {
-    ctx.beginPath();
-    ctx.moveTo(cx - 40, cy + 18);
-    ctx.lineTo(cx - 50, cy + 16 + a);
-    ctx.stroke();
-  }
-  ctx.lineWidth = 8.5;
-
-  // Bow stance: front (left) leg deeply bent, back (right) leg extended.
-  const sign = -1; // front leg to the left
-  ctx.beginPath();
-  ctx.moveTo(cx + sign * 14, hp + 4);
-  ctx.quadraticCurveTo(cx + sign * 52, cy + 70, cx + sign * 60, cy + 104);
-  ctx.quadraticCurveTo(cx + sign * 60, cy + 150, cx + sign * 92, fy);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(cx + sign * 60, cy + 104, 3.2, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.moveTo(cx - sign * 12, hp + 4);
-  ctx.quadraticCurveTo(cx - sign * 64, cy + 96, cx - sign * 120, cy + 186);
-  ctx.stroke();
-  foot(cx + sign * 92, fy, sign);
-  foot(cx - sign * 120, cy + 186, -sign);
-
-  ctx.restore();
-}
-
-const ICONS: Record<
-  WorldSymbol,
-  (ctx: CanvasRenderingContext2D, cx: number, cy: number) => void
-> = {
-  tea: drawTea,
-  yinyang: drawYinYang,
-  taichi: drawTaiChi,
-};
-
-function drawFace(symbol: WorldSymbol, title: string) {
+function drawFace(symbol: WorldSymbol, title: string, subtitle: string) {
   return (ctx: CanvasRenderingContext2D) => {
     drawDecoFrame(ctx);
     drawTitle(ctx, title);
-    ICONS[symbol](ctx, W / 2, ICON_CY);
+    drawEmblem(ctx, symbol, W / 2, EMBLEM_CY, EMBLEM_SIZE, EMBLEM_PALETTE);
+    if (subtitle) drawSubtitle(ctx, subtitle, SUBTITLE_Y);
     drawButtonBar(ctx, "Reveal");
   };
 }
@@ -214,6 +38,7 @@ const cache: Partial<Record<WorldSymbol, CanvasTexture>> = {};
 export function getCardFaceTexture(
   symbol: WorldSymbol,
   title: string,
+  subtitle = "",
 ): CanvasTexture {
-  return (cache[symbol] ??= textureFromDraw(drawFace(symbol, title)));
+  return (cache[symbol] ??= textureFromDraw(drawFace(symbol, title, subtitle)));
 }

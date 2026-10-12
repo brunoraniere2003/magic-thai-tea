@@ -15,6 +15,6 @@ test("home responds 200 and renders the hero shell", async ({ page }) => {
     page.getByRole("link", { name: HOME.hero.primaryCta.label }),
   ).toBeVisible();
   await expect(
-    page.getByRole("link", { name: "Talk to Ethan" }).first(),
+    page.getByRole("link", { name: HOME.hero.secondaryCta.label }).first(),
   ).toBeVisible();
 });

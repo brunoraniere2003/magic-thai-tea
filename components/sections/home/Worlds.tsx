@@ -8,6 +8,7 @@ import { useDriveProgress } from "@/webgl/core/useDriveProgress";
 import { DeckPoster } from "@/webgl/cards/DeckPoster";
 import type { DeckCard } from "@/webgl/cards/FlippingCardsScene";
 import { useIsMobile } from "@/lib/hooks/useIsMobile";
+import { scrollToAnchor } from "@/lib/smoothScroll";
 import { HOME, type WorldKey } from "@/content/home";
 
 const FlippingCardsScene = dynamic(
@@ -24,18 +25,23 @@ const accentColor: Record<WorldKey, string> = {
   taichi: "#afc4b4",
 };
 
-/** Smoothly bring the contact form into view (the deck's call to action). */
-function scrollToContact() {
-  document
-    .getElementById("contact")
-    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+/**
+ * A card's "Book": the booking site opens in a new tab (the page stays where
+ * it was), an on-page anchor glides into view.
+ */
+function goToBooking(href: string) {
+  if (href.startsWith("http")) {
+    window.open(href, "_blank", "noopener,noreferrer");
+    return;
+  }
+  scrollToAnchor(href);
 }
 
 /**
  * The three-cards centerpiece. On a capable device the cards are a 3D deck that
  * flips on scroll; otherwise (and for keyboard / SEO) the static DeckPoster.
  * Tapping a card's "Reveal" types an invitation into the card itself (no modal),
- * ending in a "Book" button that scrolls to the contact form.
+ * ending in a "Book" button: the Tea Temple for tea, the contact form otherwise.
  */
 export function Worlds() {
   const isMobile = useIsMobile();
@@ -67,6 +73,8 @@ export function Worlds() {
   const cards: DeckCard[] = HOME.worlds.map((world) => ({
     symbol: world.symbol,
     title: world.title,
+    subtitle: world.subtitle,
+    bookHref: world.bookHref,
     blurb: world.blurb,
     color: accentColor[world.key],
     label: world.title,
@@ -114,7 +122,7 @@ export function Worlds() {
                 active={active}
                 progressRef={progressRef}
                 cards={cards}
-                onBook={scrollToContact}
+                onBook={goToBooking}
                 isMobile={isMobile}
               />
             )}

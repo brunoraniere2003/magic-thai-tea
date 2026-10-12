@@ -14,10 +14,21 @@ describe("SITE content", () => {
     expect(SITE.seo.url).toContain("theredflyingdragon.com");
   });
 
-  it("uses in-page anchors for every nav item", () => {
-    for (const item of SITE.nav) {
+  it("uses in-page anchors for every nav and menu item", () => {
+    for (const item of [...SITE.nav, ...SITE.menu]) {
       expect(item.label).toBeTruthy();
       expect(item.href.startsWith("#")).toBe(true);
     }
+  });
+
+  it("keeps the header short and lists every header link in the menu", () => {
+    expect(SITE.nav.length).toBeLessThanOrEqual(5);
+    const menu = new Set(SITE.menu.map((item) => item.href));
+    for (const item of SITE.nav) expect(menu.has(item.href)).toBe(true);
+  });
+
+  it("books private sessions on the Tea Temple", () => {
+    expect(SITE.booking.url).toMatch(/^https:\/\/entertheteatemple\.com\//);
+    expect(SITE.booking.cta).toBeTruthy();
   });
 });

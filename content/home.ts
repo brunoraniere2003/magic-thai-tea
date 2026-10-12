@@ -5,7 +5,13 @@
  * `redflyingdragondevhandoff.md` (8/20/26), archived in
  * `docs/specs/033-content-handoff-2026-08/source-handoff.md`. Since 2026-10-11
  * Ethan edits this file directly (spec 036): this file is the source of truth.
+ *
+ * 2026-10-11 refocus: the site is tea and tai chi only. Magic, the service
+ * price list and the free/busy calendar are gone; private sessions are booked
+ * on The Tea Temple (SITE.booking), and the only prices on the page are the
+ * teas in the shop.
  */
+import { SITE } from "./site";
 
 export interface HeroCta {
   label: string;
@@ -31,8 +37,12 @@ export interface World {
   eyebrow: string;
   title: string;
   essence: string;
+  /** Small spaced line under the card's emblem (e.g. "Gongfu Cha"). */
+  subtitle: string;
   /** Invitation shown inside the card when "revealed" (tap Book to plan). */
   blurb: string;
+  /** Where the card's "Book" goes: an on-page anchor or the booking site. */
+  bookHref: string;
   /** Drawn-icon identifier for the canvas card face. */
   symbol: WorldSymbol;
 }
@@ -75,8 +85,6 @@ export interface YinYangContent {
   cta: HeroCta;
   /** The two halves, shown side by side. */
   images: [PracticeImage, PracticeImage];
-  /** Which Services tier this block quotes. */
-  tierId: string;
 }
 
 export interface AboutContent {
@@ -86,23 +94,16 @@ export interface AboutContent {
   image: PracticeImage;
 }
 
-export interface PricingRow {
-  /** Stable handle, so other sections can quote a tier without matching text. */
-  id: string;
-  /** First column: the tier or offering name. */
-  name: string;
-  /** Dropped by the v2 services table, which shows name + range only. */
-  included?: string;
-  groupSize?: string;
-  duration?: string;
-  price: string;
-}
-
-export interface ServicesContent {
+/** "Enter the Tea Temple": the invitation to book a private session. */
+export interface BookContent {
   eyebrow: string;
   title: string;
-  intro: string;
-  tiers: PricingRow[];
+  body: string;
+  /** The five beats of a session, shown as one quiet line. */
+  steps: string[];
+  primaryCta: HeroCta;
+  secondaryCta: HeroCta;
+  image: PracticeImage;
 }
 
 export interface BookingPolicyItem {
@@ -115,15 +116,6 @@ export interface BookingPolicyContent {
   /** One line shown while the terms are collapsed. */
   teaser: string;
   items: BookingPolicyItem[];
-}
-
-export interface MagicContent {
-  eyebrow: string;
-  /** Handoff section heading: "Also: Wonder, on Request". */
-  title: string;
-  body: string;
-  cta: HeroCta;
-  offerings: PricingRow[];
 }
 
 export interface Review {
@@ -207,34 +199,38 @@ export interface EventsContent {
   items: EventEntry[];
 }
 
+export interface ContactContent extends SectionIntro {
+  /** One line above the form pointing private sessions to The Tea Temple. */
+  templeNote: string;
+  templeLinkLabel: string;
+}
+
 export interface HomeContent {
   hero: HeroContent;
   worldsHeading: SectionIntro;
   worlds: World[];
   practices: Practice[];
   yinYang: YinYangContent;
-  services: ServicesContent;
+  book: BookContent;
   bookingPolicy: BookingPolicyContent;
   about: AboutContent;
-  magic: MagicContent;
   reviewsHeading: SectionIntro;
   reviews: Review[];
   connect: ConnectContent;
   teaList: TeaListContent;
   classesCalendar: CalendarContent;
-  availabilityCalendar: CalendarContent;
   events: EventsContent;
-  contact: SectionIntro;
+  contact: ContactContent;
 }
 
 export const HOME: HomeContent = {
   hero: {
-    eyebrow: "The Red Flying Dragon",
+    eyebrow: "Tea & Tai Chi · San Francisco",
     title: "The Red Flying Dragon",
     subtitle:
-      "Ethan Holtzman honors the Taiwanese art of tea and teaches the moving meditation of tai chi, a ceremony that helps us reconnect with our mind, body and spirit.",
-    primaryCta: { label: "See the practice", href: "#worlds" },
-    secondaryCta: { label: "Talk to Ethan", href: "#contact" },
+      "Taiwanese gongfu tea and Yang-style Tai Chi with Ethan Holtzman. Private ceremonies, classes, and teas to take home.",
+    primaryCta: { label: "Explore the practice", href: "#worlds" },
+    secondaryCta: { label: "Shop the tea", href: "#shop" },
     scrollCue: "Scroll to enter",
   },
 
@@ -248,32 +244,38 @@ export const HOME: HomeContent = {
       key: "tea",
       eyebrow: "The Chinese art of tea",
       title: "Tea",
+      subtitle: "Gongfu Cha",
       essence: "A ceremony that slows the whole room down.",
       blurb:
-        "Book a private tea tasting. A gongfu ceremony performed for you and your guests. Tap Book to choose a date.",
+        "A private gongfu ceremony for you and your guests, at the Tea Temple or in your home. Tap Book to choose a time.",
+      bookHref: SITE.booking.url,
       symbol: "tea",
     },
     {
       key: "taichi",
       eyebrow: "Tai chi chuan",
       title: "Tai Chi",
+      subtitle: "Taiji Quan",
       essence: "Strength that moves like calm.",
       blurb:
-        "Book a tai chi performance or class for your event. Breath, balance, a quiet power. Tap Book to plan a date.",
+        "Book a tai chi class, a private lesson, or a performance for your event. Breath, balance, a quiet power. Tap Book to plan it.",
+      bookHref: "#contact",
       symbol: "taichi",
     },
     {
       key: "yinyang",
       eyebrow: "Balance",
       title: "Yin & Yang",
+      subtitle: "Tea & Tai Chi",
       essence: "Where tea meets tai chi.",
       blurb:
         "Book the full experience. Tea and tai chi together, stillness and motion in one evening. Tap Book to plan it.",
+      bookHref: "#contact",
       symbol: "yinyang",
     },
   ],
 
-  // handoff — Tea Ceremony / Tai Chi
+  // handoff — Tea Ceremony / Tai Chi (tightened 2026-10-11)
   practices: [
     {
       key: "tea",
@@ -281,8 +283,8 @@ export const HOME: HomeContent = {
       eyebrow: "The Chinese art of tea",
       title: "Tea Ceremony",
       short:
-        "Gongfu cha — the art of tea, done slowly. Small clay vessels, patient steepings, full attention. A ritual that invokes quiet serenity and joy — bring your curiosity, come learn and explore.",
-      body: "Gongfu cha is Taiwan's tradition of “tea made with skill” — high-mountain oolongs and aged teas steeped again and again in small clay vessels, each pour a little different from the last. It's less a drink than a pace: unhurried, sensory, present. I lead you through the full ceremony — the smell of the leaf, the sound of the pour, the way the taste unfolds over rounds — as a shared ritual of hospitality, curiosity, and quiet joy. No tea knowledge required. Just come and taste.",
+        "Gongfu cha: the art of tea, done slowly. Small clay vessels, patient steepings, full attention.",
+      body: "It's Taiwan's tradition of “tea made with skill”: high-mountain oolongs steeped again and again, each pour a little different from the last. I guide you through the whole ritual, the smell of the leaf, the sound of the pour, the way the taste opens over rounds. No tea knowledge required. Just come and taste.",
       formats: ["Intimate tasting", "Group session", "Private event"],
       image: {
         src: "/images/tea/tea-ceremony-fire.jpg",
@@ -303,7 +305,7 @@ export const HOME: HomeContent = {
           alt: "Ethan Holtzman smiling while pouring tea for guests during a ceremony",
         },
       ],
-      cta: { label: "Reserve a tasting", href: "#contact" },
+      cta: { label: "Book a tea session", href: SITE.booking.url },
     },
     {
       key: "taichi",
@@ -311,8 +313,8 @@ export const HOME: HomeContent = {
       eyebrow: "Tai chi chuan",
       title: "Tai Chi",
       short:
-        "Tai Chi trains soft but powerful movement, generated from cultivated inner energy — an internal art, a discipline of qigong.",
-      body: "Tai Chi is an internal martial art — soft on the outside, powerful underneath, generated from breath and cultivated inner energy rather than muscle. Trained through the Yang-style forms passed down by my teacher, Sifu Chen, in Taipei, it builds balance, root, and a calm nervous system through slow, deliberate movement. Some call it moving meditation. I call it strength that doesn't announce itself.",
+        "An internal martial art: soft on the outside, powerful underneath, moved by breath and cultivated inner energy.",
+      body: "I teach the Yang-style forms passed down by my teacher, Sifu Chen, in Taipei. Slow, deliberate movement that builds balance, root, and a calm nervous system. Some call it moving meditation. I call it strength that doesn't announce itself.",
       formats: ["Private lesson", "Small group", "Event performance"],
       image: {
         src: "/images/tai-chi/tai-chi-teaching.jpg",
@@ -343,9 +345,9 @@ export const HOME: HomeContent = {
 
   // handoff — Yin & Yang (Combined)
   yinYang: {
-    eyebrow: "Balance",
+    eyebrow: "Tea + Tai Chi",
     title: "Yin & Yang",
-    body: "Tea slows you down. Tai Chi grounds you. Together, they're a full evening of stillness and motion — a ceremony for the body and the senses, shaped around your space and your group.",
+    body: "Tea slows you down. Tai Chi grounds you. Together, they're a full evening of stillness and motion, a ceremony for the body and the senses, shaped around your space and your group.",
     cta: { label: "Plan the full evening", href: "#contact" },
     images: [
       {
@@ -358,42 +360,23 @@ export const HOME: HomeContent = {
         alt: "Ethan Holtzman guiding a student through a tai chi movement outdoors",
       },
     ],
-    tierId: "yin-yang",
   },
 
-  // handoff — Services (primary pricing table)
-  services: {
-    eyebrow: "What you can book",
-    title: "Tea & Tai Chi",
-    intro:
-      "Ranges, so you know the ballpark before you write. Tell Ethan what you have in mind and he will quote it properly.",
-    tiers: [
-      {
-        id: "tea-private",
-        name: "Tea Ceremony — Private (1–2 guests)",
-        price: "$150–$350",
-      },
-      {
-        id: "tea-group",
-        name: "Tea Ceremony — Group (3–6 guests)",
-        price: "$300–$600",
-      },
-      {
-        id: "yin-yang",
-        name: "Yin & Yang — Combined Experience",
-        price: "$350–$750",
-      },
-      {
-        id: "tai-chi-private",
-        name: "Tai Chi — Private Lesson",
-        price: "$120–$250",
-      },
-      {
-        id: "tai-chi-group",
-        name: "Tai Chi — Small Group / Event",
-        price: "$250–$600",
-      },
-    ],
+  // Private sessions are booked on The Tea Temple (entertheteatemple.com).
+  book: {
+    eyebrow: "Private sessions",
+    title: "Enter the Tea Temple",
+    body: "Taiwanese oolong, unhurried conversation, and a few minutes of grounding. In my tea room in San Francisco, or brought to you anywhere in the Bay Area, for one to five guests.",
+    steps: ["Arrive", "Settle", "Ground", "Share", "Reconnect"],
+    primaryCta: { label: "Enter the Tea Temple", href: SITE.booking.url },
+    secondaryCta: {
+      label: "Planning an event? Write to Ethan",
+      href: "#contact",
+    },
+    image: {
+      src: "/images/tea/tea-pouring-smiling.jpg",
+      alt: "Ethan Holtzman smiling while pouring tea for his guests",
+    },
   },
 
   bookingPolicy: {
@@ -419,40 +402,14 @@ export const HOME: HomeContent = {
     eyebrow: "About",
     title: "About Ethan",
     paragraphs: [
-      "I come from a family of magicians. I grew up backstage before I grew up anywhere else, and sleight of hand was the first language I learned for presence, timing, and connection.",
-      "That same instinct carried me into tea and into Tai Chi. In Taiwan and Los Angeles, I trained as a gongfu tea apprentice, learning the ceremony leaf by leaf, steep by steep, and now work with growers and importers to bring that tradition home. In Taipei, I studied Tai Chi and White Crane under my teacher, Sifu Chen — an internal art built on breath, root, and cultivated inner strength.",
-      "Three crafts, one thread: helping people slow down, pay attention, and feel something real — whether it's a card vanishing in your hand, a form moving through stillness, or a tea opening over six steepings. Come find out for yourself.",
+      "I trained as a gongfu tea apprentice in Taiwan and Los Angeles, learning the ceremony leaf by leaf, steep by steep. Today I work with growers and importers to bring those teas home to San Francisco.",
+      "In Taipei I trained under my teacher, Sifu Chen: Yang 37 Tai Chi as a 5th-generation practitioner, and Whooping White Crane as a 4th. Both are internal arts, built on breath, root, and quiet inner strength.",
+      "Two practices, one thread: helping people slow down, come back into their bodies, and feel something real, whether it's a form moving through stillness or a tea opening over six steepings. Come find out for yourself.",
     ],
     image: {
       src: "/images/hero-ethan-tea.jpg",
       alt: "Portrait of Ethan Holtzman pouring tea",
     },
-  },
-
-  // handoff — Magic (back on the page: ADR 0012)
-  magic: {
-    eyebrow: "Magic",
-    title: "Also: Wonder, on Request",
-    body: "Magic runs in my family. It's where I learned presence and timing before I ever picked up a tea pot or trained a form. I still perform and I still teach: close-up walkabout magic for private parties, restaurants, and corporate events; small parlor sets for intimate gatherings; and 1:1 coaching for people who want to learn sleight of hand itself, from fundamentals to advanced technique. Ask about weaving a few minutes of astonishment into your tea or Tai Chi booking — or book magic on its own.",
-    cta: { label: "Inquire about magic", href: "#contact" },
-    offerings: [
-      {
-        id: "magic-show",
-        name: "Magic Show / Walkabout",
-        included:
-          "Close-up magic for private events, corporate parties, restaurant walkabout",
-        duration: "1–3 hrs",
-        price: "$400–$1,200",
-      },
-      {
-        id: "magic-coaching",
-        name: "Magic Coaching",
-        included:
-          "1:1 mentorship, sleight of hand fundamentals through advanced technique",
-        duration: "60–90 min/session",
-        price: "$150–$300",
-      },
-    ],
   },
 
   reviewsHeading: {
@@ -515,7 +472,7 @@ export const HOME: HomeContent = {
         label: "Instagram",
         value: "@theredflyingdragon",
         href: "https://www.instagram.com/theredflyingdragon",
-        note: "tea, Tai Chi, and magic behind the scenes",
+        note: "tea and Tai Chi, behind the scenes",
         // Instagram has no profile embed (Meta only exposes single posts, and
         // the profile page is login-walled). So the card embeds a real post
         // from the account and links out to the profile.
@@ -574,7 +531,7 @@ export const HOME: HomeContent = {
   teaList: {
     eyebrow: "Newsletter",
     title: "Join the Tea List",
-    body: "Upcoming ceremonies, Tai Chi sessions, magic nights, and the occasional exclusive release — straight to your inbox. No spam, just the good stuff.",
+    body: "Upcoming ceremonies, Tai Chi sessions, and the occasional limited release, straight to your inbox. No spam, just the good stuff.",
     nameLabel: "Name",
     emailLabel: "Email",
     buttonLabel: "Join the list",
@@ -582,20 +539,12 @@ export const HOME: HomeContent = {
     errorMessage: "Something went wrong. Please try again in a moment.",
   },
 
-  // handoff — Calendar / Availability (1 of 2: public class schedule)
+  // handoff — public Tai Chi class schedule (drawn from the calendar feed)
   classesCalendar: {
     title: "Upcoming Tai Chi Sessions",
-    body: "Regular sessions, open to join — see dates, times, and locations below.",
+    body: "Regular sessions, open to join. Dates, times, and locations below.",
     cta: "View the schedule",
     frameTitle: "Tai Chi class schedule calendar",
-  },
-
-  // handoff — Calendar / Availability (2 of 2: free/busy only)
-  availabilityCalendar: {
-    title: "See When I'm Free",
-    body: "Peek at my calendar before you reach out — open slots are marked, so you know what's realistic before we talk dates.",
-    cta: "View availability",
-    frameTitle: "Availability calendar, free and busy times only",
   },
 
   // handoff — Contact / Events. Empty at launch (blocker B5).
@@ -609,6 +558,8 @@ export const HOME: HomeContent = {
     eyebrow: "Get in touch",
     title: "Talk to Ethan.",
     intro:
-      "Tell Ethan what you have in mind, a tea tasting, a tai chi session, or both, and he will reply to you personally.",
+      "Planning an event, a Tai Chi class, or a tea evening for your team? Tell Ethan what you have in mind and he will reply personally.",
+    templeNote: "Booking a private tea session?",
+    templeLinkLabel: "Go straight to the Tea Temple",
   },
 };

@@ -1,16 +1,16 @@
 /**
- * "Shop the Tea" (handoff v2, 3/9/2026).
+ * "Shop the Tea" (handoff v2, 3/9/2026; reshaped 2026-10-11).
  *
  * Every product lives on Stripe: each `buyUrl` is a hosted page that owns the
  * real price, the quantity selector, shipping and the receipt. **Stripe is the
  * source of truth for price** — the numbers here are a display copy, so they
  * must be checked by hand against the dashboard before every launch.
  *
- * The page is shaped like an apothecary cabinet: the price belongs to the
- * SHELF (a tier), not to each drawer, and one photographic plate stands for a
- * whole chapter instead of one stock photo per product.
+ * The page is two symmetric rows of three: the three tiers of single teas
+ * (price said once per tier), then the two boxes and the Ginger Elixir, with
+ * the full box in the middle. These are the only prices on the whole site.
  *
- * Plates are PLACEHOLDERS (Unsplash license, downloaded into
+ * Plates marked `placeholder` are stand-ins (Unsplash license, downloaded into
  * `public/images/shop/` so the page makes no third-party request). They show
  * leaf, steam and liquor — never invented packaging, which would be a claim we
  * cannot make. Swapping in Ethan's real photography is a one-line edit each.
@@ -36,7 +36,7 @@ export interface ShopItem {
   buyUrl: string;
 }
 
-/** One shelf of the cabinet: a price, a plate, and the drawers under it. */
+/** One tier of single teas: a price, a plate, and the teas under it. */
 export interface ShopShelf {
   id: string;
   label: string;
@@ -47,27 +47,33 @@ export interface ShopShelf {
   items: ShopItem[];
 }
 
-/** A box has its own price, because each one is a different size of answer. */
+/** A box or the Elixir: priced on its own, with its own plate. */
 export interface ShopBox extends ShopItem {
   price: string;
-  /** "lead" gets the plate and the largest type. */
-  weight: "lead" | "plain";
+  /** Small label over the name ("The full box"). */
+  eyebrow: string;
+  plate: ShopPlate;
+  /** The one card that gets the gold frame and the filled button. */
+  featured?: boolean;
 }
 
 export interface ShopContent {
   eyebrow: string;
   title: string;
   body: string;
-  /** Short lines on the counter plaque, next to the shelves. */
-  counter: string[];
-  /** The long version, folded away under a disclosure. */
-  policy: { title: string; teaser: string; items: { label: string; text: string }[] };
+  /** One quiet line under the title: checkout, quantity, shipping. */
+  fineprint: string[];
   /** Turnaround time, once Ethan confirms it (blocker B13). */
   turnaround?: string;
+  /** Labels over the two rows. */
+  rows: { teas: string; collection: string };
   shelves: ShopShelf[];
-  boxes: { headline: string; arithmetic: string; plate: ShopPlate; items: ShopBox[] };
-  /** Visible on every drawer: the visitor learns where the click lands. */
+  /** Second row, left to right; the featured one sits in the middle. */
+  collection: ShopBox[];
+  /** Accessible name prefix: the visitor learns where the click lands. */
   buyLabel: string;
+  /** What the buy control visibly says. */
+  buyText: string;
 }
 
 const plate = (name: string, alt: string): ShopPlate => ({
@@ -79,33 +85,17 @@ const plate = (name: string, alt: string): ShopPlate => ({
 export const SHOP: ShopContent = {
   eyebrow: "Shop",
   title: "Shop the Tea",
-  body: "Take the ceremony home. Single-origin teas from Taiwan, packed 15g at a time — enough for several gongfu-style steepings.",
+  body: "Single-origin Taiwanese oolongs in 15g pouches. Take the ceremony home.",
   buyLabel: "Buy on Stripe",
+  buyText: "Buy",
 
-  counter: [
-    "$8.95 flat shipping, U.S. only",
-    "One tea, one order — each checkout is separate",
-    "Quantity is set on the Stripe page",
+  fineprint: [
+    "$8.95 flat shipping per order, U.S. only",
+    "Choose quantity at checkout",
+    "Secure checkout by Stripe",
   ],
 
-  policy: {
-    title: "Shipping & orders",
-    teaser: "Flat rate, U.S. only, one order per item",
-    items: [
-      {
-        label: "Shipping",
-        text: "$8.95 flat, added automatically at checkout. United States only.",
-      },
-      {
-        label: "Orders",
-        text: "Each tea checks out on its own Stripe page, so three single teas are three orders and three shipping fees. A box travels as one.",
-      },
-      {
-        label: "Quantity",
-        text: "Set it on the Stripe page: up to 10 packs per tea, up to 5 for the Ginger Elixir.",
-      },
-    ],
-  },
+  rows: { teas: "Single teas", collection: "Boxes & Elixir" },
 
   shelves: [
     {
@@ -177,66 +167,57 @@ export const SHOP: ShopContent = {
         },
       ],
     },
-    {
-      id: "elixir",
-      label: "Elixir",
-      price: "$5",
-      unit: "/ pack",
-      plate: plate("remedy", "Ginger and dried fruit beside a warm cup"),
-      items: [
-        {
-          id: "ginger-elixir",
-          name: "Ginger Elixir",
-          hanzi: "黑糖薑茶",
-          note: "Black Sugar, Ginger, Longan Fruit, Jujube (Red Date).",
-          buyUrl: "https://buy.stripe.com/7sY14ggcu0gb99adASeEo0l",
-        },
-      ],
-    },
   ],
 
-  boxes: {
-    headline: "Three teas, three shipping fees. One box, one.",
-    arithmetic:
-      "Bought one by one, three single teas are three orders — $26.85 in shipping. The boxes travel as one.",
-    plate: plate("boxes", "A full gongfu tea setting laid out in warm light"),
-    items: [
-      {
-        id: "dragons-feast",
-        name: "Dragon's Feast",
-        hanzi: "全席",
-        note: "The full box: all six teas plus the Ginger Elixir.",
-        price: "$79",
-        weight: "lead",
-        buyUrl: "https://buy.stripe.com/7sY6oA9O65Av8567cueEo0o",
+  collection: [
+    {
+      id: "six-tea-sampler",
+      name: "Six-Tea Sampler",
+      hanzi: "六品",
+      eyebrow: "Box",
+      // The full box beside it includes the Elixir; say plainly this one does
+      // not, or a $74 buyer may expect it in the parcel.
+      note: "One 15g pack of each of the six teas. Elixir not included.",
+      price: "$74",
+      plate: {
+        src: "/images/tea/tea-spread-overhead.jpg",
+        alt: "A full gongfu tea spread seen from above, cups and pots laid out",
       },
-      {
-        id: "six-tea-sampler",
-        name: "Six-Tea Sampler",
-        hanzi: "六品",
-        // The handoff's "(not Ginger Elixir)" has to survive: the Elixir is on
-        // sale a few centimetres above, and the $79 box right beside this one is
-        // described as "all six teas plus the Ginger Elixir" - so "all six teas"
-        // on its own invites a $74 buyer to expect the Elixir in the parcel.
-        // Our sentence, not Ethan's copy, so no em dash (ADR 0014).
-        note: "One 15g pack of all six teas. The Ginger Elixir is not included.",
-        price: "$74",
-        weight: "plain",
-        buyUrl: "https://buy.stripe.com/00w9AMbWe9QL2KM54meEo0n",
-      },
-    ],
-  },
+      buyUrl: "https://buy.stripe.com/00w9AMbWe9QL2KM54meEo0n",
+    },
+    {
+      id: "dragons-feast",
+      name: "Dragon's Feast",
+      hanzi: "全席",
+      eyebrow: "The full box",
+      note: "All six teas plus the Ginger Elixir, shipped as one order.",
+      price: "$79",
+      featured: true,
+      plate: plate("boxes", "A full gongfu tea setting laid out in warm light"),
+      buyUrl: "https://buy.stripe.com/7sY6oA9O65Av8567cueEo0o",
+    },
+    {
+      id: "ginger-elixir",
+      name: "Ginger Elixir",
+      hanzi: "黑糖薑茶",
+      eyebrow: "Elixir · per pack",
+      note: "Black Sugar, Ginger, Longan Fruit, Jujube (Red Date).",
+      price: "$5",
+      plate: plate("remedy", "Ginger and dried fruit beside a warm cup"),
+      buyUrl: "https://buy.stripe.com/7sY14ggcu0gb99adASeEo0l",
+    },
+  ],
 };
 
-/** Every purchasable thing on the page, shelves first then boxes. */
+/** Every purchasable thing on the page: the single teas, then the second row. */
 export function allShopItems(): (ShopItem & { price?: string })[] {
-  return [...SHOP.shelves.flatMap((shelf) => shelf.items), ...SHOP.boxes.items];
+  return [...SHOP.shelves.flatMap((shelf) => shelf.items), ...SHOP.collection];
 }
 
-/** What a drawer costs: its own price if it has one, else its shelf's. */
+/** What an item costs: its own price if it has one, else its tier's. */
 export function priceOf(item: ShopItem): string {
-  const box = SHOP.boxes.items.find((b) => b.id === item.id);
-  if (box) return box.price;
+  const own = SHOP.collection.find((b) => b.id === item.id);
+  if (own) return own.price;
   const shelf = SHOP.shelves.find((s) => s.items.some((i) => i.id === item.id));
   return shelf ? shelf.price : "";
 }

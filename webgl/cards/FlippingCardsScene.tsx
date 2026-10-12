@@ -28,6 +28,10 @@ export interface DeckCard {
   symbol: WorldSymbol;
   /** Card title, drawn on the face. */
   title: string;
+  /** Small spaced line under the emblem. */
+  subtitle: string;
+  /** Where "Book" goes: an on-page anchor or the booking site. */
+  bookHref: string;
   /** Invitation typed into the card when revealed (tap Book to plan). */
   blurb: string;
   /** Per-world accent (reserved for tinting). */
@@ -56,8 +60,8 @@ interface FlipCardProps {
   index: number;
   count: number;
   progressRef: RefObject<number>;
-  /** Scroll the page to the contact form (the card's "Book" action). */
-  onBook: () => void;
+  /** The card's "Book" action: go to `href` (anchor or booking site). */
+  onBook: (href: string) => void;
   /** Phone layout: focused carousel (spec 031). */
   isMobile: boolean;
 }
@@ -101,7 +105,7 @@ function getDetailSurface(key: string): DetailSurface {
  *
  * Reveal happens IN the card (no modal): tapping the "Reveal" band swaps the
  * front to a typed-in invitation (word-by-word) with a "Book" button that fades
- * in at the end. Tapping "Book" scrolls to contact; tapping the card body again
+ * in at the end. Tapping "Book" follows the card's bookHref; tapping the card body again
  * flips back to the face. Only reacts once the card is actually face-up.
  */
 function FlipCard({
@@ -166,7 +170,7 @@ function FlipCard({
         if (!faceUp.current) return; // ignore until the face is showing
         const onButton = (e.uv?.y ?? 1) < BUTTON_BAND;
         if (revealed) {
-          if (onButton) onBook();
+          if (onButton) onBook(card.bookHref);
           else {
             setRevealed(false); // tap body → back to the face
             revealAnim.current = 0;
@@ -188,7 +192,7 @@ function FlipCard({
           map={
             revealed
               ? getDetailSurface(card.symbol).texture
-              : getCardFaceTexture(card.symbol, card.title)
+              : getCardFaceTexture(card.symbol, card.title, card.subtitle)
           }
           roughness={0.6}
           metalness={0.1}
@@ -210,8 +214,8 @@ export interface FlippingCardsSceneProps {
   active: boolean;
   progressRef: RefObject<number>;
   cards: DeckCard[];
-  /** Scroll the page to the contact form when a card's "Book" is tapped. */
-  onBook: () => void;
+  /** Called with the card's `bookHref` when its "Book" is tapped. */
+  onBook: (href: string) => void;
   /** Phone layout (spec 031): focused carousel. */
   isMobile?: boolean;
 }
