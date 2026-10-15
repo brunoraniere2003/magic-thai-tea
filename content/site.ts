@@ -35,7 +35,7 @@ export interface SiteBooking {
 export interface Site {
   name: string;
   tagline: string;
-  /** The header's text links (desktop). Keep it short: five at most. */
+  /** The header's text links (desktop). Keep it short: six at most. */
   nav: SiteNavItem[];
   /** Every section worth jumping to, in page order: phone menu and footer. */
   menu: SiteNavItem[];
@@ -52,6 +52,7 @@ export const SITE: Site = {
     { label: "Tai Chi", href: "#tai-chi" },
     { label: "Shop", href: "#shop" },
     { label: "About", href: "#about" },
+    { label: "Newsletter", href: "#tea-list" },
     { label: "Contact", href: "#contact" },
   ],
   menu: [
@@ -61,6 +62,7 @@ export const SITE: Site = {
     { label: "Private Sessions", href: "#book" },
     { label: "Shop the Tea", href: "#shop" },
     { label: "About Ethan", href: "#about" },
+    { label: "Newsletter", href: "#tea-list" },
     { label: "Contact", href: "#contact" },
   ],
   booking: {
@@ -76,7 +78,7 @@ export const SITE: Site = {
   seo: {
     title: "The Red Flying Dragon: Tea & Tai Chi by Ethan Holtzman",
     description:
-      "Taiwanese gongfu tea and Yang-style Tai Chi with Ethan Holtzman in San Francisco. Private tea ceremonies, Tai Chi classes, and single-origin oolongs to take home.",
+      "Taiwanese gongfu tea and Yang-style Tai Chi with Ethan Holtzman, serving San Francisco, the Bay Area, and beyond. Private tea ceremonies, Tai Chi classes, and single-origin oolongs to take home.",
     url: "https://theredflyingdragon.com",
   },
 };

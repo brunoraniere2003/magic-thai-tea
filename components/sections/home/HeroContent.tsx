@@ -9,7 +9,7 @@ import { scrollToAnchor } from "@/lib/smoothScroll";
  * instead of jumping instantly.
  */
 export function HeroContent() {
-  const { eyebrow, title, subtitle, primaryCta, secondaryCta, scrollCue } =
+  const { eyebrow, region, title, subtitle, primaryCta, secondaryCta, scrollCue } =
     HOME.hero;
 
   const onCtaClick = (
@@ -28,6 +28,9 @@ export function HeroContent() {
         className="font-sans text-xs uppercase tracking-[0.35em] text-stone"
       >
         {eyebrow}
+        <span className="mt-2 block text-balance font-display text-base normal-case italic tracking-normal text-gold/80 sm:text-lg">
+          {region}
+        </span>
       </p>
 
       <h1

@@ -27,7 +27,7 @@ export function TeaList() {
               alt="Ethan Holtzman seated at a fire-lit tea ceremony"
               fill
               sizes="(min-width: 1024px) 45vw, 100vw"
-              className="object-cover"
+              className="object-cover object-[50%_8%] lg:object-center"
             />
             <span
               aria-hidden

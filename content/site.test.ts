@@ -22,7 +22,7 @@ describe("SITE content", () => {
   });
 
   it("keeps the header short and lists every header link in the menu", () => {
-    expect(SITE.nav.length).toBeLessThanOrEqual(5);
+    expect(SITE.nav.length).toBeLessThanOrEqual(6);
     const menu = new Set(SITE.menu.map((item) => item.href));
     for (const item of SITE.nav) expect(menu.has(item.href)).toBe(true);
   });

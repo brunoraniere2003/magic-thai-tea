@@ -20,6 +20,8 @@ export interface HeroCta {
 
 export interface HeroContent {
   eyebrow: string;
+  /** Where Ethan works, shown under the eyebrow. */
+  region: string;
   title: string;
   subtitle: string;
   primaryCta: HeroCta;
@@ -225,7 +227,8 @@ export interface HomeContent {
 
 export const HOME: HomeContent = {
   hero: {
-    eyebrow: "Tea & Tai Chi · San Francisco",
+    eyebrow: "Tea & Tai Chi",
+    region: "Serving San Francisco, the Bay Area & beyond",
     title: "The Red Flying Dragon",
     subtitle:
       "Taiwanese gongfu tea and Yang-style Tai Chi with Ethan Holtzman. Private ceremonies, classes, and teas to take home.",
