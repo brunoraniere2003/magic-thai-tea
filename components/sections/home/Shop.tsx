@@ -2,27 +2,29 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import { Reveal, Stagger, ShelfRule } from "@/components/motion";
 import { SectionHeading } from "@/components/shared";
+import { AddToCart } from "@/components/shop/Cart";
 import {
   SHOP,
-  buyLabelFor,
+  formatPrice,
+  savingsOf,
   type ShopBox,
-  type ShopItem,
   type ShopPlate,
   type ShopShelf,
 } from "@/content/shop";
 
 /**
- * "Shop the Tea" — two symmetric rows of three.
+ * "Shop the Tea" — three symmetric rows of three.
  *
  * Row one is the three tiers of single teas, the price said once per tier.
  * Row two is the Sampler, the full Dragon's Feast box in the middle (the only
- * gold-framed card), and the Ginger Elixir. Copy is cut to the tea's name and
- * Ethan's tasting note; the rules a buyer needs (shipping, quantity, where the
- * click goes) sit in one quiet line under the title, before any buy control.
+ * gold-framed card), and the Ginger Elixir. Row three is the glass teaware,
+ * the set in the middle with what it saves. Copy is cut to the name and
+ * Ethan's note; the rules a buyer needs (shipping, pickup, Stripe) sit in one
+ * quiet line under the title, before any add control.
  *
- * Phones get each row as a swipeable rail with the next card peeking in, so
- * the shop is two screens tall instead of six. Buying always opens Stripe in
- * a new tab, and every control is named for what it buys (buyLabelFor).
+ * Phones get each row as a swipeable rail with the next card peeking in.
+ * "Add" puts the item in the cart (components/shop/Cart.tsx); every control
+ * is named for what it adds (addLabelFor).
  */
 export function Shop() {
   const fineprint = SHOP.turnaround
@@ -82,6 +84,15 @@ export function Shop() {
           </li>
         ))}
       </Rail>
+
+      <RowLabel label={SHOP.rows.teaware} />
+      <Rail>
+        {SHOP.teaware.map((box) => (
+          <li key={box.id} className={CELL}>
+            <CollectionCard box={box} />
+          </li>
+        ))}
+      </Rail>
     </section>
   );
 }
@@ -126,7 +137,7 @@ function TierCard({ shelf }: { shelf: ShopShelf }) {
             {shelf.label}
           </h4>
           <p className="shrink-0 font-display text-2xl leading-none text-cream">
-            {shelf.price}
+            {formatPrice(shelf.price)}
             <span className="ml-1.5 font-sans text-xs text-stone">
               {shelf.unit}
             </span>
@@ -152,7 +163,7 @@ function TierCard({ shelf }: { shelf: ShopShelf }) {
                   {item.note}
                 </span>
               </span>
-              <BuyButton item={item} />
+              <AddToCart item={item} />
             </li>
           ))}
         </ul>
@@ -161,8 +172,10 @@ function TierCard({ shelf }: { shelf: ShopShelf }) {
   );
 }
 
-/** A box or the Elixir: plate, name and price, the note, one button. */
+/** A box, the Elixir or a piece of teaware: plate, name and price, note, button. */
 function CollectionCard({ box }: { box: ShopBox }) {
+  const savings = savingsOf(box);
+
   return (
     <article
       className={`relative flex w-full flex-col overflow-hidden rounded-2xl border bg-cream/[0.025] ${
@@ -171,7 +184,16 @@ function CollectionCard({ box }: { box: ShopBox }) {
           : "border-stone/15"
       }`}
     >
-      <Plate plate={box.plate} />
+      {box.plate ? (
+        <Plate plate={box.plate} />
+      ) : (
+        <HanziPlate hanzi={box.hanzi} />
+      )}
+      {savings > 0 ? (
+        <span className="absolute right-4 top-4 rounded-full border border-gold/60 bg-stage/80 px-3 py-1 font-sans text-[0.65rem] font-medium uppercase tracking-[0.2em] text-gold backdrop-blur-sm">
+          Save {formatPrice(savings)}
+        </span>
+      ) : null}
       <div className="flex flex-1 flex-col px-5 pb-6 pt-5 sm:px-6">
         <p className="font-sans text-[0.7rem] uppercase tracking-[0.35em] text-gold">
           {box.eyebrow}
@@ -187,48 +209,32 @@ function CollectionCard({ box }: { box: ShopBox }) {
             {box.name}
           </h4>
           <p className="shrink-0 font-display text-2xl leading-none text-cream">
-            {box.price}
+            {formatPrice(box.price)}
           </p>
         </div>
         <p className="mt-2 flex-1 font-sans text-sm leading-relaxed text-stone">
           {box.note}
         </p>
-        <BuyButton item={box} block filled={box.featured} />
+        <AddToCart item={box} block filled={box.featured} />
       </div>
     </article>
   );
 }
 
 /**
- * The buy control. Visibly a short "Buy ↗"; its accessible name says what it
- * buys, the price and that it opens Stripe.
+ * Until Ethan's photo arrives: the name in Chinese, large and quiet, on the
+ * same warm dark the photographs are graded to.
  */
-function BuyButton({
-  item,
-  block = false,
-  filled = false,
-}: {
-  item: ShopItem;
-  block?: boolean;
-  filled?: boolean;
-}) {
+function HanziPlate({ hanzi }: { hanzi: string }) {
   return (
-    <a
-      href={item.buyUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={buyLabelFor(item)}
-      className={`inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full border px-5 py-2.5 font-sans text-xs font-medium uppercase tracking-[0.2em] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold ${
-        block ? "mt-5 w-full" : ""
-      } ${
-        filled
-          ? "border-gold bg-gold text-stage hover:bg-amber"
-          : "border-gold/50 text-gold hover:border-gold hover:bg-gold hover:text-stage"
-      }`}
+    <div
+      aria-hidden
+      className="relative flex aspect-[16/10] w-full items-center justify-center overflow-hidden bg-[radial-gradient(80%_90%_at_50%_100%,rgba(224,160,64,0.16),transparent_70%)] bg-crimson/30"
     >
-      {SHOP.buyText}
-      <span aria-hidden>↗</span>
-    </a>
+      <span className="font-display text-5xl tracking-[0.2em] text-gold/45">
+        {hanzi}
+      </span>
+    </div>
   );
 }
 

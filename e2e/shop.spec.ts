@@ -1,32 +1,19 @@
 import { test, expect } from "@playwright/test";
-import { SHOP, allShopItems, buyLabelFor } from "../content/shop";
+import { SHOP, addLabelFor, allShopItems, formatPrice } from "../content/shop";
 
 const ITEMS = allShopItems();
 // The fine-print line about shipping, whatever its wording or price.
 const SHIPPING_LINE =
   SHOP.fineprint.find((line) => /shipping/i.test(line)) ?? "";
 
-// The shop is the site's second money path: every control must reach Stripe.
-test("every shop item links to its own Stripe page, in a new tab", async ({
+test("every shop item has its own add control, named for what it adds", async ({
   page,
 }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-
-  const links = page.locator('#shop a[href*="buy.stripe.com"]');
-  await expect(links).toHaveCount(ITEMS.length);
-
-  const hrefs = await links.evaluateAll((els) =>
-    els.map((el) => (el as HTMLAnchorElement).href),
-  );
-  expect(new Set(hrefs).size).toBe(ITEMS.length);
-
-  for (const attr of ["target", "rel"]) {
-    const values = await links.evaluateAll(
-      (els, name) => els.map((el) => el.getAttribute(name)),
-      attr,
-    );
-    expect(values.every(Boolean)).toBe(true);
+  for (const item of ITEMS) {
+    await expect(
+      page.getByRole("button", { name: addLabelFor(item), exact: true }),
+    ).toHaveCount(1);
   }
 });
 
@@ -36,47 +23,53 @@ test("no private booking link is ever exposed", async ({ page }) => {
   expect(html).not.toContain("book.stripe.com");
 });
 
-test("the shipping rule is stated before any buy control", async ({ page }) => {
+test("the shipping rule is stated before any add control", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
 
   expect(SHIPPING_LINE).not.toBe("");
-  const shipping = page.getByText(SHIPPING_LINE).first();
-  await expect(shipping).toBeVisible();
+  await expect(page.getByText(SHIPPING_LINE).first()).toBeVisible();
 
-  // "Before" means in reading order: the fine print sits under the title, so
-  // the rule is read (and announced) ahead of every buy control.
   const precedes = await page.evaluate((line) => {
     const note = [...document.querySelectorAll("#shop li")].find((el) =>
       el.textContent?.includes(line),
     );
-    const firstBuy = document.querySelector(
-      '#shop a[href*="buy.stripe.com"]',
-    );
-    if (!note || !firstBuy) return false;
+    const firstAdd = document.querySelector("#shop button");
+    if (!note || !firstAdd) return false;
     return Boolean(
-      note.compareDocumentPosition(firstBuy) &
-        Node.DOCUMENT_POSITION_FOLLOWING,
+      note.compareDocumentPosition(firstAdd) & Node.DOCUMENT_POSITION_FOLLOWING,
     );
   }, SHIPPING_LINE);
   expect(precedes).toBe(true);
 });
 
-test("each buy control names what it buys, and says where it goes", async ({
+test("the cart counts, totals, and counts down to free shipping", async ({
   page,
 }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
 
-  // Every buy control is named after what it buys, its price and where it
-  // goes (buyLabelFor), so ten links never read as ten identical "Buy".
-  for (const item of ITEMS) {
-    await expect(
-      page.getByRole("link", { name: buyLabelFor(item), exact: true }),
-    ).toHaveCount(1);
-  }
+  const teapot = ITEMS.find((item) => item.id === "glass-teapot")!;
+  const add = page.getByRole("button", {
+    name: addLabelFor(teapot),
+    exact: true,
+  });
+  await add.click();
+  await add.click();
 
-  const names = await page
-    .locator('#shop a[href*="buy.stripe.com"]')
-    .evaluateAll((els) => els.map((el) => el.textContent?.trim() ?? ""));
-  expect(names.every((n) => n.includes(SHOP.buyText))).toBe(true);
+  await page.getByRole("button", { name: "Cart, 2 items" }).click();
+  const drawer = page.getByRole("dialog", { name: "Your cart" });
+  await expect(drawer).toBeVisible();
+  await expect(drawer.getByText(formatPrice(60)).first()).toBeVisible();
+  await expect(
+    drawer.getByText(
+      `You're ${formatPrice(SHOP.shipping.freeOver - 60)} away from free shipping`,
+    ),
+  ).toBeVisible();
+
+  // The cart survives a reload (localStorage).
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: "Cart, 2 items" }),
+  ).toBeVisible();
 });

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { SITE } from "@/content/site";
+import { CartButton } from "@/components/shop/Cart";
 import { buildSmsHref } from "@/lib/contact/sms";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { scrollToAnchor, scrollToTop } from "@/lib/smoothScroll";
@@ -48,7 +49,7 @@ const BOOKING_LABEL = `${SITE.booking.cta} at ${SITE.booking.name} (opens in a n
  * Desktop: five text links that light up for the section you are in, and the
  * booking button for The Tea Temple. Tablet: Shop, booking and the menu. Phone:
  * Shop and the menu, which opens a full-screen index of every section plus a
- * card for The Tea Temple. Esc closes; body scroll locks while it is open.
+ * card for The Tea Temple. The cart bag sits beside them on every screen. Esc closes; body scroll locks while it is open.
  */
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -244,6 +245,8 @@ export function Header() {
           >
             Shop
           </Link>
+
+          <CartButton className={open ? "invisible" : ""} />
 
           <a
             href={SITE.booking.url}

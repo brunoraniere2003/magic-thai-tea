@@ -4,6 +4,7 @@ import { SITE } from "@/content/site";
 import { MotionProvider } from "@/lib/animations/MotionProvider";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { CartDrawer } from "@/components/shop/Cart";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -64,6 +65,7 @@ export default function RootLayout({
           <Header />
           {children}
           <Footer />
+          <CartDrawer />
         </MotionProvider>
       </body>
     </html>
