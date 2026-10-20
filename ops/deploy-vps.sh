@@ -142,6 +142,27 @@ fi
 cd "$APP_DIR"
 clear_stale_git_locks
 
+# --- 2b. Stripe key, from the GitHub secret STRIPE_SECRET_KEY ------------------
+# deploy.yml pipes one line, "STRIPE_SECRET_KEY=sk_...", into this command. It
+# goes into the live folder's .env.production (read by `next start`; never in
+# git) and the app restarts if it changed. No line, an empty secret or anything
+# that is not a Stripe secret key changes nothing. The timer sends nothing.
+KEY_CHANGED=0
+if [[ "$VERB" == "deploy" && ! -t 0 ]]; then
+  key_line=$(timeout 5 head -c 512 || true)
+  if [[ "$key_line" =~ ^STRIPE_SECRET_KEY=((sk|rk)_(live|test)_[A-Za-z0-9]+)$ ]]; then
+    key=${BASH_REMATCH[1]}
+    env_file="$APP_DIR/.env.production"
+    if ! grep -qxF "STRIPE_SECRET_KEY=$key" "$env_file" 2>/dev/null; then
+      touch "$env_file" && chmod 600 "$env_file"
+      { grep -v '^STRIPE_SECRET_KEY=' "$env_file" || true; echo "STRIPE_SECRET_KEY=$key"; } >"$env_file.tmp" \
+        && chmod 600 "$env_file.tmp" && mv -f "$env_file.tmp" "$env_file"
+      KEY_CHANGED=1
+      log "Stripe key updated (${key:0:8}...)"
+    fi
+  fi
+fi
+
 # --- 3. Watchdog: the site answers, whatever else happens ---------------------
 if [[ "$VERB" == "sync" ]] && ! wait_healthy 15; then
   log "watchdog: site not answering on :$PORT, restarting $PM2_APP"
@@ -164,7 +185,12 @@ git merge-base --is-ancestor "$SHA" "origin/$BRANCH" \
 
 PREVIOUS=$(git rev-parse HEAD)
 if [[ "$PREVIOUS" == "$SHA" ]]; then
-  [[ "$VERB" == "deploy" ]] && log "already live: $SHA, nothing to do"
+  if [[ "$KEY_CHANGED" == 1 ]]; then
+    log "already live: $SHA, restarting for the new Stripe key"
+    start_app && wait_healthy 90 || die "site did not come back after the key change"
+  elif [[ "$VERB" == "deploy" ]]; then
+    log "already live: $SHA, nothing to do"
+  fi
   exit 0
 fi
 if git merge-base --is-ancestor "$SHA" "$PREVIOUS"; then

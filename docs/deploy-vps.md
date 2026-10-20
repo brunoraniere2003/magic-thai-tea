@@ -136,6 +136,14 @@ delas exige `npm run build` de novo — `pm2 restart --update-env` sozinho **nã
 nada. Para o provedor da tea list, crie `/var/www/magic-thai-tea/.env.production`
 com as chaves de `.env.example`, rode o build e só então reinicie.
 
+**`STRIPE_SECRET_KEY` (checkout do carrinho, 2026-10-19).** Não se edita no
+servidor: vem do secret `STRIPE_SECRET_KEY` do GitHub (Settings → Secrets and
+variables → Actions). O `deploy.yml` manda a chave pelo stdin do SSH (nunca na
+linha de comando nem no log) e o `deploy-vps.sh` a grava em `.env.production`
+(chmod 600) e reinicia o app se ela mudou. Trocar a chave = trocar o secret e
+rodar **Actions → deploy → Run workflow**. Secret vazio não apaga nada. O timer
+de 5 min não mexe na chave.
+
 ## Porta 80 (resolvido em 2026-09-21)
 
 Antes, `http://theredflyingdragon.com` caía no app `banco-horas` — que era dono da porta 80 — **com a API dele aberta** (`/api/state`). Agora:
