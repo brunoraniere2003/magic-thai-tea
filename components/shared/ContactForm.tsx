@@ -14,7 +14,13 @@ import {
   type ContactErrors,
 } from "@/lib/contact/validateContactForm";
 
-const EMPTY: ContactValues = { name: "", email: "", phone: "", message: "" };
+const EMPTY: ContactValues = {
+  name: "",
+  email: "",
+  phone: "",
+  location: "",
+  message: "",
+};
 type Status = "idle" | "submitting" | "success" | "error";
 
 // Leads go straight to Ethan's Flying Dragon Tea inbox via FormSubmit, sent from
@@ -52,7 +58,7 @@ function Field({
 }
 
 /**
- * Contact form (name, email, phone). Sends the lead to the owner's inbox via
+ * Contact form (name, email, phone, event location). Sends the lead to the owner's inbox via
  * FormSubmit (account-free, from the browser). A hidden honeypot (`_honey`)
  * blocks bots. "Text Ethan" (SMS) is always offered too.
  */
@@ -86,6 +92,7 @@ export function ContactForm() {
           Name: values.name.trim(),
           Email: values.email.trim(),
           Phone: values.phone.trim(),
+          "Event location": values.location.trim(),
           Message: values.message.trim(),
           _replyto: values.email.trim(),
           _subject: `New enquiry from ${values.name.trim()} (The Red Flying Dragon)`,
@@ -168,6 +175,22 @@ export function ContactForm() {
               "aria-invalid": Boolean(errors.phone),
               "aria-describedby": errors.phone ? "phone-error" : undefined,
             }}
+          />
+        </Field>
+
+        <Field id="location" label="Event location" error={errors.location}>
+          <input
+            id="location"
+            name="location"
+            type="text"
+            required
+            autoComplete="off"
+            placeholder="Venue name, or city and neighborhood"
+            className={fieldClasses}
+            value={values.location}
+            onChange={(event) => update("location", event.target.value)}
+            aria-invalid={Boolean(errors.location)}
+            aria-describedby={errors.location ? "location-error" : undefined}
           />
         </Field>
 

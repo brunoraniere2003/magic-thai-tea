@@ -5,6 +5,7 @@ const valid = {
   name: "Jane Doe",
   email: "jane@example.com",
   phone: "(415) 699-1715",
+  location: "Presidio, San Francisco",
   message: "I would love to book a tea tasting.",
 };
 
@@ -18,11 +19,13 @@ describe("validateContactForm", () => {
       name: "",
       email: "",
       phone: "",
+      location: "",
       message: "",
     });
     expect(errors.name).toBeTruthy();
     expect(errors.email).toBeTruthy();
     expect(errors.phone).toBeTruthy();
+    expect(errors.location).toBeTruthy();
     expect(errors.message).toBeTruthy();
   });
 
@@ -47,11 +50,13 @@ describe("validateContactForm", () => {
       name: "   ",
       email: "  jane@example.com  ",
       phone: "  4156991715  ",
+      location: "   ",
       message: "  hello  ",
     });
     expect(errors.name).toBeTruthy();
     expect(errors.email).toBeFalsy();
     expect(errors.phone).toBeFalsy();
+    expect(errors.location).toBeTruthy();
     expect(errors.message).toBeFalsy();
   });
 });

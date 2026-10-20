@@ -1,5 +1,4 @@
 import { Hero } from "@/components/sections/home/Hero";
-import { Worlds } from "@/components/sections/home/Worlds";
 import { Practice } from "@/components/sections/home/Practice";
 import { YinYang } from "@/components/sections/home/YinYang";
 import { Reviews } from "@/components/sections/home/Reviews";
@@ -15,7 +14,10 @@ import { HOME } from "@/content/home";
 
 /**
  * Page order (2026-10-11 refocus on tea and tai chi):
- * Hero > the three cards > Tea Ceremony > Tai Chi (+ class schedule) >
+
+ * (2026-10-19: the three-card reveal is gone; the hero's one button, "Book
+ * me", goes straight to the contact form.)
+ * Hero > Tea Ceremony > Tai Chi (+ class schedule) >
  * Tea + Tai Chi > Reviews > Private sessions (The Tea Temple) > Shop >
  * About > Tea List > Connect > Events > Contact.
  *
@@ -29,7 +31,6 @@ export default function Home() {
   return (
     <main id="main" className="relative flex flex-1 flex-col">
       <Hero />
-      <Worlds />
       <Practice practice={tea} />
       <Practice practice={taichi} reversed>
         {/* Drawn from the calendar feed, not embedded: Google's iframe would

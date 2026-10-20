@@ -100,8 +100,8 @@ export async function ClassSchedule() {
           client names, errands and home address this list keeps out. The next
           step for someone who wants to join is a conversation. */}
       <Reveal delay={0.1}>
-        <a href="#contact" className={buttonClasses("secondary", "self-start")}>
-          {HOME.hero.secondaryCta.label}
+        <a href={HOME.hero.cta.href} className={buttonClasses("secondary", "self-start")}>
+          {HOME.hero.cta.label}
         </a>
       </Reveal>
     </div>

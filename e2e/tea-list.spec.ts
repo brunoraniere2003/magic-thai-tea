@@ -44,9 +44,9 @@ test("the page carries the handoff sections in order", async ({ page }) => {
   );
 
   // Events are absent until Ethan sends them (B5). Magic, the service price
-  // list and the availability calendar left the page on 2026-10-11.
+  // list and the availability calendar left the page on 2026-10-11, the three
+  // cards on 2026-10-19.
   expect(ids).toEqual([
-    "worlds",
     "tea-ceremony",
     "tai-chi",
     "yin-yang",

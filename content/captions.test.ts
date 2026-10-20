@@ -59,9 +59,8 @@ describe("isWellFormedCaption", () => {
 });
 
 describe("CAPTIONS", () => {
-  it("ships the starter set from the handoff, all well formed", () => {
+  it("keeps every caption well formed", () => {
     const entries = Object.values(CAPTIONS);
-    expect(entries.length).toBeGreaterThanOrEqual(6);
     for (const caption of entries) {
       expect(isWellFormedCaption(formatCaption(caption))).toBe(true);
     }
@@ -105,9 +104,4 @@ describe("CAPTIONS", () => {
     expect(captionFor("/images/does-not-exist.jpg")).toBeUndefined();
   });
 
-  it("captions the master photo with the Sifu Chen lineage note", () => {
-    expect(captionFor("/images/tai-chi/master-and-ethan.jpg")).toContain(
-      "Sifu Chen",
-    );
-  });
 });

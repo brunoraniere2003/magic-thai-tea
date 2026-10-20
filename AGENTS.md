@@ -21,7 +21,7 @@ This repo is the live site **theredflyingdragon.com**. Ethan edits it with Claud
 | Home page text, the three cards, Tea Temple block, booking policy, About, Connect, Tea List, events | `content/home.ts` |
 | Shop: teas, boxes, notes, prices, Stripe links, shipping lines | `content/shop.ts` |
 | Site name, header links + phone menu, Tea Temple booking link, contact email/SMS, SEO | `content/site.ts` |
-| Card emblems (teapot, crane, yin-yang) | `webgl/cards/emblems.ts` |
+| Tea Temple emblem (teapot) | `webgl/cards/emblems.ts` |
 | Photo captions | `content/captions.ts` |
 | Photos | `public/images/` (then point to them from `content/`) |
 

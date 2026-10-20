@@ -12,8 +12,6 @@ import { SITE } from "@/content/site";
  */
 const AUTHORED = JSON.stringify([
   HOME.hero,
-  HOME.worldsHeading,
-  HOME.worlds,
   HOME.reviewsHeading,
   HOME.reviews,
   HOME.contact,
@@ -32,23 +30,9 @@ const isBookingTarget = (href: string) =>
   ANCHORS.has(href) || href === SITE.booking.url;
 
 describe("HOME content", () => {
-  // Deck order was swapped in af3d8a3 (Yin & Yang moved after Tai Chi); this
-  // expectation had been stale ever since.
-  // The 3D deck is built for exactly these three cards and symbols.
-  it("has exactly the three cards (tea, tai chi, yin-yang) with drawn symbols", () => {
-    expect(HOME.worlds.map((w) => w.key)).toEqual(["tea", "taichi", "yinyang"]);
-    for (const world of HOME.worlds) {
-      expect(world.title).toBeTruthy();
-      expect(world.subtitle).toBeTruthy();
-      expect(world.essence).toBeTruthy();
-      expect(["tea", "yinyang", "taichi"]).toContain(world.symbol);
-      expect(isBookingTarget(world.bookHref)).toBe(true);
-    }
-  });
-
-  it("points the hero CTAs at on-page anchors that exist in the layout", () => {
-    expect(HOME.hero.primaryCta.href).toBe("#worlds");
-    expect(ANCHORS.has(HOME.hero.secondaryCta.href)).toBe(true);
+  it("points the hero's one button at the contact form", () => {
+    expect(HOME.hero.cta.href).toBe("#contact");
+    expect(ANCHORS.has(HOME.hero.cta.href)).toBe(true);
   });
 
   // The site is tea and tai chi (2026-10-11): no magic, and the only prices on

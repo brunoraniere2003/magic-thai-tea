@@ -10,11 +10,8 @@ test("home responds 200 and renders the hero shell", async ({ page }) => {
     page.getByRole("heading", { name: HOME.hero.title, level: 1 }),
   ).toBeVisible();
 
-  // The two CTAs must be present and clickable from the first paint.
+  // The hero's one button must be present and clickable from the first paint.
   await expect(
-    page.getByRole("link", { name: HOME.hero.primaryCta.label }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: HOME.hero.secondaryCta.label }).first(),
+    page.getByRole("link", { name: HOME.hero.cta.label }).first(),
   ).toBeVisible();
 });

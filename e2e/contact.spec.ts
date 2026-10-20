@@ -20,6 +20,7 @@ test("contact form submits a lead and confirms success", async ({ page }) => {
   await form.getByLabel("Your name").fill("Jane Doe");
   await form.getByLabel("Email", { exact: true }).fill("jane@example.com");
   await form.getByRole("textbox", { name: "Phone" }).fill("+14156991715");
+  await form.getByLabel("Event location").fill("Presidio, San Francisco");
   await form.getByLabel("Message").fill("I would love to book a tea tasting.");
   await form.getByRole("button", { name: /send message/i }).click();
 

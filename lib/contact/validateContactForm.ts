@@ -2,6 +2,7 @@ export interface ContactValues {
   name: string;
   email: string;
   phone: string;
+  location: string;
   message: string;
 }
 
@@ -18,7 +19,7 @@ function digitCount(value: string): number {
 }
 
 /**
- * Pure validation for the contact form (name / email / phone). Returns a map of
+ * Pure validation for the contact form (name / email / phone / location). Returns a map of
  * field → message; an empty map means the values are valid.
  */
 export function validateContactForm(values: ContactValues): ContactErrors {
@@ -39,6 +40,10 @@ export function validateContactForm(values: ContactValues): ContactErrors {
     errors.phone = "Please enter your phone number.";
   } else if (digits < MIN_DIGITS || digits > MAX_DIGITS) {
     errors.phone = "Please enter a valid phone number.";
+  }
+
+  if (!values.location.trim()) {
+    errors.location = "Please tell us where the event is.";
   }
 
   if (!values.message.trim()) {

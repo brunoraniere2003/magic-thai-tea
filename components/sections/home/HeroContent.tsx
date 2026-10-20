@@ -9,7 +9,7 @@ import { scrollToAnchor } from "@/lib/smoothScroll";
  * instead of jumping instantly.
  */
 export function HeroContent() {
-  const { eyebrow, region, title, subtitle, primaryCta, secondaryCta, scrollCue } =
+  const { eyebrow, region, title, subtitle, cta, scrollCue } =
     HOME.hero;
 
   const onCtaClick = (
@@ -47,24 +47,14 @@ export function HeroContent() {
         {subtitle}
       </p>
 
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-        <a
-          href={primaryCta.href}
-          data-fire-line
-          onClick={(event) => onCtaClick(event, primaryCta.href)}
-          className="inline-flex items-center justify-center rounded-full bg-cream px-7 py-3 font-sans text-sm font-medium text-stage transition-colors hover:bg-white"
-        >
-          {primaryCta.label}
-        </a>
-        <a
-          href={secondaryCta.href}
-          data-fire-line
-          onClick={(event) => onCtaClick(event, secondaryCta.href)}
-          className="inline-flex items-center justify-center rounded-full border border-stone/40 px-7 py-3 font-sans text-sm font-medium text-cream transition-colors hover:border-cream/70 hover:bg-cream/5"
-        >
-          {secondaryCta.label}
-        </a>
-      </div>
+      <a
+        href={cta.href}
+        data-fire-line
+        onClick={(event) => onCtaClick(event, cta.href)}
+        className="mt-4 inline-flex items-center justify-center rounded-full bg-cream px-9 py-3 font-sans text-sm font-medium text-stage transition-colors hover:bg-white"
+      >
+        {cta.label}
+      </a>
 
       <span className="absolute bottom-8 hidden font-sans text-[0.65rem] uppercase tracking-[0.3em] text-stone/80 sm:block">
         {scrollCue}

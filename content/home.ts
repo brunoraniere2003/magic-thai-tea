@@ -24,30 +24,13 @@ export interface HeroContent {
   region: string;
   title: string;
   subtitle: string;
-  primaryCta: HeroCta;
-  secondaryCta: HeroCta;
+  /** The hero's one button. */
+  cta: HeroCta;
   scrollCue: string;
 }
 
-/** The three cards. `yinyang` is the balance that links tea and tai chi. */
-export type WorldKey = "tea" | "yinyang" | "taichi";
-/** A card front is drawn from its symbol (no photo). See makeCardFaceTextures. */
-export type WorldSymbol = WorldKey;
-
-export interface World {
-  key: WorldKey;
-  eyebrow: string;
-  title: string;
-  essence: string;
-  /** Small spaced line under the card's emblem (e.g. "Gongfu Cha"). */
-  subtitle: string;
-  /** Invitation shown inside the card when "revealed" (tap Book to plan). */
-  blurb: string;
-  /** Where the card's "Book" goes: an on-page anchor or the booking site. */
-  bookHref: string;
-  /** Drawn-icon identifier for the canvas card face. */
-  symbol: WorldSymbol;
-}
+/** Drawn emblems (webgl/cards/emblems.ts). */
+export type WorldSymbol = "tea" | "yinyang" | "taichi";
 
 export interface SectionIntro {
   eyebrow: string;
@@ -209,8 +192,6 @@ export interface ContactContent extends SectionIntro {
 
 export interface HomeContent {
   hero: HeroContent;
-  worldsHeading: SectionIntro;
-  worlds: World[];
   practices: Practice[];
   yinYang: YinYangContent;
   book: BookContent;
@@ -232,51 +213,10 @@ export const HOME: HomeContent = {
     title: "The Red Flying Dragon",
     subtitle:
       "Taiwanese gongfu tea and Yang-style Tai Chi with Ethan Holtzman. Private ceremonies, classes, and teas to take home.",
-    primaryCta: { label: "Explore the practice", href: "#worlds" },
-    secondaryCta: { label: "Shop the tea", href: "#shop" },
+    cta: { label: "Book me", href: "#contact" },
     scrollCue: "Scroll to enter",
   },
 
-  worldsHeading: {
-    eyebrow: "Three forms",
-    title: "One practice, three forms.",
-  },
-
-  worlds: [
-    {
-      key: "tea",
-      eyebrow: "The Chinese art of tea",
-      title: "Tea",
-      subtitle: "Gongfu Cha",
-      essence: "A ceremony that slows the whole room down.",
-      blurb:
-        "A private gongfu ceremony for you and your guests, at the Tea Temple or in your home. Tap Book to choose a time.",
-      bookHref: SITE.booking.url,
-      symbol: "tea",
-    },
-    {
-      key: "taichi",
-      eyebrow: "Tai chi chuan",
-      title: "Tai Chi",
-      subtitle: "Taiji Quan",
-      essence: "Strength that moves like calm.",
-      blurb:
-        "Book a tai chi class, a private lesson, or a performance for your event. Breath, balance, a quiet power. Tap Book to plan it.",
-      bookHref: "#contact",
-      symbol: "taichi",
-    },
-    {
-      key: "yinyang",
-      eyebrow: "Balance",
-      title: "Yin & Yang",
-      subtitle: "Tea & Tai Chi",
-      essence: "Where tea meets tai chi.",
-      blurb:
-        "Book the full experience. Tea and tai chi together, stillness and motion in one evening. Tap Book to plan it.",
-      bookHref: "#contact",
-      symbol: "yinyang",
-    },
-  ],
 
   // handoff — Tea Ceremony / Tai Chi (tightened 2026-10-11)
   practices: [
@@ -330,7 +270,7 @@ export const HOME: HomeContent = {
         },
         {
           src: "/images/tai-chi/master-and-ethan.jpg",
-          alt: "Ethan Holtzman standing together with his tai chi master",
+          alt: "Ethan Holtzman with Master Sifu Chen, his Tai Chi and White Crane teacher, in Taipei",
         },
         // NOTE (blocker: photo needed from Ethan). The handoff's 4th starter
         // caption, "Golden Rooster Stands on One Leg", is written and correct in
@@ -407,6 +347,7 @@ export const HOME: HomeContent = {
     paragraphs: [
       "I trained as a gongfu tea apprentice in Taiwan and Los Angeles, learning the ceremony leaf by leaf, steep by steep. Today I work with growers and importers to bring those teas home to San Francisco.",
       "In Taipei I trained under my teacher, Sifu Chen: Yang 37 Tai Chi as a 5th-generation practitioner, and Whooping White Crane as a 4th. Both are internal arts, built on breath, root, and quiet inner strength.",
+      "My Tai Chi and White Crane teacher is Master Sifu Chen in Taipei. Most of what I bring to the table started with him.",
       "Two practices, one thread: helping people slow down, come back into their bodies, and feel something real, whether it's a form moving through stillness or a tea opening over six steepings. Come find out for yourself.",
     ],
     image: {
