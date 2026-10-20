@@ -1,62 +1,41 @@
 import { describe, it, expect } from "vitest";
-import { validateContactForm, hasErrors } from "./validateContactForm";
+import { validateContactForm, hasErrors, type ContactValues } from "./validateContactForm";
 
-const valid = {
+const valid: ContactValues = {
   name: "Jane Doe",
   email: "jane@example.com",
-  phone: "(415) 699-1715",
+  phone: "",
+  eventType: "",
   location: "Presidio, San Francisco",
-  message: "I would love to book a tea tasting.",
+  guests: "",
+  date: "",
+  message: "",
 };
 
 describe("validateContactForm", () => {
-  it("returns no errors for valid input", () => {
+  it("needs only name, email and location", () => {
     expect(hasErrors(validateContactForm(valid))).toBe(false);
   });
 
-  it("flags missing required fields", () => {
-    const errors = validateContactForm({
-      name: "",
-      email: "",
-      phone: "",
-      location: "",
-      message: "",
-    });
-    expect(errors.name).toBeTruthy();
-    expect(errors.email).toBeTruthy();
-    expect(errors.phone).toBeTruthy();
-    expect(errors.location).toBeTruthy();
-    expect(errors.message).toBeTruthy();
+  it("flags the missing required fields, and only those", () => {
+    const errors = validateContactForm({ ...valid, name: " ", email: "", location: "" });
+    expect(Object.keys(errors).sort()).toEqual(["email", "location", "name"]);
   });
 
   it("flags an invalid email", () => {
-    const errors = validateContactForm({ ...valid, email: "jane@" });
-    expect(errors.email).toBeTruthy();
+    expect(validateContactForm({ ...valid, email: "jane@" }).email).toBeTruthy();
   });
 
-  it("flags a phone with too few digits", () => {
-    const errors = validateContactForm({ ...valid, phone: "12345" });
-    expect(errors.phone).toBeTruthy();
-  });
-
-  it("accepts common US phone formats", () => {
-    for (const phone of ["4156991715", "+1 415 699 1715", "(415) 699-1715"]) {
+  it("takes a phone when it is a real number, and no phone at all", () => {
+    expect(validateContactForm({ ...valid, phone: "12345" }).phone).toBeTruthy();
+    for (const phone of ["", "4156991715", "+1 415 699 1715", "(415) 699-1715"]) {
       expect(validateContactForm({ ...valid, phone }).phone).toBeFalsy();
     }
   });
 
-  it("ignores surrounding whitespace", () => {
-    const errors = validateContactForm({
-      name: "   ",
-      email: "  jane@example.com  ",
-      phone: "  4156991715  ",
-      location: "   ",
-      message: "  hello  ",
-    });
-    expect(errors.name).toBeTruthy();
-    expect(errors.email).toBeFalsy();
-    expect(errors.phone).toBeFalsy();
-    expect(errors.location).toBeTruthy();
-    expect(errors.message).toBeFalsy();
+  it("takes a whole guest count, or none", () => {
+    expect(validateContactForm({ ...valid, guests: "about 40" }).guests).toBeTruthy();
+    expect(validateContactForm({ ...valid, guests: "40" }).guests).toBeFalsy();
+    expect(validateContactForm({ ...valid, guests: "" }).guests).toBeFalsy();
   });
 });

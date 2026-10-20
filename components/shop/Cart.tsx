@@ -32,7 +32,7 @@ export function CartButton({ className = "" }: { className?: string }) {
       type="button"
       onClick={cart.open}
       aria-label={`Cart, ${count} ${count === 1 ? "item" : "items"}`}
-      className={`relative z-50 -m-2 p-2 text-cream transition-colors hover:text-gold ${className}`}
+      className={`relative z-50 -m-3 p-3 text-cream transition-colors duration-[400ms] hover:text-gold focus-visible:outline-2 focus-visible:outline-gold ${className}`}
     >
       <svg
         aria-hidden
@@ -50,7 +50,9 @@ export function CartButton({ className = "" }: { className?: string }) {
       {count > 0 ? (
         <span
           aria-hidden
-          className="absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-gold px-1 font-sans text-[0.6rem] font-semibold leading-4 text-stage"
+          // A new key on every count replays the one soft pulse.
+          key={count}
+          className="badge-pulse absolute right-0.5 top-0.5 flex min-w-4 items-center justify-center rounded-full bg-gold px-1 font-sans text-[0.6rem] font-semibold leading-4 text-stage"
         >
           {count}
         </span>
@@ -85,12 +87,8 @@ export function AddToCart({
         cart.add(item.id);
         setAdded(true);
       }}
-      className={`inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full border px-5 py-2.5 font-sans text-xs font-medium uppercase tracking-[0.2em] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold ${
-        block ? "mt-5 w-full" : ""
-      } ${
-        filled || added
-          ? "border-gold bg-gold text-stage hover:bg-amber"
-          : "border-gold/50 text-gold hover:border-gold hover:bg-gold hover:text-stage"
+      className={`btn-lux shrink-0 px-5 ${block ? "mt-5 w-full" : ""} ${
+        filled || added ? "border-gold bg-gold/10 text-cream" : ""
       }`}
     >
       {added ? "Added" : SHOP.addText}
@@ -177,7 +175,7 @@ export function CartDrawer() {
         if (event.target === event.currentTarget) dialogRef.current?.close();
       }}
       aria-labelledby="cart-title"
-      className="fixed inset-y-0 left-auto right-0 m-0 h-dvh max-h-none w-full max-w-md bg-transparent p-0 text-cream backdrop:bg-black/60 backdrop:backdrop-blur-sm"
+      className="cart-drawer fixed inset-y-0 left-auto right-0 m-0 h-dvh max-h-none w-full max-w-md bg-transparent p-0 text-cream backdrop:bg-black/60 backdrop:backdrop-blur-sm"
     >
       <div
         data-lenis-prevent
@@ -190,7 +188,7 @@ export function CartDrawer() {
           <button
             type="button"
             onClick={() => dialogRef.current?.close()}
-            className="-m-2 p-2 font-sans text-sm text-stone transition-colors hover:text-cream"
+            className="link-lux -my-2"
           >
             Close
           </button>
@@ -265,7 +263,7 @@ export function CartDrawer() {
                 type="button"
                 onClick={checkout}
                 disabled={status === "loading"}
-                className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-gold px-7 py-3 font-sans text-sm font-medium text-stage transition-colors hover:bg-amber disabled:cursor-not-allowed disabled:opacity-60"
+                className="btn-lux mt-5 w-full"
               >
                 {status === "loading" ? "Opening checkout..." : "Checkout"}
               </button>
@@ -302,6 +300,14 @@ function CartRow({ item, quantity }: { item: ShopItem; quantity: number }) {
           {formatPrice(price)}
           {unit ? ` / ${unit}` : ""}
         </span>
+        <button
+          type="button"
+          aria-label={`Remove ${item.name}`}
+          onClick={() => cart.set(item.id, 0)}
+          className="link-lux -mb-3 -mt-1 min-h-11 text-[0.65rem]"
+        >
+          Remove
+        </button>
       </span>
 
       <span className="flex items-center rounded-full border border-stone/25">
@@ -309,7 +315,7 @@ function CartRow({ item, quantity }: { item: ShopItem; quantity: number }) {
           type="button"
           aria-label={`One less ${item.name}`}
           onClick={() => cart.set(item.id, quantity - 1)}
-          className="size-9 font-sans text-lg text-stone transition-colors hover:text-cream"
+          className="size-11 rounded-full font-sans text-lg text-stone transition-colors duration-[400ms] hover:text-cream focus-visible:outline-2 focus-visible:outline-gold active:bg-black/40"
         >
           −
         </button>
@@ -320,7 +326,7 @@ function CartRow({ item, quantity }: { item: ShopItem; quantity: number }) {
           type="button"
           aria-label={`One more ${item.name}`}
           onClick={() => cart.add(item.id)}
-          className="size-9 font-sans text-lg text-stone transition-colors hover:text-cream"
+          className="size-11 rounded-full font-sans text-lg text-stone transition-colors duration-[400ms] hover:text-cream focus-visible:outline-2 focus-visible:outline-gold active:bg-black/40"
         >
           +
         </button>

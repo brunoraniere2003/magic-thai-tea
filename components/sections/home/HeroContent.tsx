@@ -9,7 +9,7 @@ import { scrollToAnchor } from "@/lib/smoothScroll";
  * instead of jumping instantly.
  */
 export function HeroContent() {
-  const { eyebrow, region, title, subtitle, cta, scrollCue } =
+  const { eyebrow, region, title, subtitle, cta, shopLink, scrollCue } =
     HOME.hero;
 
   const onCtaClick = (
@@ -47,14 +47,25 @@ export function HeroContent() {
         {subtitle}
       </p>
 
-      <a
-        href={cta.href}
+      <div
         data-fire-line
-        onClick={(event) => onCtaClick(event, cta.href)}
-        className="mt-4 inline-flex items-center justify-center rounded-full bg-cream px-9 py-3 font-sans text-sm font-medium text-stage transition-colors hover:bg-white"
+        className="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:gap-8"
       >
-        {cta.label}
-      </a>
+        <a
+          href={cta.href}
+          onClick={(event) => onCtaClick(event, cta.href)}
+          className="btn-lux px-10"
+        >
+          {cta.label}
+        </a>
+        <a
+          href={shopLink.href}
+          onClick={(event) => onCtaClick(event, shopLink.href)}
+          className="link-lux"
+        >
+          {shopLink.label}
+        </a>
+      </div>
 
       <span className="absolute bottom-8 hidden font-sans text-[0.65rem] uppercase tracking-[0.3em] text-stone/80 sm:block">
         {scrollCue}

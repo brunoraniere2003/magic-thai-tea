@@ -21,7 +21,7 @@ const CONFIG: NewsletterConfig = {
 };
 
 const fieldClasses =
-  "w-full rounded-xl border border-stone/40 bg-stage/60 px-4 py-3 font-sans text-base text-cream outline-none transition-colors placeholder:text-stone/50 focus:border-cream/60";
+  "w-full rounded-xl border border-stone/40 bg-stage/60 px-4 py-3 font-sans text-base text-cream outline-none transition-colors placeholder:text-stone/80 focus:border-cream/60";
 
 /** "Join the Tea List" signup: optional name, required email (spec 033 / R7). */
 export function TeaListForm() {

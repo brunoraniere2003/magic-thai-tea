@@ -40,6 +40,8 @@ export interface Site {
   /** Every section worth jumping to, in page order: phone menu and footer. */
   menu: SiteNavItem[];
   booking: SiteBooking;
+  /** The header's always-visible button: to the contact form. */
+  headerCta: SiteNavItem;
   contact: SiteContact;
   seo: SiteSeo;
 }
@@ -48,29 +50,30 @@ export const SITE: Site = {
   name: "The Red Flying Dragon",
   tagline: "The Chinese arts of tea and tai chi, by Ethan Holtzman.",
   nav: [
+    { label: "About", href: "#about" },
     { label: "Tea", href: "#tea-ceremony" },
     { label: "Tai Chi", href: "#tai-chi" },
     { label: "Shop", href: "#shop" },
-    { label: "About", href: "#about" },
-    { label: "Newsletter", href: "#tea-list" },
     { label: "Contact", href: "#contact" },
+    { label: "Newsletter", href: "#tea-list" },
   ],
   menu: [
+    { label: "About Ethan", href: "#about" },
+    { label: "Two Ways to Book", href: "#book" },
     { label: "Tea Ceremony", href: "#tea-ceremony" },
     { label: "Tai Chi", href: "#tai-chi" },
     { label: "Tea + Tai Chi", href: "#yin-yang" },
-    { label: "Private Sessions", href: "#book" },
     { label: "Shop the Tea", href: "#shop" },
-    { label: "About Ethan", href: "#about" },
-    { label: "Newsletter", href: "#tea-list" },
     { label: "Contact", href: "#contact" },
+    { label: "Newsletter", href: "#tea-list" },
   ],
   booking: {
     name: "The Tea Temple",
-    cta: "Book a Session",
-    note: "Private tea sessions in San Francisco",
+    cta: "Book an intimate session",
+    note: "Tastings for 1-5 guests, and online sessions",
     url: "https://entertheteatemple.com/",
   },
+  headerCta: { label: "Book a Session", href: "#contact" },
   contact: {
     email: "flyingdragontea@gmail.com",
     sms: "+14156991715",

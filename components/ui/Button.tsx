@@ -1,17 +1,17 @@
 import type { ButtonHTMLAttributes } from "react";
 
-const base =
-  "inline-flex items-center justify-center rounded-full px-7 py-3 font-sans text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60";
+// The look lives in app/globals.css (.btn-lux): a thin brass line at rest, a
+// slow warm glow and one sheen on hover, a pressed key on click.
+const base = "btn-lux";
 
 const variants = {
-  primary: "bg-cream text-stage hover:bg-white",
-  secondary:
-    "border border-stone/40 text-cream hover:border-cream/70 hover:bg-cream/5",
+  primary: "",
+  secondary: "btn-lux-quiet",
 } as const;
 
 export type ButtonVariant = keyof typeof variants;
 
-/** Shared pill-button styling (mirrors the Hero CTAs). Apply to a/Link/button. */
+/** Shared pill-button styling. Apply to a/Link/button. */
 export function buttonClasses(
   variant: ButtonVariant = "primary",
   className = "",

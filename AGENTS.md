@@ -18,10 +18,12 @@ This repo is the live site **theredflyingdragon.com**. Ethan edits it with Claud
 
 | To change | Edit |
 |---|---|
-| Home page text, the three cards, Tea Temple block, booking policy, About, Connect, Tea List, events | `content/home.ts` |
+| Home page text, the two ways to book, booking policy, About, Connect, Tea List, events, contact form success line | `content/home.ts` |
 | Shop: teas, boxes, teaware, notes, prices, shipping and pickup (the cart's checkout charges exactly these prices) | `content/shop.ts` |
-| Site name, header links + phone menu, Tea Temple booking link, contact email/SMS, SEO | `content/site.ts` |
-| Tea Temple emblem (teapot) | `webgl/cards/emblems.ts` |
+| Site name, header links + phone menu, the "Book a Session" button, Tea Temple booking link, contact email/SMS, SEO | `content/site.ts` |
+| Emblems on the two booking cards | `webgl/cards/emblems.ts` |
+| Easter eggs (dragon, secret word, gong, third steep, console teapot) and the family-and-friends page | `components/eggs/`, `app/inner-room/page.tsx` |
+| Button look (brass line, slow glow, sheen) | `.btn-lux` / `.link-lux` in `app/globals.css` |
 | Photo captions | `content/captions.ts` |
 | Photos | `public/images/` (then point to them from `content/`) |
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SITE } from "@/content/site";
 import { buildSmsHref } from "@/lib/contact/sms";
+import { FooterEggs } from "@/components/eggs/FooterEggs";
 
 /** Site footer: brand, every section, the Tea Temple, direct contact. */
 export function Footer() {
@@ -18,7 +19,8 @@ export function Footer() {
             href={SITE.booking.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-6 inline-flex items-center gap-2 rounded-full border border-gold/50 px-5 py-2.5 font-sans text-sm text-cream transition-colors hover:border-gold hover:bg-gold hover:text-stage"
+            aria-label={`Enter ${SITE.booking.name} (opens in a new tab)`}
+            className="btn-lux mt-6 px-5"
           >
             Enter {SITE.booking.name}
             <span aria-hidden className="text-xs">
@@ -28,12 +30,12 @@ export function Footer() {
         </div>
 
         <nav aria-label="Footer">
-          <ul className="grid grid-cols-2 gap-x-8 gap-y-2.5 sm:grid-cols-1">
+          <ul className="grid grid-cols-2 gap-x-8 sm:grid-cols-1">
             {SITE.menu.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="font-sans text-sm text-stone transition-colors hover:text-cream"
+                  className="inline-flex min-h-11 items-center font-sans text-sm text-stone transition-colors duration-[400ms] hover:text-cream"
                 >
                   {item.label}
                 </Link>
@@ -42,17 +44,17 @@ export function Footer() {
           </ul>
         </nav>
 
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col">
           <a
             href={`mailto:${SITE.contact.email}`}
-            className="font-sans text-sm text-stone transition-colors [overflow-wrap:anywhere] hover:text-cream"
+            className="inline-flex min-h-11 items-center font-sans text-sm text-stone transition-colors duration-[400ms] [overflow-wrap:anywhere] hover:text-cream"
           >
             {SITE.contact.email}
           </a>
           {smsHref ? (
             <a
               href={smsHref}
-              className="font-sans text-sm text-stone transition-colors hover:text-cream"
+              className="inline-flex min-h-11 items-center font-sans text-sm text-stone transition-colors duration-[400ms] hover:text-cream"
             >
               Text Ethan
             </a>
@@ -61,9 +63,12 @@ export function Footer() {
       </div>
 
       <div className="border-t border-stone/10">
-        <p className="mx-auto max-w-7xl px-6 py-6 font-sans text-xs text-stone/80">
-          © {new Date().getFullYear()} {SITE.name}. All rights reserved.
-        </p>
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-6">
+          <p className="font-sans text-xs text-stone">
+            © {new Date().getFullYear()} {SITE.name}. All rights reserved.
+          </p>
+          <FooterEggs />
+        </div>
       </div>
     </footer>
   );

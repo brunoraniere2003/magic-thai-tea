@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { HOME } from "../content/home";
 
 // Contact is the only conversion path (ADR 0009/0010) → money-flow E2E (§7).
 test("contact form submits a lead and confirms success", async ({ page }) => {
@@ -14,17 +15,20 @@ test("contact form submits a lead and confirms success", async ({ page }) => {
   );
 
   await page.goto("/");
+  // Typing before React hydrates is lost; wait until the page is live.
+  await page.waitForLoadState("networkidle");
 
   // Scoped to the contact section: the tea list has an "Email" field too.
   const form = page.locator("#contact");
   await form.getByLabel("Your name").fill("Jane Doe");
   await form.getByLabel("Email", { exact: true }).fill("jane@example.com");
-  await form.getByRole("textbox", { name: "Phone" }).fill("+14156991715");
+  await form.getByLabel("Event type").selectOption("Wedding");
   await form.getByLabel("Event location").fill("Presidio, San Francisco");
+  await form.getByLabel("Approximate guest count").fill("40");
   await form.getByLabel("Message").fill("I would love to book a tea tasting.");
   await form.getByRole("button", { name: /send message/i }).click();
 
-  await expect(page.getByText(/Ethan will be in touch soon/i)).toBeVisible();
+  await expect(page.getByText(HOME.contact.successMessage)).toBeVisible();
 });
 
 test("contact form blocks an empty submit with validation errors", async ({
@@ -39,6 +43,5 @@ test("contact form blocks an empty submit with validation errors", async ({
 
   await expect(page.getByText("Please enter your name.")).toBeVisible();
   await expect(page.getByText("Please enter your email.")).toBeVisible();
-  await expect(page.getByText("Please enter your phone number.")).toBeVisible();
-  await expect(page.getByText("Please write a short message.")).toBeVisible();
+  await expect(page.getByText("Please tell us where the event is.")).toBeVisible();
 });

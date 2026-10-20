@@ -38,7 +38,15 @@ export function Reveal({
   const reducedMotion = useReducedMotion();
   const ref = useScrollAnimation<HTMLElement>(
     ({ element, gsap, ScrollTrigger }) => {
-      gsap.set(element, { autoAlpha: 0, y });
+      // Opacity, not autoAlpha: content waiting to be revealed must stay
+      // reachable by Tab (visibility:hidden would skip it). Focus landing
+      // here before a scroll does shows it at once.
+      gsap.set(element, { opacity: 0, y });
+      element.addEventListener(
+        "focusin",
+        () => gsap.set(element, { opacity: 1, y: 0 }),
+        { once: true },
+      );
       // onEnter fires immediately if the trigger is already in view at build
       // time (anchor jump / scrolled reload) - content never stays hidden.
       ScrollTrigger.create({
@@ -47,7 +55,7 @@ export function Reveal({
         once: true,
         onEnter: () =>
           gsap.to(element, {
-            autoAlpha: 1,
+            opacity: 1,
             y: 0,
             duration,
             delay,

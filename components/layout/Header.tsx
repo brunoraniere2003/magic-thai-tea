@@ -46,8 +46,8 @@ const BOOKING_LABEL = `${SITE.booking.cta} at ${SITE.booking.name} (opens in a n
  * Fixed top header. Transparent over the hero, then a solid stage background
  * once scrolled, with a gold hairline that fills as you read down the page.
  *
- * Desktop: five text links that light up for the section you are in, and the
- * booking button for The Tea Temple. Tablet: Shop, booking and the menu. Phone:
+ * Desktop: six text links that light up for the section you are in, and the
+ * "Book a Session" button, which glides to the contact form. Tablet: Shop, booking and the menu. Phone:
  * Shop and the menu, which opens a full-screen index of every section plus a
  * card for The Tea Temple. The cart bag sits beside them on every screen. Esc closes; body scroll locks while it is open.
  */
@@ -201,6 +201,7 @@ export function Header() {
       >
         <Link
           href="/"
+          data-brand
           className="relative z-50 -my-2 shrink-0 py-2 font-display text-base text-cream sm:text-lg"
           onClick={onBrandClick}
         >
@@ -217,14 +218,14 @@ export function Header() {
                   href={item.href}
                   aria-current={current ? "location" : undefined}
                   onClick={(event) => onAnchorClick(event, item.href)}
-                  className={`group relative -my-2 block py-2 font-sans text-sm tracking-wide transition-colors hover:text-cream ${
+                  className={`group relative -my-2 block py-2 font-sans text-sm tracking-wide transition-[color,letter-spacing] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:text-cream hover:tracking-wider focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold ${
                     current ? "text-cream" : "text-stone"
                   }`}
                 >
                   {item.label}
                   <span
                     aria-hidden
-                    className={`absolute bottom-0.5 left-0 h-px bg-gold transition-all duration-300 group-hover:w-full ${
+                    className={`absolute bottom-0.5 left-0 h-px bg-gold transition-all duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:w-full ${
                       current ? "w-full" : "w-0"
                     }`}
                   />
@@ -248,17 +249,13 @@ export function Header() {
 
           <CartButton className={open ? "invisible" : ""} />
 
+          {/* Always in view: glides to the contact form (brief 2026-10-20). */}
           <a
-            href={SITE.booking.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={BOOKING_LABEL}
-            className="hidden items-center gap-2 rounded-full border border-gold/60 px-5 py-2.5 font-sans text-sm text-cream transition-colors hover:border-gold hover:bg-gold hover:text-stage sm:inline-flex"
+            href={SITE.headerCta.href}
+            onClick={(event) => onAnchorClick(event, SITE.headerCta.href)}
+            className="btn-lux hidden whitespace-nowrap px-5 sm:inline-flex"
           >
-            {SITE.booking.cta}
-            <span aria-hidden className="text-xs">
-              ↗
-            </span>
+            {SITE.headerCta.label}
           </a>
 
           {/* The only navigation control on a phone, so the tap area is padded

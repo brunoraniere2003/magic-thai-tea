@@ -9,7 +9,10 @@ const SHIPPING_LINE =
 test("every shop item has its own add control, named for what it adds", async ({
   page,
 }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  // Typing before React hydrates is lost; wait until the page is live.
+  await page.waitForLoadState("networkidle");
   for (const item of ITEMS) {
     await expect(
       page.getByRole("button", { name: addLabelFor(item), exact: true }),
@@ -19,6 +22,8 @@ test("every shop item has its own add control, named for what it adds", async ({
 
 test("no private booking link is ever exposed", async ({ page }) => {
   await page.goto("/");
+  // Typing before React hydrates is lost; wait until the page is live.
+  await page.waitForLoadState("networkidle");
   const html = await page.content();
   expect(html).not.toContain("book.stripe.com");
 });
@@ -26,6 +31,8 @@ test("no private booking link is ever exposed", async ({ page }) => {
 test("the shipping rule is stated before any add control", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  // Typing before React hydrates is lost; wait until the page is live.
+  await page.waitForLoadState("networkidle");
 
   expect(SHIPPING_LINE).not.toBe("");
   await expect(page.getByText(SHIPPING_LINE).first()).toBeVisible();
@@ -48,6 +55,8 @@ test("the cart counts, totals, and counts down to free shipping", async ({
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  // Typing before React hydrates is lost; wait until the page is live.
+  await page.waitForLoadState("networkidle");
 
   const teapot = ITEMS.find((item) => item.id === "glass-teapot")!;
   const add = page.getByRole("button", {
@@ -68,8 +77,11 @@ test("the cart counts, totals, and counts down to free shipping", async ({
   ).toBeVisible();
 
   // The cart survives a reload (localStorage).
+  // The count only shows once the page has read localStorage, so this waits.
   await page.reload();
-  await expect(
-    page.getByRole("button", { name: "Cart, 2 items" }),
-  ).toBeVisible();
+  await page.getByRole("button", { name: "Cart, 2 items" }).click();
+
+  // Remove empties it.
+  await page.getByRole("button", { name: `Remove ${teapot.name}` }).click();
+  await expect(page.getByText("Your cart is empty.")).toBeVisible();
 });

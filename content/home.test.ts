@@ -15,7 +15,7 @@ const AUTHORED = JSON.stringify([
   HOME.reviewsHeading,
   HOME.reviews,
   HOME.contact,
-  HOME.book,
+  HOME.doors,
   HOME.events.eyebrow,
   HOME.events.title,
   HOME.practices.map((practice) => [practice.eyebrow, practice.cta.label]),
@@ -43,11 +43,13 @@ describe("HOME content", () => {
     expect(all).not.toMatch(/\$\s?\d/);
   });
 
-  it("sends private sessions to the Tea Temple", () => {
+  it("offers two doors: gatherings to the contact form, intimate sessions to the Tea Temple", () => {
     expect(SITE.booking.url).toBe("https://entertheteatemple.com/");
-    expect(HOME.book.primaryCta.href).toBe(SITE.booking.url);
-    expect(HOME.book.secondaryCta.href).toBe("#contact");
-    expect(HOME.book.steps.length).toBeGreaterThan(0);
+    expect(HOME.doors.doors.map((door) => door.cta.href)).toEqual([
+      "#contact",
+      SITE.booking.url,
+    ]);
+    expect(SITE.headerCta.href).toBe("#contact");
   });
 
   it("keeps our own copy free of em dashes (spec 031 R2, narrowed by ADR 0014)", () => {

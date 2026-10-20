@@ -11,9 +11,12 @@ test("header and footer render with navigation", async ({ page }) => {
   for (const item of SITE.nav) {
     await expect(page.locator(item.href)).toHaveCount(1);
   }
-  await expect(
-    header.getByRole("link", { name: new RegExp(SITE.booking.cta) }),
-  ).toHaveAttribute("href", SITE.booking.url);
+  // "Book a Session" glides to the contact form (shown from tablet width up).
+  if ((page.viewportSize()?.width ?? 0) >= 640) {
+    await expect(
+      header.getByRole("link", { name: SITE.headerCta.label }),
+    ).toHaveAttribute("href", SITE.headerCta.href);
+  }
 
   const footer = page.getByRole("contentinfo");
   await expect(

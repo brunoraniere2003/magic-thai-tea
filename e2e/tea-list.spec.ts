@@ -16,6 +16,8 @@ test("tea list accepts a signup and confirms it", async ({ page }) => {
   );
 
   await page.goto("/");
+  // Typing before React hydrates is lost; wait until the page is live.
+  await page.waitForLoadState("networkidle");
 
   const form = page.locator("#tea-list");
   await form.getByLabel(HOME.teaList.emailLabel).fill("jane@example.com");
@@ -27,6 +29,8 @@ test("tea list accepts a signup and confirms it", async ({ page }) => {
 test("tea list refuses a malformed email and asks again", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  // Typing before React hydrates is lost; wait until the page is live.
+  await page.waitForLoadState("networkidle");
 
   const form = page.locator("#tea-list");
   await form.getByLabel(HOME.teaList.emailLabel).fill("not-an-email");
@@ -38,31 +42,34 @@ test("tea list refuses a malformed email and asks again", async ({ page }) => {
 test("the page carries the handoff sections in order", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  // Typing before React hydrates is lost; wait until the page is live.
+  await page.waitForLoadState("networkidle");
 
   const ids = await page.$$eval("main > section[id]", (sections) =>
     sections.map((section) => section.id),
   );
 
-  // Events are absent until Ethan sends them (B5). Magic, the service price
-  // list and the availability calendar left the page on 2026-10-11, the three
-  // cards on 2026-10-19.
+  // Order from the brief of 2026-10-20. Events are absent until Ethan sends
+  // them (B5).
   expect(ids).toEqual([
+    "about",
+    "book",
     "tea-ceremony",
     "tai-chi",
     "yin-yang",
     "reviews",
-    "book",
     "shop",
-    "about",
+    "contact",
     "tea-list",
     "connect",
-    "contact",
   ]);
 });
 
 test("no magic and no service prices anywhere on the page", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  // Typing before React hydrates is lost; wait until the page is live.
+  await page.waitForLoadState("networkidle");
 
   const main = page.locator("main");
   await expect(main).not.toContainText(/magic/i);
@@ -78,9 +85,11 @@ test("no magic and no service prices anywhere on the page", async ({ page }) => 
 test("the Tea Temple is offered for booking", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  // Typing before React hydrates is lost; wait until the page is live.
+  await page.waitForLoadState("networkidle");
 
   const temple = page.locator("#book").getByRole("link", {
-    name: new RegExp(HOME.book.primaryCta.label),
+    name: new RegExp(HOME.doors.doors[1].cta.label),
   });
   await expect(temple).toHaveAttribute("href", SITE.booking.url);
   await expect(temple).toHaveAttribute("target", "_blank");

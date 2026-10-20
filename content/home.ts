@@ -26,6 +26,8 @@ export interface HeroContent {
   subtitle: string;
   /** The hero's one button. */
   cta: HeroCta;
+  /** The small text link beside it. */
+  shopLink: HeroCta;
   scrollCue: string;
 }
 
@@ -80,15 +82,18 @@ export interface AboutContent {
 }
 
 /** "Enter the Tea Temple": the invitation to book a private session. */
-export interface BookContent {
+/** One of the two ways to book. */
+export interface BookingDoor {
+  symbol: WorldSymbol;
   eyebrow: string;
   title: string;
   body: string;
-  /** The five beats of a session, shown as one quiet line. */
-  steps: string[];
-  primaryCta: HeroCta;
-  secondaryCta: HeroCta;
-  image: PracticeImage;
+  /** An on-page anchor (#contact) or The Tea Temple (opens a new tab). */
+  cta: HeroCta;
+}
+
+export interface DoorsContent extends SectionIntro {
+  doors: BookingDoor[];
 }
 
 export interface BookingPolicyItem {
@@ -185,16 +190,18 @@ export interface EventsContent {
 }
 
 export interface ContactContent extends SectionIntro {
-  /** One line above the form pointing private sessions to The Tea Temple. */
+  /** The line above the form; the link label points to The Tea Temple. */
   templeNote: string;
   templeLinkLabel: string;
+  /** Shown after a successful send, in Ethan's voice. */
+  successMessage: string;
 }
 
 export interface HomeContent {
   hero: HeroContent;
   practices: Practice[];
   yinYang: YinYangContent;
-  book: BookContent;
+  doors: DoorsContent;
   bookingPolicy: BookingPolicyContent;
   about: AboutContent;
   reviewsHeading: SectionIntro;
@@ -212,8 +219,9 @@ export const HOME: HomeContent = {
     region: "Serving San Francisco, the Bay Area & beyond",
     title: "The Red Flying Dragon",
     subtitle:
-      "Taiwanese gongfu tea and Yang-style Tai Chi with Ethan Holtzman. Private ceremonies, classes, and teas to take home.",
+      "I'm Ethan Holtzman. I lead Taiwanese gongfu tea ceremonies and teach Yang-style Tai Chi.",
     cta: { label: "Book me", href: "#contact" },
+    shopLink: { label: "Shop tea", href: "#shop" },
     scrollCue: "Scroll to enter",
   },
 
@@ -305,21 +313,27 @@ export const HOME: HomeContent = {
     ],
   },
 
-  // Private sessions are booked on The Tea Temple (entertheteatemple.com).
-  book: {
-    eyebrow: "Private sessions",
-    title: "Enter the Tea Temple",
-    body: "Taiwanese oolong, unhurried conversation, and a few minutes of grounding. In my tea room in San Francisco, or brought to you anywhere in the Bay Area, for one to five guests.",
-    steps: ["Arrive", "Settle", "Ground", "Share", "Reconnect"],
-    primaryCta: { label: "Enter the Tea Temple", href: SITE.booking.url },
-    secondaryCta: {
-      label: "Planning an event? Write to Ethan",
-      href: "#contact",
-    },
-    image: {
-      src: "/images/tea/tea-pouring-smiling.jpg",
-      alt: "Ethan Holtzman smiling while pouring tea for his guests",
-    },
+  // Two ways to book (brief 2026-10-20): gatherings come through the contact
+  // form; intimate and online sessions are booked on The Tea Temple.
+  doors: {
+    eyebrow: "Book",
+    title: "Two ways in.",
+    doors: [
+      {
+        symbol: "yinyang",
+        eyebrow: "Gatherings",
+        title: "Events & residencies",
+        body: "Corporate events, weddings, private parties, venue residencies, and Tea + Tai Chi evenings.",
+        cta: { label: "Book me", href: "#contact" },
+      },
+      {
+        symbol: "tea",
+        eyebrow: "1 to 5 guests",
+        title: "Intimate sessions",
+        body: "Intimate tastings for 1-5 guests, online tea consultations, and virtual tea space holding.",
+        cta: { label: "Book an intimate session", href: SITE.booking.url },
+      },
+    ],
   },
 
   bookingPolicy: {
@@ -347,7 +361,6 @@ export const HOME: HomeContent = {
     paragraphs: [
       "I trained as a gongfu tea apprentice in Taiwan and Los Angeles, learning the ceremony leaf by leaf, steep by steep. Today I work with growers and importers to bring those teas home to San Francisco.",
       "In Taipei I trained under my teacher, Sifu Chen: Yang 37 Tai Chi as a 5th-generation practitioner, and Whooping White Crane as a 4th. Both are internal arts, built on breath, root, and quiet inner strength.",
-      "My Tai Chi and White Crane teacher is Master Sifu Chen in Taipei. Most of what I bring to the table started with him.",
       "Two practices, one thread: helping people slow down, come back into their bodies, and feel something real, whether it's a form moving through stillness or a tea opening over six steepings. Come find out for yourself.",
     ],
     image: {
@@ -503,7 +516,10 @@ export const HOME: HomeContent = {
     title: "Talk to Ethan.",
     intro:
       "Planning an event, a Tai Chi class, or a tea evening for your team? Tell Ethan what you have in mind and he will reply personally.",
-    templeNote: "Booking a private tea session?",
-    templeLinkLabel: "Go straight to the Tea Temple",
+    templeNote:
+      "Planning something for 6 or more guests? Tell me about it here. Hosting 1-5 guests, or want an online session?",
+    templeLinkLabel: "Book at The Tea Temple",
+    successMessage:
+      "Thank you. Ethan is getting the water boiling to 195° as we speak. You'll hear back within a day.",
   },
 };

@@ -51,17 +51,6 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Mobile flip card: rotates 0 -> 180deg on the Y axis when scroll-lock fires. */
-.card-flip {
-  transform: rotateY(0deg);
-  transition-property: transform;
-  transition-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
-  will-change: transform;
-}
-.card-flip[data-flipped="true"] {
-  transform: rotateY(180deg);
-}
-
 /* Reviews rail: visible, on-theme scrollbar (a thin gold thumb) instead of
    hiding it, so the extra cards read as reachable, not cut off. Fades the
    right edge (desktop only) as an extra "there's more" cue. */
@@ -132,4 +121,267 @@ body {
 /* The native option list is OS-drawn; keep its text readable on either theme. */
 .phone-field .PhoneInputCountrySelect option {
   color: var(--color-ink);
+}
+
+/* ============================================================
+   Luxury controls (brief 2026-10-20, section C)
+   Restrained at rest: a thin brass line, wide tracking, no loud fill.
+   Hover is slow (400ms): a warm glow, the border brightens, the tracking opens
+   a little, and one thin sheen crosses once. Pressed: a heavy lacquered key.
+   Nothing depends on hover (touch), and reduced motion drops the movement.
+   ============================================================ */
+:root {
+  --ease-lux: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* In the components layer, so utilities (hidden, px-*, w-full) still win. */
+@layer components {
+  .btn-lux {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0.75rem 1.75rem;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--color-gold) 55%, transparent);
+    background-color: color-mix(in srgb, var(--color-gold) 5%, transparent);
+    color: var(--color-tea-cream);
+    font-family: var(--font-sans), system-ui, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition:
+      border-color 400ms var(--ease-lux),
+      box-shadow 400ms var(--ease-lux),
+      letter-spacing 400ms var(--ease-lux),
+      background-color 400ms var(--ease-lux),
+      color 400ms var(--ease-lux),
+      transform 200ms var(--ease-lux),
+      filter 200ms var(--ease-lux);
+  }
+  /* The quieter sibling: stone line instead of brass. */
+  .btn-lux-quiet {
+    border-color: color-mix(in srgb, var(--color-stone) 45%, transparent);
+    background-color: transparent;
+  }
+  /* The sheen: parked off to the left, crosses once on hover. */
+  .btn-lux::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(
+      105deg,
+      transparent 35%,
+      rgba(255, 228, 180, 0.2) 50%,
+      transparent 65%
+    );
+    transform: translateX(-110%);
+    pointer-events: none;
+  }
+  @media (hover: hover) {
+    .btn-lux:hover {
+      border-color: var(--color-gold);
+      background-color: color-mix(in srgb, var(--color-gold) 9%, transparent);
+      box-shadow: 0 0 28px -8px rgba(224, 160, 64, 0.55);
+      letter-spacing: 0.24em;
+      color: var(--color-cream);
+    }
+    .btn-lux:hover::after {
+      transform: translateX(110%);
+      transition: transform 1100ms var(--ease-lux);
+    }
+  }
+  .btn-lux:active {
+    transform: translateY(1px);
+    filter: brightness(0.9);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
+  }
+  .btn-lux:focus-visible,
+  .link-lux:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+  }
+  .btn-lux:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  /* A text link with the same manners: a hairline that draws itself in. */
+  .link-lux {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--color-stone);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    transition:
+      color 400ms var(--ease-lux),
+      letter-spacing 400ms var(--ease-lux);
+  }
+  .link-lux::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.6rem;
+    height: 1px;
+    background: var(--color-gold);
+    transform: scaleX(0.25);
+    transform-origin: left;
+    opacity: 0.6;
+    transition:
+      transform 400ms var(--ease-lux),
+      opacity 400ms var(--ease-lux);
+  }
+  @media (hover: hover) {
+    .link-lux:hover {
+      color: var(--color-cream);
+      letter-spacing: 0.24em;
+    }
+    .link-lux:hover::after {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+  }
+
+  /* Cart count: one soft pulse when something is added. */
+  @keyframes badge-pulse {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(224, 160, 64, 0.6);
+    }
+    40% {
+      transform: scale(1.18);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 8px rgba(224, 160, 64, 0);
+    }
+  }
+  .badge-pulse {
+    animation: badge-pulse 600ms var(--ease-lux);
+  }
+
+  /* Cart drawer: slides in from the right, the room dims behind it. */
+  @keyframes drawer-in {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes backdrop-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .cart-drawer[open] {
+    animation: drawer-in 450ms var(--ease-lux);
+  }
+  .cart-drawer[open]::backdrop {
+    animation: backdrop-in 450ms var(--ease-lux);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-lux::after,
+    .badge-pulse,
+    .cart-drawer[open],
+    .cart-drawer[open]::backdrop {
+      animation: none !important;
+    }
+    .btn-lux::after {
+      display: none;
+    }
+  }
+}
+
+/* ---- Easter eggs (brief section F) -------------------------------------- */
+@keyframes egg-dragon-fly {
+  0% {
+    transform: translate(-75vw, 30px) rotate(-3deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate(20vw, -26px) rotate(2deg);
+  }
+  88% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(110vw, 20px) rotate(-2deg);
+    opacity: 0;
+  }
+}
+.egg-dragon-fly {
+  animation: egg-dragon-fly 4s cubic-bezier(0.45, 0, 0.35, 1) forwards;
+}
+@keyframes egg-fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  30%,
+  70% {
+    opacity: 0.85;
+  }
+}
+.egg-dragon-still {
+  display: flex;
+  justify-content: center;
+  animation: egg-fade 1.8s ease forwards !important;
+  animation-duration: 1.8s !important;
+}
+@keyframes egg-steam {
+  0% {
+    transform: translateY(8px) scaleY(0.8);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-22px) scaleY(1.1);
+    opacity: 0;
+  }
+}
+.egg-steam path {
+  animation: egg-steam 3.2s ease-out infinite;
+}
+.egg-steam path:nth-child(2) {
+  animation-delay: 1.1s;
+}
+@keyframes egg-line-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.egg-line {
+  animation: egg-line-in 1.6s var(--ease-lux) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .egg-steam path {
+    animation: none !important;
+    opacity: 0.6;
+  }
 }

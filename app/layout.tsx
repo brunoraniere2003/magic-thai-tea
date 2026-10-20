@@ -5,6 +5,7 @@ import { MotionProvider } from "@/lib/animations/MotionProvider";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/shop/Cart";
+import { Eggs } from "@/components/eggs/Eggs";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -66,6 +67,7 @@ export default function RootLayout({
           {children}
           <Footer />
           <CartDrawer />
+          <Eggs />
         </MotionProvider>
       </body>
     </html>

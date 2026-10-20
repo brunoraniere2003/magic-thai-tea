@@ -5,9 +5,11 @@ import PhoneInput from "react-phone-number-input";
 import flags from "react-phone-number-input/flags";
 import "react-phone-number-input/style.css";
 import { SITE } from "@/content/site";
+import { HOME } from "@/content/home";
 import { buttonClasses } from "@/components/ui/Button";
 import { buildSmsHref } from "@/lib/contact/sms";
 import {
+  EVENT_TYPES,
   validateContactForm,
   hasErrors,
   type ContactValues,
@@ -18,7 +20,10 @@ const EMPTY: ContactValues = {
   name: "",
   email: "",
   phone: "",
+  eventType: "",
   location: "",
+  guests: "",
+  date: "",
   message: "",
 };
 type Status = "idle" | "submitting" | "success" | "error";
@@ -29,23 +34,28 @@ type Status = "idle" | "submitting" | "success" | "error";
 const FORMSUBMIT_URL = `https://formsubmit.co/ajax/${SITE.contact.email}`;
 
 const fieldClasses =
-  "w-full rounded-xl border border-stone/25 bg-stage px-4 py-3 font-sans text-base text-cream outline-none transition-colors placeholder:text-stone/50 focus:border-cream/60";
+  "w-full rounded-xl border border-stone/25 bg-stage px-4 py-3 font-sans text-base text-cream outline-none transition-colors placeholder:text-stone/80 focus:border-cream/60";
 
 function Field({
   id,
   label,
   error,
+  optional = false,
   children,
 }: {
   id: string;
   label: string;
   error?: string;
+  optional?: boolean;
   children: ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-2 text-left">
       <label htmlFor={id} className="font-sans text-sm text-cream">
         {label}
+        {optional ? (
+          <span className="ml-1.5 text-xs text-stone">(optional)</span>
+        ) : null}
       </label>
       {children}
       {error ? (
@@ -58,7 +68,8 @@ function Field({
 }
 
 /**
- * Contact form (name, email, phone, event location). Sends the lead to the owner's inbox via
+ * Contact form (brief 2026-10-20): name, email and event location required;
+ * phone, event type, guest count, date and message optional. Sends the lead to the owner's inbox via
  * FormSubmit (account-free, from the browser). A hidden honeypot (`_honey`)
  * blocks bots. "Text Ethan" (SMS) is always offered too.
  */
@@ -91,9 +102,12 @@ export function ContactForm() {
         body: JSON.stringify({
           Name: values.name.trim(),
           Email: values.email.trim(),
-          Phone: values.phone.trim(),
+          Phone: values.phone.trim() || "(not given)",
+          "Event type": values.eventType || "(not given)",
           "Event location": values.location.trim(),
-          Message: values.message.trim(),
+          "Guest count": values.guests.trim() || "(not given)",
+          "Event date": values.date || "(not given)",
+          Message: values.message.trim() || "(none)",
           _replyto: values.email.trim(),
           _subject: `New enquiry from ${values.name.trim()} (The Red Flying Dragon)`,
           _template: "table",
@@ -146,7 +160,7 @@ export function ContactForm() {
           />
         </Field>
 
-        <Field id="phone" label="Phone" error={errors.phone}>
+        <Field id="phone" label="Phone" error={errors.phone} optional>
           {/* Country-aware phone mask: pick a country (flag dropdown), and the
               number formats as you type for THAT country. Defaults to US (+1).
 
@@ -171,11 +185,28 @@ export function ContactForm() {
             className="phone-field"
             numberInputProps={{
               className:
-                "w-full bg-transparent font-sans text-base text-cream outline-none placeholder:text-stone/50",
+                "w-full bg-transparent font-sans text-base text-cream outline-none placeholder:text-stone/80",
               "aria-invalid": Boolean(errors.phone),
               "aria-describedby": errors.phone ? "phone-error" : undefined,
             }}
           />
+        </Field>
+
+        <Field id="eventType" label="Event type" optional>
+          <select
+            id="eventType"
+            name="eventType"
+            className={`${fieldClasses} appearance-none [&_option]:text-ink bg-[url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2012%208'%3E%3Cpath%20d='M1%201l5%205%205-5'%20fill='none'%20stroke='%23a39b8e'%20stroke-width='1.5'/%3E%3C/svg%3E")] bg-[length:12px_8px] bg-[right_1rem_center] bg-no-repeat pr-10`}
+            value={values.eventType}
+            onChange={(event) => update("eventType", event.target.value)}
+          >
+            <option value="">Choose one</option>
+            {EVENT_TYPES.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
         </Field>
 
         <Field id="location" label="Event location" error={errors.location}>
@@ -194,7 +225,35 @@ export function ContactForm() {
           />
         </Field>
 
-        <Field id="message" label="Message" error={errors.message}>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field id="guests" label="Approximate guest count" error={errors.guests} optional>
+            <input
+              id="guests"
+              name="guests"
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              placeholder="e.g. 40"
+              className={fieldClasses}
+              value={values.guests}
+              onChange={(event) => update("guests", event.target.value)}
+              aria-invalid={Boolean(errors.guests)}
+              aria-describedby={errors.guests ? "guests-error" : undefined}
+            />
+          </Field>
+          <Field id="date" label="Event date" optional>
+            <input
+              id="date"
+              name="date"
+              type="date"
+              className={`${fieldClasses} [color-scheme:dark]`}
+              value={values.date}
+              onChange={(event) => update("date", event.target.value)}
+            />
+          </Field>
+        </div>
+
+        <Field id="message" label="Message" error={errors.message} optional>
           <textarea
             id="message"
             name="message"
@@ -233,9 +292,7 @@ export function ContactForm() {
       </form>
 
       <p aria-live="polite" className="min-h-5 text-center font-sans text-sm text-stone">
-        {status === "success"
-          ? "Thank you. Ethan will be in touch soon."
-          : null}
+        {status === "success" ? HOME.contact.successMessage : null}
         {status === "error"
           ? "Something went wrong. Please text Ethan instead."
           : null}

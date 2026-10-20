@@ -1,10 +1,27 @@
 export interface ContactValues {
   name: string;
   email: string;
+  /** Optional. */
   phone: string;
+  /** Optional: one of EVENT_TYPES. */
+  eventType: string;
   location: string;
+  /** Optional: a whole number. */
+  guests: string;
+  /** Optional: yyyy-mm-dd from the date picker. */
+  date: string;
+  /** Optional. */
   message: string;
 }
+
+export const EVENT_TYPES = [
+  "Corporate",
+  "Wedding",
+  "Private party",
+  "Venue residency",
+  "Community or festival",
+  "Other",
+] as const;
 
 export type ContactField = keyof ContactValues;
 export type ContactErrors = Partial<Record<ContactField, string>>;
@@ -19,8 +36,9 @@ function digitCount(value: string): number {
 }
 
 /**
- * Pure validation for the contact form (name / email / phone / location). Returns a map of
- * field → message; an empty map means the values are valid.
+ * Pure validation for the contact form. Required: name, email, event location.
+ * Phone, guest count and date are optional but must make sense when given.
+ * Returns field -> message; an empty map means the values are valid.
  */
 export function validateContactForm(values: ContactValues): ContactErrors {
   const errors: ContactErrors = {};
@@ -36,18 +54,17 @@ export function validateContactForm(values: ContactValues): ContactErrors {
   }
 
   const digits = digitCount(values.phone);
-  if (!values.phone.trim()) {
-    errors.phone = "Please enter your phone number.";
-  } else if (digits < MIN_DIGITS || digits > MAX_DIGITS) {
-    errors.phone = "Please enter a valid phone number.";
+  if (values.phone.trim() && (digits < MIN_DIGITS || digits > MAX_DIGITS)) {
+    errors.phone = "Please enter a valid phone number, or leave it empty.";
   }
 
   if (!values.location.trim()) {
     errors.location = "Please tell us where the event is.";
   }
 
-  if (!values.message.trim()) {
-    errors.message = "Please write a short message.";
+  const guests = values.guests.trim();
+  if (guests && !/^\d{1,5}$/.test(guests)) {
+    errors.guests = "Please enter a number of guests, or leave it empty.";
   }
 
   return errors;

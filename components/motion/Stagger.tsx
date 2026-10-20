@@ -39,7 +39,13 @@ export function Stagger({
     ({ element, gsap, ScrollTrigger }) => {
       const targets = element.children;
       if (targets.length === 0) return;
-      gsap.set(targets, { autoAlpha: 0, y });
+      // Opacity, not autoAlpha: see Reveal (keyboard focus must reach them).
+      gsap.set(targets, { opacity: 0, y });
+      element.addEventListener(
+        "focusin",
+        () => gsap.set(targets, { opacity: 1, y: 0 }),
+        { once: true },
+      );
       // onEnter fires immediately if already in view at build time (anchor
       // jump / scrolled reload) - the cascade never stays hidden.
       ScrollTrigger.create({
@@ -48,7 +54,7 @@ export function Stagger({
         once: true,
         onEnter: () =>
           gsap.to(targets, {
-            autoAlpha: 1,
+            opacity: 1,
             y: 0,
             duration,
             stagger,
