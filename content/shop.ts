@@ -259,14 +259,14 @@ export const SHOP: ShopContent = {
     },
   ],
 
-  // Photos and capacity in ml: coming from Ethan.
+  // Photos: coming from Ethan. Capacities from Ethan, 2026-10-20.
   teaware: [
     {
       id: "glass-teapot",
       name: "Glass Gongfu Teapot",
       hanzi: "玻璃壺",
       eyebrow: "Teapot",
-      note: "Brews almost any tea. The glass makes heat easy to manage and the pot easy to handle.",
+      note: "About 150 mL (5 oz). Brews almost any tea; the glass makes heat easy to manage and the pot easy to handle. Use about 5g of oolong; each steep pours about 120 mL (4 oz).",
       price: 30,
     },
     {
@@ -274,7 +274,7 @@ export const SHOP: ShopContent = {
       name: "Gongfu Glass Set",
       hanzi: "茶具",
       eyebrow: "The set",
-      note: "The glass teapot and the double-walled fairness pitcher, together.",
+      note: "The 150 mL glass teapot and the 150 mL double-walled fairness pitcher, together.",
       price: 55,
       includes: ["glass-teapot", "glass-pitcher"],
     },
@@ -283,7 +283,7 @@ export const SHOP: ShopContent = {
       name: "Double-Walled Glass Fairness Pitcher",
       hanzi: "公道杯",
       eyebrow: "Pitcher",
-      note: "Double-walled glass, to pour every cup even. Matches the teapot.",
+      note: "Holds 150 mL. Double-walled glass, to pour every cup even. Matches the teapot.",
       price: 30,
     },
   ],
