@@ -19,7 +19,7 @@ import { HOME } from "@/content/home";
  *
  * Who Ethan is, then how to book him (a gathering through the contact form, or
  * an intimate session at The Tea Temple), then the practices and the proof,
- * then the shop with the contact form right after it. Ways to stay in touch
+ * then a link to the shop on The Tea Temple, and the contact form. Ways to stay in touch
  * close the page. Every section is one tap away in the header (SITE.nav/menu).
  */
 export default function Home() {

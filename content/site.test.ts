@@ -14,11 +14,15 @@ describe("SITE content", () => {
     expect(SITE.seo.url).toContain("theredflyingdragon.com");
   });
 
-  it("uses in-page anchors for every nav and menu item", () => {
+  it("uses in-page anchors for every nav and menu item, except the shop", () => {
     for (const item of [...SITE.nav, ...SITE.menu]) {
       expect(item.label).toBeTruthy();
-      expect(item.href.startsWith("#")).toBe(true);
+      expect(item.href.startsWith("#") || item.href === SITE.shopUrl).toBe(true);
     }
+  });
+
+  it("sends the shop to The Tea Temple", () => {
+    expect(SITE.shopUrl).toBe("https://entertheteatemple.com/#shop");
   });
 
   it("keeps the header short and lists every header link in the menu", () => {

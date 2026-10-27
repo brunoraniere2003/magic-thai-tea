@@ -60,7 +60,8 @@ export function HeroContent() {
         </a>
         <a
           href={shopLink.href}
-          onClick={(event) => onCtaClick(event, shopLink.href)}
+          target="_blank"
+          rel="noopener noreferrer"
           className="link-lux"
         >
           {shopLink.label}

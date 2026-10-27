@@ -27,7 +27,7 @@ const AUTHORED = JSON.stringify([
 /** On-page anchors every CTA may point at, or the booking site. */
 const ANCHORS = new Set(SITE.menu.map((item) => item.href));
 const isBookingTarget = (href: string) =>
-  ANCHORS.has(href) || href === SITE.booking.url;
+  ANCHORS.has(href) || href === SITE.booking.url || href === SITE.shopUrl;
 
 describe("HOME content", () => {
   it("points the hero's one button at the contact form", () => {
@@ -35,8 +35,8 @@ describe("HOME content", () => {
     expect(ANCHORS.has(HOME.hero.cta.href)).toBe(true);
   });
 
-  // The site is tea and tai chi (2026-10-11): no magic, and the only prices on
-  // the page are the teas in the shop (content/shop.ts).
+  // The site is tea and tai chi (2026-10-11): no magic, and no prices at all:
+  // the shop and every price live on The Tea Temple (2026-10-27).
   it("carries no magic and no service prices", () => {
     const all = JSON.stringify(HOME);
     expect(all).not.toMatch(/magic|sleight|magician/i);

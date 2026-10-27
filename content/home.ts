@@ -8,8 +8,8 @@
  *
  * 2026-10-11 refocus: the site is tea and tai chi only. Magic, the service
  * price list and the free/busy calendar are gone; private sessions are booked
- * on The Tea Temple (SITE.booking), and the only prices on the page are the
- * teas in the shop.
+ * on The Tea Temple (SITE.booking). Since 2026-10-27 the shop lives there too:
+ * this site lists no prices at all.
  */
 import { SITE } from "./site";
 
@@ -197,6 +197,14 @@ export interface ContactContent extends SectionIntro {
   successMessage: string;
 }
 
+/** "Take the tea home": the teas and teaware are sold on The Tea Temple. */
+export interface ShopLinkContent {
+  eyebrow: string;
+  title: string;
+  body: string;
+  cta: HeroCta;
+}
+
 export interface HomeContent {
   hero: HeroContent;
   practices: Practice[];
@@ -210,6 +218,7 @@ export interface HomeContent {
   teaList: TeaListContent;
   classesCalendar: CalendarContent;
   events: EventsContent;
+  shop: ShopLinkContent;
   contact: ContactContent;
 }
 
@@ -221,7 +230,7 @@ export const HOME: HomeContent = {
     subtitle:
       "I'm Ethan Holtzman. I lead Taiwanese gongfu tea ceremonies and teach Yang-style Tai Chi.",
     cta: { label: "Book me", href: "#contact" },
-    shopLink: { label: "Shop tea", href: "#shop" },
+    shopLink: { label: "Shop tea", href: SITE.shopUrl },
     scrollCue: "Scroll to enter",
   },
 
@@ -509,6 +518,14 @@ export const HOME: HomeContent = {
     eyebrow: "What's next",
     title: "Upcoming Events",
     items: [],
+  },
+
+  // The shop moved to The Tea Temple (2026-10-27), the only site with prices.
+  shop: {
+    eyebrow: "Shop",
+    title: "Take the tea home",
+    body: "The teas Ethan pours and the glass teaware he pours them with are sold at The Tea Temple.",
+    cta: { label: "Shop tea and teaware", href: SITE.shopUrl },
   },
 
   contact: {

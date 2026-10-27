@@ -35,16 +35,21 @@ export interface SiteBooking {
 export interface Site {
   name: string;
   tagline: string;
-  /** The header's text links (desktop). Keep it short: six at most. */
+  /** The header's text links (desktop). Keep it short: six at most. Anchors,
+   * except Shop, which goes to The Tea Temple. */
   nav: SiteNavItem[];
   /** Every section worth jumping to, in page order: phone menu and footer. */
   menu: SiteNavItem[];
   booking: SiteBooking;
+  /** Teas and teaware are sold on The Tea Temple, the only site with prices. */
+  shopUrl: string;
   /** The header's always-visible button: to the contact form. */
   headerCta: SiteNavItem;
   contact: SiteContact;
   seo: SiteSeo;
 }
+
+const SHOP_URL = "https://entertheteatemple.com/#shop";
 
 export const SITE: Site = {
   name: "The Red Flying Dragon",
@@ -53,7 +58,7 @@ export const SITE: Site = {
     { label: "About", href: "#about" },
     { label: "Tea", href: "#tea-ceremony" },
     { label: "Tai Chi", href: "#tai-chi" },
-    { label: "Shop", href: "#shop" },
+    { label: "Shop", href: SHOP_URL },
     { label: "Contact", href: "#contact" },
     { label: "Newsletter", href: "#tea-list" },
   ],
@@ -63,7 +68,7 @@ export const SITE: Site = {
     { label: "Tea Ceremony", href: "#tea-ceremony" },
     { label: "Tai Chi", href: "#tai-chi" },
     { label: "Tea + Tai Chi", href: "#yin-yang" },
-    { label: "Shop the Tea", href: "#shop" },
+    { label: "Shop the Tea", href: SHOP_URL },
     { label: "Contact", href: "#contact" },
     { label: "Newsletter", href: "#tea-list" },
   ],
@@ -73,6 +78,7 @@ export const SITE: Site = {
     note: "Tastings for 1-5 guests, and online sessions",
     url: "https://entertheteatemple.com/",
   },
+  shopUrl: SHOP_URL,
   headerCta: { label: "Book a Session", href: "#contact" },
   contact: {
     email: "flyingdragontea@gmail.com",

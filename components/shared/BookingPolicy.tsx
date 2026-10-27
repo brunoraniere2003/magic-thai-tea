@@ -4,7 +4,7 @@ export interface BookingPolicyProps {
   /** One line shown while collapsed. Defaults to the payment rule. */
   teaser?: string;
   /**
-   * Start open. Used next to the prices: the booking is charged in full on
+   * Start open where it matters: the booking is charged in full on
    * confirmation, and a term like that must not hide behind a closed toggle.
    */
   defaultOpen?: boolean;

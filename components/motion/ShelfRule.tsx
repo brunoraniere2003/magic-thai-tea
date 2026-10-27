@@ -10,7 +10,7 @@ export interface ShelfRuleProps {
 
 /**
  * The hairline of a shelf, drawn left to right as it comes into view — the one
- * signature gesture of the shop (§5). Scales on the X axis only, so nothing
+ * signature gesture of the class schedule. Scales on the X axis only, so nothing
  * lays out twice; without motion it is simply already drawn.
  */
 export function ShelfRule({ className = "" }: ShelfRuleProps) {

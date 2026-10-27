@@ -172,7 +172,7 @@ export function ContactForm() {
 
               flags={flags} serves the flag artwork from the package instead of
               the library's default CDN (a personal GitHub Pages host), so the
-              page makes no third-party request - same rule the shop follows. */}
+              page makes no third-party request. */}
           <PhoneInput
             id="phone"
             international

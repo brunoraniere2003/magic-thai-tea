@@ -4,15 +4,22 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { SITE } from "@/content/site";
-import { CartButton } from "@/components/shop/Cart";
 import { buildSmsHref } from "@/lib/contact/sms";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { scrollToAnchor, scrollToTop } from "@/lib/smoothScroll";
 
 /** Every in-page section the header knows about, in page order. */
 const SECTION_IDS = Array.from(
-  new Set([...SITE.menu, ...SITE.nav].map((item) => item.href.slice(1))),
+  new Set(
+    [...SITE.menu, ...SITE.nav]
+      .filter((item) => item.href.startsWith("#"))
+      .map((item) => item.href.slice(1)),
+  ),
 );
+
+/** Shop goes to The Tea Temple: open it in a new tab, like the booking link. */
+const external = (href: string) =>
+  href.startsWith("#") ? {} : { target: "_blank", rel: "noopener noreferrer" };
 
 /**
  * Which section the reader is in: the last one whose top has passed 40% of the
@@ -49,7 +56,8 @@ const BOOKING_LABEL = `${SITE.booking.cta} at ${SITE.booking.name} (opens in a n
  * Desktop: six text links that light up for the section you are in, and the
  * "Book a Session" button, which glides to the contact form. Tablet: Shop, booking and the menu. Phone:
  * Shop and the menu, which opens a full-screen index of every section plus a
- * card for The Tea Temple. The cart bag sits beside them on every screen. Esc closes; body scroll locks while it is open.
+ * card for The Tea Temple. Shop opens the shop on The Tea Temple in a new tab.
+ * Esc closes; body scroll locks while it is open.
  */
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -216,6 +224,7 @@ export function Header() {
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  {...external(item.href)}
                   aria-current={current ? "location" : undefined}
                   onClick={(event) => onAnchorClick(event, item.href)}
                   className={`group relative -my-2 block py-2 font-sans text-sm tracking-wide transition-[color,letter-spacing] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:text-cream hover:tracking-wider focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold ${
@@ -237,17 +246,15 @@ export function Header() {
 
         <div className="flex items-center gap-5">
           {/* Shop stays one tap away on every screen below desktop. */}
-          <Link
-            href="#shop"
-            onClick={(event) => onAnchorClick(event, "#shop")}
-            className={`relative z-50 -my-2 py-2 font-sans text-sm transition-colors hover:text-cream lg:hidden ${
-              isActive("#shop") ? "text-cream" : "text-stone"
-            } ${open ? "invisible" : ""}`}
+          <a
+            href={SITE.shopUrl}
+            {...external(SITE.shopUrl)}
+            className={`relative z-50 -my-2 py-2 font-sans text-sm text-stone transition-colors hover:text-cream lg:hidden ${
+              open ? "invisible" : ""
+            }`}
           >
             Shop
-          </Link>
-
-          <CartButton className={open ? "invisible" : ""} />
+          </a>
 
           {/* Always in view: glides to the contact form (brief 2026-10-20). */}
           <a
@@ -301,6 +308,7 @@ export function Header() {
                 >
                   <Link
                     href={item.href}
+                    {...external(item.href)}
                     aria-current={current ? "location" : undefined}
                     className="flex items-baseline gap-4 py-3.5"
                     onClick={(event) => onAnchorClick(event, item.href)}

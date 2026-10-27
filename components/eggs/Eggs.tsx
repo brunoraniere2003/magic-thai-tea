@@ -6,7 +6,7 @@ import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 
 /**
  * Easter eggs that live page-wide (brief 2026-10-20, section F). None of them
- * blocks the page, a form or the checkout: no popups, nothing focusable,
+ * blocks the page or a form: no popups, nothing focusable,
  * nothing tracked.
  *
  * - The dragon: five clicks on the site name in the header, and a thin

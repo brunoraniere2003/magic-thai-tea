@@ -65,7 +65,7 @@ test("the page carries the handoff sections in order", async ({ page }) => {
   ]);
 });
 
-test("no magic and no service prices anywhere on the page", async ({ page }) => {
+test("no magic and no prices anywhere on the page", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   // Typing before React hydrates is lost; wait until the page is live.
@@ -73,13 +73,8 @@ test("no magic and no service prices anywhere on the page", async ({ page }) => 
 
   const main = page.locator("main");
   await expect(main).not.toContainText(/magic/i);
-  // The only prices live in the shop.
-  const pricesOutsideShop = await page.evaluate(() =>
-    [...document.querySelectorAll("main > section:not(#shop)")]
-      .map((section) => section.textContent ?? "")
-      .filter((text) => /\$\s?\d/.test(text)),
-  );
-  expect(pricesOutsideShop).toEqual([]);
+  // Every price lives on The Tea Temple (2026-10-27), none on this site.
+  await expect(page.locator("body")).not.toContainText(/\$\s?\d/);
 });
 
 test("the Tea Temple is offered for booking", async ({ page }) => {
