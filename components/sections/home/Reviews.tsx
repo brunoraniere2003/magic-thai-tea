@@ -42,7 +42,10 @@ export function Reviews() {
         start="top 90%"
         onWheel={onWheel}
       >
-        {HOME.reviews.map((review) => (
+        {/* Cathy and Lucy sit beside the team-events offer (Corporate). */}
+        {HOME.reviews
+          .filter((review) => !HOME.corporate.featuredReviews.includes(review.name))
+          .map((review) => (
           <li
             key={review.name}
             className="flex w-[85vw] shrink-0 snap-center flex-col justify-between rounded-2xl border border-stone/15 bg-cream/[0.03] p-8 sm:w-[380px]"
@@ -60,7 +63,7 @@ export function Reviews() {
               ) : null}
             </footer>
           </li>
-        ))}
+          ))}
       </Stagger>
     </section>
   );

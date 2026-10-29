@@ -41,8 +41,22 @@ export interface Site {
   /** Every section worth jumping to, in page order: phone menu and footer. */
   menu: SiteNavItem[];
   booking: SiteBooking;
-  /** Teas and teaware are sold on The Tea Temple, the only site with prices. */
+  /** Teas and teaware are sold on The Tea Temple. */
   shopUrl: string;
+  /** Private tastings for 1-5 guests, booked on The Tea Temple. */
+  tastingUrl: string;
+  /** The free 15-minute intro call (Cal.com). Same link on The Tea Temple. */
+  introCallUrl: string;
+  /**
+   * Gatherings of 6 or more: the only price this site shows. It MUST match
+   * entertheteatemple.com/#gatherings (see ~/Projects/CLAUDE.md).
+   */
+  gathering: { perGuest: number; minGuests: number; hours: number };
+  /**
+   * One Tea List for both sites: signups here go to The Tea Temple's Netlify
+   * form, the same list its own footer form fills.
+   */
+  newsletter: { url: string; formName: string };
   /** The header's always-visible button: to the contact form. */
   headerCta: SiteNavItem;
   contact: SiteContact;
@@ -55,7 +69,7 @@ export const SITE: Site = {
   name: "The Red Flying Dragon",
   tagline: "The Chinese arts of tea and tai chi, by Ethan Holtzman.",
   nav: [
-    { label: "About", href: "#about" },
+    { label: "Teams", href: "#corporate" },
     { label: "Tea", href: "#tea-ceremony" },
     { label: "Tai Chi", href: "#tai-chi" },
     { label: "Shop", href: SHOP_URL },
@@ -63,6 +77,7 @@ export const SITE: Site = {
     { label: "Newsletter", href: "#tea-list" },
   ],
   menu: [
+    { label: "Team Events", href: "#corporate" },
     { label: "About Ethan", href: "#about" },
     { label: "Two Ways to Book", href: "#book" },
     { label: "Tea Ceremony", href: "#tea-ceremony" },
@@ -70,6 +85,7 @@ export const SITE: Site = {
     { label: "Tea + Tai Chi", href: "#yin-yang" },
     { label: "Shop the Tea", href: SHOP_URL },
     { label: "Contact", href: "#contact" },
+    { label: "Tai Chi Classes", href: "#classes" },
     { label: "Newsletter", href: "#tea-list" },
   ],
   booking: {
@@ -79,6 +95,11 @@ export const SITE: Site = {
     url: "https://entertheteatemple.com/",
   },
   shopUrl: SHOP_URL,
+  tastingUrl: "https://entertheteatemple.com/#book",
+  introCallUrl:
+    "https://cal.com/redflyingdragon/intro-call-with-the-red-flying-dragon",
+  gathering: { perGuest: 125, minGuests: 6, hours: 2 },
+  newsletter: { url: "https://entertheteatemple.com/", formName: "tea-list" },
   headerCta: { label: "Book a Session", href: "#contact" },
   contact: {
     email: "flyingdragontea@gmail.com",

@@ -26,8 +26,8 @@ export interface HeroContent {
   subtitle: string;
   /** The hero's one button. */
   cta: HeroCta;
-  /** The small text link beside it. */
-  shopLink: HeroCta;
+  /** The second button: a private tasting on The Tea Temple (new tab). */
+  secondaryCta: HeroCta;
   scrollCue: string;
 }
 
@@ -90,6 +90,14 @@ export interface BookingDoor {
   body: string;
   /** An on-page anchor (#contact) or The Tea Temple (opens a new tab). */
   cta: HeroCta;
+}
+
+/** Team events (brief 2026-10-29): the corporate offer, with its own section. */
+export interface CorporateContent extends SectionIntro {
+  steps: { title: string; text: string }[];
+  cta: HeroCta;
+  /** Shown beside the offer, and left out of the reviews rail. */
+  featuredReviews: string[];
 }
 
 export interface DoorsContent extends SectionIntro {
@@ -158,7 +166,6 @@ export interface TeaListContent {
   eyebrow: string;
   title: string;
   body: string;
-  nameLabel: string;
   emailLabel: string;
   buttonLabel: string;
   successMessage: string;
@@ -172,6 +179,8 @@ export interface CalendarContent {
   cta: string;
   /** Accessible title for the iframe. */
   frameTitle: string;
+  /** The class times don't link anywhere; this is how someone joins. */
+  joinCta: HeroCta;
 }
 
 export interface EventEntry {
@@ -209,6 +218,7 @@ export interface HomeContent {
   hero: HeroContent;
   practices: Practice[];
   yinYang: YinYangContent;
+  corporate: CorporateContent;
   doors: DoorsContent;
   bookingPolicy: BookingPolicyContent;
   about: AboutContent;
@@ -224,13 +234,13 @@ export interface HomeContent {
 
 export const HOME: HomeContent = {
   hero: {
-    eyebrow: "Tea & Tai Chi",
+    eyebrow: "Ethan Holtzman",
     region: "Serving San Francisco, the Bay Area & beyond",
     title: "The Red Flying Dragon",
     subtitle:
-      "I'm Ethan Holtzman. I lead Taiwanese gongfu tea ceremonies and teach Yang-style Tai Chi.",
-    cta: { label: "Book me", href: "#contact" },
-    shopLink: { label: "Shop tea", href: SITE.shopUrl },
+      "Tea & Tai Chi for teams and private groups. I bring a gongfu tea ceremony to your office or event in the Bay Area.",
+    cta: { label: "Plan a team event", href: "#corporate" },
+    secondaryCta: { label: "Book a private tasting", href: SITE.tastingUrl },
     scrollCue: "Scroll to enter",
   },
 
@@ -322,6 +332,31 @@ export const HOME: HomeContent = {
     ],
   },
 
+  // Team events (brief 2026-10-29). The price, minimum and length come from
+  // SITE.gathering, shared with The Tea Temple's #gatherings.
+  corporate: {
+    eyebrow: "For teams",
+    title: "Tea for your team.",
+    intro:
+      "I bring a gongfu tea ceremony, with Tai Chi if you like, to your office, offsite, or client event anywhere in the Bay Area.",
+    steps: [
+      {
+        title: "Inquire",
+        text: "Tell me the date, the place, and roughly how many guests.",
+      },
+      {
+        title: "15-minute call",
+        text: "We talk through the room, the group, and what you want them to leave with.",
+      },
+      {
+        title: "Proposal",
+        text: "You get a written plan and a quote to approve. Then I bring the tea.",
+      },
+    ],
+    cta: { label: "Plan a team event", href: "#contact" },
+    featuredReviews: ["Cathy Cao", "Lucy Shen"],
+  },
+
   // Two ways to book (brief 2026-10-20): gatherings come through the contact
   // form; intimate and online sessions are booked on The Tea Temple.
   doors: {
@@ -332,7 +367,7 @@ export const HOME: HomeContent = {
         symbol: "yinyang",
         eyebrow: "Gatherings",
         title: "Events & residencies",
-        body: "Corporate events, weddings, private parties, venue residencies, and Tea + Tai Chi evenings.",
+        body: "Weddings, private parties, venue residencies, and Tea + Tai Chi evenings.",
         cta: { label: "Book me", href: "#contact" },
       },
       {
@@ -498,7 +533,6 @@ export const HOME: HomeContent = {
     eyebrow: "Newsletter",
     title: "Join the Tea List",
     body: "Upcoming ceremonies, Tai Chi sessions, and the occasional limited release, straight to your inbox. No spam, just the good stuff.",
-    nameLabel: "Name",
     emailLabel: "Email",
     buttonLabel: "Join the list",
     successMessage: "You're on the list. Watch your inbox.",
@@ -511,6 +545,7 @@ export const HOME: HomeContent = {
     body: "Regular sessions, open to join. Dates, times, and locations below.",
     cta: "View the schedule",
     frameTitle: "Tai Chi class schedule calendar",
+    joinCta: { label: "Ask to join a class", href: "#contact" },
   },
 
   // handoff — Contact / Events. Empty at launch (blocker B5).

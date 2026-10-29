@@ -54,7 +54,12 @@ export async function ClassSchedule() {
   const content = HOME.classesCalendar;
 
   return (
-    <div className="flex flex-col gap-6">
+    // Its own section near the end of the page (brief 2026-10-29): the weekly
+    // classes are for students, and sat in the way of team-event buyers.
+    <section
+      id="classes"
+      className="mx-auto flex w-full max-w-4xl scroll-mt-24 flex-col gap-6 px-6 py-20 sm:py-28"
+    >
       <div>
         <h3 className="font-display text-2xl text-cream sm:text-3xl">
           {content.title}
@@ -100,10 +105,10 @@ export async function ClassSchedule() {
           client names, errands and home address this list keeps out. The next
           step for someone who wants to join is a conversation. */}
       <Reveal delay={0.1}>
-        <a href={HOME.hero.cta.href} className={buttonClasses("secondary", "self-start")}>
-          {HOME.hero.cta.label}
+        <a href={content.joinCta.href} className={buttonClasses("secondary", "self-start")}>
+          {content.joinCta.label}
         </a>
       </Reveal>
-    </div>
+    </section>
   );
 }

@@ -30,9 +30,16 @@ const isBookingTarget = (href: string) =>
   ANCHORS.has(href) || href === SITE.booking.url || href === SITE.shopUrl;
 
 describe("HOME content", () => {
-  it("points the hero's one button at the contact form", () => {
-    expect(HOME.hero.cta.href).toBe("#contact");
+  it("leads the hero with team events, then a private tasting on the Tea Temple", () => {
+    expect(HOME.hero.cta.href).toBe("#corporate");
     expect(ANCHORS.has(HOME.hero.cta.href)).toBe(true);
+    expect(HOME.hero.secondaryCta.href).toBe(SITE.tastingUrl);
+    expect(HOME.corporate.cta.href).toBe("#contact");
+  });
+
+  it("features two reviews that exist, beside the team-event offer", () => {
+    const names = HOME.reviews.map((review) => review.name);
+    for (const name of HOME.corporate.featuredReviews) expect(names).toContain(name);
   });
 
   // The site is tea and tai chi (2026-10-11): no magic, and no prices at all:
@@ -110,7 +117,6 @@ describe("HOME content", () => {
   it("labels every field of the tea list form", () => {
     expect(HOME.teaList.title).toBeTruthy();
     expect(HOME.teaList.buttonLabel).toBeTruthy();
-    expect(HOME.teaList.nameLabel).toBeTruthy();
     expect(HOME.teaList.emailLabel).toBeTruthy();
     expect(HOME.teaList.successMessage).toBeTruthy();
   });

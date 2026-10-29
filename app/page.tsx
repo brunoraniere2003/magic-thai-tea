@@ -3,6 +3,7 @@ import { Practice } from "@/components/sections/home/Practice";
 import { YinYang } from "@/components/sections/home/YinYang";
 import { Reviews } from "@/components/sections/home/Reviews";
 import { TwoDoors } from "@/components/sections/home/TwoDoors";
+import { Corporate } from "@/components/sections/home/Corporate";
 import { Shop } from "@/components/sections/home/Shop";
 import { About } from "@/components/sections/home/About";
 import { TeaList } from "@/components/sections/home/TeaList";
@@ -13,14 +14,13 @@ import { ClassSchedule } from "@/components/sections/home/ClassSchedule";
 import { HOME } from "@/content/home";
 
 /**
- * Page order (brief 2026-10-20):
- * Hero > About > Two ways to book > Tea Ceremony > Tai Chi (+ class schedule)
- * > Tea + Tai Chi > Reviews > Shop > Contact > Tea List > Connect > Events.
+ * Page order (brief 2026-10-29):
+ * Hero > Team events > About > Two ways to book > Tea Ceremony > Tai Chi >
+ * Tea + Tai Chi > Reviews > Take the tea home > Contact > Tai Chi classes >
+ * Tea List > Connect > Events.
  *
- * Who Ethan is, then how to book him (a gathering through the contact form, or
- * an intimate session at The Tea Temple), then the practices and the proof,
- * then a link to the shop on The Tea Temple, and the contact form. Ways to stay in touch
- * close the page. Every section is one tap away in the header (SITE.nav/menu).
+ * The page now leads with the team-event offer (price, steps, two business
+ * quotes); the weekly class schedule sits low, where students look for it.
  */
 export default function Home() {
   const [tea, taichi] = HOME.practices;
@@ -28,19 +28,18 @@ export default function Home() {
   return (
     <main id="main" className="relative flex flex-1 flex-col">
       <Hero />
+      <Corporate />
       <About />
       <TwoDoors />
       <Practice practice={tea} />
-      <Practice practice={taichi} reversed>
-        {/* Drawn from the calendar feed, not embedded: Google's iframe would
-            republish his private bookings, errands and home address, and has
-            no way to hide event titles. See ClassSchedule. */}
-        <ClassSchedule />
-      </Practice>
+      <Practice practice={taichi} reversed />
       <YinYang />
       <Reviews />
       <Shop />
       <Contact />
+      {/* Drawn from the calendar feed, not embedded: Google's iframe would
+          republish his private bookings, errands and home address. */}
+      <ClassSchedule />
       <TeaList />
       <Connect />
       <Events />

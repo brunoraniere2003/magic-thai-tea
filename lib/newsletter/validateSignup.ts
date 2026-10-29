@@ -1,6 +1,4 @@
 export interface SignupValues {
-  /** Optional, per the handoff. */
-  name: string;
   email: string;
 }
 
@@ -10,8 +8,7 @@ export type SignupErrors = Partial<Record<SignupField, string>>;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
- * Pure validation for the "Join the Tea List" form. Name is optional (R7),
- * email is required. Returns a map of field → message; empty means valid.
+ * Pure validation for the "Join the Tea List" form. Email is required. Returns a map of field → message; empty means valid.
  */
 export function validateSignup(values: SignupValues): SignupErrors {
   const errors: SignupErrors = {};

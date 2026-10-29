@@ -6,14 +6,13 @@ import { SITE } from "../content/site";
 test("tea list accepts a signup and confirms it", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
 
-  // Stub the transport so the test is hermetic (no real signup).
-  await page.route("**/formsubmit.co/**", (route) =>
-    route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ success: "true" }),
-    }),
-  );
+  // Stub The Tea Temple's list so the test is hermetic (no real signup), and
+  // check what would have been sent.
+  let sent = "";
+  await page.route("https://entertheteatemple.com/", (route) => {
+    sent = route.request().postData() ?? "";
+    return route.fulfill({ status: 200, body: "" });
+  });
 
   await page.goto("/");
   // Typing before React hydrates is lost; wait until the page is live.
@@ -24,6 +23,8 @@ test("tea list accepts a signup and confirms it", async ({ page }) => {
   await form.getByRole("button", { name: HOME.teaList.buttonLabel }).click();
 
   await expect(page.getByText(HOME.teaList.successMessage)).toBeVisible();
+  expect(new URLSearchParams(sent).get("form-name")).toBe("tea-list");
+  expect(new URLSearchParams(sent).get("email")).toBe("jane@example.com");
 });
 
 test("tea list refuses a malformed email and asks again", async ({ page }) => {
@@ -49,9 +50,10 @@ test("the page carries the handoff sections in order", async ({ page }) => {
     sections.map((section) => section.id),
   );
 
-  // Order from the brief of 2026-10-20. Events are absent until Ethan sends
+  // Order from the brief of 2026-10-29. Events are absent until Ethan sends
   // them (B5).
   expect(ids).toEqual([
+    "corporate",
     "about",
     "book",
     "tea-ceremony",
@@ -60,12 +62,13 @@ test("the page carries the handoff sections in order", async ({ page }) => {
     "reviews",
     "shop",
     "contact",
+    "classes",
     "tea-list",
     "connect",
   ]);
 });
 
-test("no magic and no prices anywhere on the page", async ({ page }) => {
+test("no magic, and the only price is the team-event anchor", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   // Typing before React hydrates is lost; wait until the page is live.
@@ -73,8 +76,16 @@ test("no magic and no prices anywhere on the page", async ({ page }) => {
 
   const main = page.locator("main");
   await expect(main).not.toContainText(/magic/i);
-  // Every price lives on The Tea Temple (2026-10-27), none on this site.
-  await expect(page.locator("body")).not.toContainText(/\$\s?\d/);
+  // Every price lives on The Tea Temple (2026-10-27), except the per-guest
+  // anchor for team events (2026-10-29), which must match its #gatherings.
+  const pricesOutsideCorporate = await page.evaluate(() =>
+    [...document.querySelectorAll("header, footer, main > section, dialog")]
+      .filter((el) => el.id !== "corporate")
+      .map((el) => el.textContent ?? "")
+      .filter((text) => /\$\s?\d/.test(text)),
+  );
+  expect(pricesOutsideCorporate).toEqual([]);
+  await expect(page.locator("#corporate")).toContainText(`$${SITE.gathering.perGuest}`);
 });
 
 test("the Tea Temple is offered for booking", async ({ page }) => {

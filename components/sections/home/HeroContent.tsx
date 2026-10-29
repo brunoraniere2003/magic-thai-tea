@@ -9,7 +9,7 @@ import { scrollToAnchor } from "@/lib/smoothScroll";
  * instead of jumping instantly.
  */
 export function HeroContent() {
-  const { eyebrow, region, title, subtitle, cta, shopLink, scrollCue } =
+  const { eyebrow, region, title, subtitle, cta, secondaryCta, scrollCue } =
     HOME.hero;
 
   const onCtaClick = (
@@ -59,12 +59,14 @@ export function HeroContent() {
           {cta.label}
         </a>
         <a
-          href={shopLink.href}
+          href={secondaryCta.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="link-lux"
+          aria-label={`${secondaryCta.label} (opens The Tea Temple in a new tab)`}
+          className="btn-lux btn-lux-quiet px-8"
         >
-          {shopLink.label}
+          {secondaryCta.label}
+          <span aria-hidden>↗</span>
         </a>
       </div>
 

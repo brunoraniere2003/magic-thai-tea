@@ -298,16 +298,33 @@ export function ContactForm() {
           : null}
       </p>
 
-      {smsHref ? (
+      {/* The two ways around the form: a call or a text. */}
+      <div className="flex flex-col items-center justify-center gap-8 sm:flex-row sm:gap-12">
         <div className="flex flex-col items-center gap-2">
           <span className="font-sans text-xs uppercase tracking-[0.3em] text-stone/80">
-            Prefer to text?
+            Prefer to talk?
           </span>
-          <a href={smsHref} className={buttonClasses("secondary")}>
-            Text Ethan
+          <a
+            href={SITE.introCallUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Book a 15-min call (opens Cal.com in a new tab)"
+            className={buttonClasses("primary")}
+          >
+            Book a 15-min call <span aria-hidden>↗</span>
           </a>
         </div>
-      ) : null}
+        {smsHref ? (
+          <div className="flex flex-col items-center gap-2">
+            <span className="font-sans text-xs uppercase tracking-[0.3em] text-stone/80">
+              Prefer to text?
+            </span>
+            <a href={smsHref} className={buttonClasses("secondary")}>
+              Text Ethan
+            </a>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
