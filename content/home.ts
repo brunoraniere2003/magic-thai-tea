@@ -506,23 +506,18 @@ export const HOME: HomeContent = {
       {
         label: "Podcast",
         value: "The Third Steep",
-        href: "https://www.youtube.com/@TheThirdSteep",
-        note: "conversations over tea",
+        // The guest intake form (2026-10-29), in place of the episode player.
+        href: "https://forms.gle/XpMsct5TxJ4aDL8b6",
+        note: "Want to be a guest? Fill out the intake form.",
         preview: {
           kind: "portrait",
           images: [
             {
               src: "/images/tea/tea-ceremony-fire.jpg",
               alt: "Ethan seated at a tea ceremony in warm light",
+              position: "top",
             },
           ],
-        },
-        // youtube-nocookie.com, not youtube.com: the regular host pulls in
-        // Google's ad stack (googleads.g.doubleclick.net, ad_status.js) on load,
-        // and the page carries no consent banner.
-        embed: {
-          url: "https://www.youtube-nocookie.com/embed/2aR6WcCRUPk?rel=0",
-          frameTitle: "The Third Steep podcast episode",
         },
       },
     ],
@@ -545,7 +540,10 @@ export const HOME: HomeContent = {
     body: "Regular sessions, open to join. Dates, times, and locations below.",
     cta: "View the schedule",
     frameTitle: "Tai Chi class schedule calendar",
-    joinCta: { label: "Ask to join a class", href: "#contact" },
+    joinCta: {
+      label: "Ask to join a class",
+      href: "https://sites.google.com/view/armbridge-tai-chi/",
+    },
   },
 
   // handoff — Contact / Events. Empty at launch (blocker B5).

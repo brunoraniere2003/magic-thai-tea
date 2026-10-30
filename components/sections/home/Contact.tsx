@@ -2,6 +2,7 @@ import { Reveal } from "@/components/motion";
 import { SectionHeading, ContactForm } from "@/components/shared";
 import { BookingPolicy } from "@/components/shared/BookingPolicy";
 import { HOME } from "@/content/home";
+import { buttonClasses } from "@/components/ui/Button";
 import { SITE } from "@/content/site";
 
 /**
@@ -26,17 +27,18 @@ export function Contact() {
       {/* The terms come BEFORE the form: after the send button nobody reads
           them, and the booking is charged in full once the date is set. */}
       <Reveal className="mb-8">
-        <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-2xl border border-gold/20 bg-cream/[0.03] px-5 py-4 text-center font-sans text-sm text-stone">
-          <span>{HOME.contact.templeNote}</span>
+        <div className="flex flex-col items-center gap-4 rounded-2xl border border-gold/20 bg-cream/[0.03] px-5 py-5 text-center font-sans text-sm text-stone">
+          <p className="max-w-md">{HOME.contact.templeNote}</p>
           <a
             href={SITE.booking.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gold underline decoration-gold/40 underline-offset-4 transition-colors hover:text-cream hover:decoration-cream/60"
+            aria-label={`${HOME.contact.templeLinkLabel} (opens in a new tab)`}
+            className={buttonClasses("primary")}
           >
             {HOME.contact.templeLinkLabel} <span aria-hidden>↗</span>
           </a>
-        </p>
+        </div>
       </Reveal>
 
       <Reveal className="mb-10">

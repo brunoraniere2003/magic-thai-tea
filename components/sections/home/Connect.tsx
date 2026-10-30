@@ -217,8 +217,10 @@ function Preview({ link }: { link: ConnectLink }) {
   const [image] = images;
   if (!image) return null;
 
+  // A single photo has no height of its own: hold the 16:9 the episode
+  // player used to fill, so the tile keeps its place in the grid.
   return (
-    <div className={MEDIA}>
+    <div className={`${MEDIA} aspect-video`}>
       <Image
         src={image.src}
         alt={image.alt}

@@ -105,8 +105,14 @@ export async function ClassSchedule() {
           client names, errands and home address this list keeps out. The next
           step for someone who wants to join is a conversation. */}
       <Reveal delay={0.1}>
-        <a href={content.joinCta.href} className={buttonClasses("secondary", "self-start")}>
-          {content.joinCta.label}
+        <a
+          href={content.joinCta.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`${content.joinCta.label} (opens in a new tab)`}
+          className={buttonClasses("secondary", "self-start")}
+        >
+          {content.joinCta.label} <span aria-hidden>↗</span>
         </a>
       </Reveal>
     </section>
