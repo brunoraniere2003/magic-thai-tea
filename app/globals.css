@@ -51,6 +51,18 @@
   }
 }
 
+/* The 紅飛龍 seal: the same chop as entertheteatemple.com's header. Cinnabar fill,
+   used once per page. */
+.seal {
+  flex-shrink: 0;
+  padding: 5px 5px 4px;
+  border-radius: 3px;
+  background: var(--color-seal);
+  color: #f6e7d3;
+  font: 500 0.875rem/1 "Noto Serif TC", "Songti TC", "PMingLiU", serif;
+  letter-spacing: 0.04em;
+}
+
 /* Hero steam: two soft wisps rising off the tea table. Transform and opacity
    only (cheap on phones); the reduced-motion block above stops it. */
 .hero-steam {

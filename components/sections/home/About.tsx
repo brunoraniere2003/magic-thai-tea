@@ -1,6 +1,7 @@
 import { Reveal, Parallax } from "@/components/motion";
 import { Figure } from "@/components/shared/Figure";
 import { SectionHeading } from "@/components/shared";
+import Image from "next/image";
 import { HOME } from "@/content/home";
 
 /** Ethan's story in his own words (spec 033 / R2). */
@@ -18,6 +19,16 @@ export function About() {
         </Parallax>
 
         <div className="w-full md:w-3/5">
+          {/* the shared cloud line (also on entertheteatemple.com), once per section at most */}
+          <Image
+            src="/images/cloud.svg"
+            alt=""
+            aria-hidden
+            width={140}
+            height={25}
+            unoptimized
+            className="mb-6 opacity-60"
+          />
           <SectionHeading eyebrow={about.eyebrow} title={about.title} />
           <div className="mt-6 flex flex-col gap-5">
             {about.paragraphs.map((paragraph, index) => (

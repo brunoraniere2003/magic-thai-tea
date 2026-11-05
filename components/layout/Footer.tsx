@@ -11,7 +11,12 @@ export function Footer() {
     <footer className="relative z-10 border-t border-stone/15 bg-stage">
       <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr]">
         <div className="max-w-xs">
-          <p className="font-display text-2xl text-cream">{SITE.name}</p>
+          <p className="flex items-center gap-3 font-display text-2xl text-cream">
+            <span lang="zh-Hant" aria-hidden className="seal">
+              紅飛龍
+            </span>
+            {SITE.name}
+          </p>
           <p className="mt-3 font-sans text-sm leading-relaxed text-stone">
             {SITE.tagline}
           </p>
