@@ -63,7 +63,7 @@ export function HeroPoster() {
       {/* vertical gradient: heavier at the top (eyebrow) and bottom (CTAs) */}
       <div className="absolute inset-0 bg-gradient-to-b from-stage/70 via-stage/15 to-stage/85" />
       {/* warm golden glow rising from the bottom */}
-      <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_125%,rgba(224,160,64,0.16),transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_125%,rgba(217, 162, 83,0.16),transparent_60%)]" />
     </div>
   );
 }

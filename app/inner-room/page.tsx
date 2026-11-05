@@ -15,7 +15,7 @@ export default function InnerRoom() {
     <main className="fixed inset-0 z-[60] flex flex-col items-center justify-center overflow-y-auto bg-stage px-6 text-center [background:radial-gradient(60%_50%_at_50%_45%,rgba(58,14,8,0.6),transparent_75%),var(--color-stage)]">
       <span
         aria-hidden
-        className="flex size-12 items-center justify-center rounded-md border border-ember/50 font-display text-xl text-ember/80"
+        className="flex size-12 items-center justify-center rounded-md border border-seal font-display text-xl text-seal"
       >
         龍
       </span>

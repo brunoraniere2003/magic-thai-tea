@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Fraunces, IBM_Plex_Mono, Inter } from "next/font/google";
 import { SITE } from "@/content/site";
 import { MotionProvider } from "@/lib/animations/MotionProvider";
 import { Header } from "@/components/layout/Header";
@@ -7,9 +7,19 @@ import { Footer } from "@/components/layout/Footer";
 import { Eggs } from "@/components/eggs/Eggs";
 import "./globals.css";
 
+// Fraunces with the SOFT and optical-size axes: the same headings as entertheteatemple.com
+// (SOFT 50 is set in globals.css). Plex Mono is for small uppercase labels only.
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
+  axes: ["SOFT", "opsz"],
+  display: "swap",
+});
+
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -42,7 +52,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b0a09",
+  themeColor: "#14100d",
 };
 
 export default function RootLayout({
@@ -52,7 +62,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${fraunces.variable} ${inter.variable} grain h-full antialiased`}
+      className={`${fraunces.variable} ${inter.variable} ${plexMono.variable} grain h-full antialiased`}
     >
       <body suppressHydrationWarning className="flex min-h-full flex-col">
         <a

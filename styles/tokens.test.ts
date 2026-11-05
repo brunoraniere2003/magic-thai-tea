@@ -6,13 +6,14 @@ const css = readFileSync(join(process.cwd(), "app/globals.css"), "utf8");
 
 describe("design tokens - single source of truth", () => {
   it("defines the stage (base) colors", () => {
-    expect(css).toMatch(/--color-stage:\s*#0b0a09/i);
+    // Shared with entertheteatemple.com (HANDOFF.md, Design Direction)
+    expect(css).toMatch(/--color-stage:\s*#14100d/i);
     expect(css).toMatch(/--color-cream:/i);
   });
 
   it("defines the brand and accent color tokens", () => {
-    expect(css).toMatch(/--color-ember:/i); // brand fire (the dragon)
-    expect(css).toMatch(/--color-gold:/i); // brand gold
+    expect(css).toMatch(/--color-seal:\s*#a3261b/i); // cinnabar seal
+    expect(css).toMatch(/--color-gold:\s*#d9a253/i); // brass, same as the Temple's --liquor
     expect(css).toMatch(/--color-tea:/i); // tea
     expect(css).toMatch(/--color-mist:/i); // tai chi
   });
@@ -20,5 +21,6 @@ describe("design tokens - single source of truth", () => {
   it("binds the display and sans font tokens", () => {
     expect(css).toMatch(/--font-display:/i);
     expect(css).toMatch(/--font-sans:/i);
+    expect(css).toMatch(/--font-mono:/i);
   });
 });

@@ -59,7 +59,7 @@ function Field({
       </label>
       {children}
       {error ? (
-        <span id={`${id}-error`} role="alert" className="font-sans text-xs text-ember">
+        <span id={`${id}-error`} role="alert" className="font-sans text-xs text-alert">
           {error}
         </span>
       ) : null}

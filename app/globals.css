@@ -4,31 +4,38 @@
    Design tokens - single source of truth (see docs/blueprint.md §1)
    ============================================================ */
 @theme {
-  /* Stage (base) */
-  --color-stage: #0b0a09; /* deep warm black - the stage */
-  --color-cream: #f4efe6; /* primary text */
-  --color-stone: #a39b8e; /* secondary text */
+  /* Shared with entertheteatemple.com: see "Design Direction" in HANDOFF.md.
+     Names kept from the first build so components don't change; values are the shared palette. */
+  /* Ground */
+  --color-stage: #14100d; /* warm black - the page */
+  --color-ink: #1f1813; /* oak - sections and panels */
+  --color-crimson: #4a0f0e; /* oxblood - shadows and glows */
+  /* Text */
+  --color-cream: #f1e9d8; /* body text, 15.7:1 on stage */
+  --color-stone: #b8aa93; /* secondary text, 8.3:1 */
+  /* Accents */
+  --color-gold: #d9a253; /* brass - primary actions, 8.3:1 */
+  --color-jade: #8fb59a; /* links and focus, 8.3:1 */
+  --color-seal: #a3261b; /* cinnabar - the seal and decoration only, never text on dark (2.6:1) */
+  --color-alert: #f0b9a8; /* form errors */
 
-  /* Brand fire (the red flying dragon - gold/crimson) */
-  --color-ember: #ff5e1a;
-  --color-gold: #e0a040;
-  --color-crimson: #3a0e08;
-
-  /* Tea */
+  /* Tea and Tai Chi accents */
   --color-tea: #6e8b6a;
   --color-amber: #c99a4e;
   --color-tea-cream: #ede3d0;
-
-  /* Tai Chi */
   --color-mist: #9daab2;
-  --color-ink: #14110f;
-  --color-jade: #afc4b4;
 }
 
 /* Fonts bound to the CSS variables injected by next/font */
 @theme inline {
   --font-display: var(--font-fraunces);
   --font-sans: var(--font-inter);
+  --font-mono: var(--font-plex-mono); /* small uppercase labels only */
+}
+
+/* Fraunces, softened to match entertheteatemple.com's headings */
+.font-display {
+  font-variation-settings: "SOFT" 50;
 }
 
 html {
@@ -191,7 +198,7 @@ body {
     .btn-lux:hover {
       border-color: var(--color-gold);
       background-color: color-mix(in srgb, var(--color-gold) 9%, transparent);
-      box-shadow: 0 0 28px -8px rgba(224, 160, 64, 0.55);
+      box-shadow: 0 0 28px -8px rgba(217, 162, 83, 0.55);
       letter-spacing: 0.24em;
       color: var(--color-cream);
     }

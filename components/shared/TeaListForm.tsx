@@ -74,7 +74,7 @@ export function TeaListForm() {
             <span
               id="tea-list-email-error"
               role="alert"
-              className="font-sans text-xs text-ember"
+              className="font-sans text-xs text-alert"
             >
               {errors.email}
             </span>

@@ -46,7 +46,7 @@ export function Eggs() {
   useEffect(() => {
     console.log(
       `%c${TEAPOT}\nYou looked under the lid. Say hi.`,
-      "color:#e0a040;font-family:monospace",
+      "color:#d9a253;font-family:monospace",
     );
   }, []);
 

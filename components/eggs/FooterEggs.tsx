@@ -42,7 +42,7 @@ export function FooterEggs() {
       >
         <span
           aria-hidden
-          className="flex size-5 items-center justify-center rounded-[3px] border border-ember/40 font-display text-[0.6rem] leading-none text-ember/70 transition-colors duration-[400ms] hover:border-ember hover:text-ember"
+          className="flex size-5 items-center justify-center rounded-[3px] border border-seal/60 font-display text-[0.6rem] leading-none text-seal transition-colors duration-[400ms] hover:border-gold hover:text-gold"
         >
           龍
         </span>

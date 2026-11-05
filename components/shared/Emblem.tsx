@@ -24,7 +24,7 @@ export interface EmblemProps {
 export function Emblem({
   symbol,
   className = "",
-  groundColor = "#3a0e08",
+  groundColor = "#4a0f0e",
   clipId = `emblem-clip-${symbol}`,
 }: EmblemProps) {
   const color = (tone: EmblemTone | undefined) =>

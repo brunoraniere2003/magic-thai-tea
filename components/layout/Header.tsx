@@ -334,7 +334,7 @@ export function Header() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={BOOKING_LABEL}
-                className="flex items-center justify-between gap-4 rounded-2xl border border-gold/40 bg-[radial-gradient(120%_120%_at_0%_0%,rgba(224,160,64,0.14),transparent_60%)] px-5 py-4"
+                className="flex items-center justify-between gap-4 rounded-2xl border border-gold/40 bg-[radial-gradient(120%_120%_at_0%_0%,rgba(217, 162, 83,0.14),transparent_60%)] px-5 py-4"
               >
                 <span className="flex flex-col">
                   <span className="font-display text-xl text-cream">

@@ -32,7 +32,7 @@ export function HeroCanvas() {
       splatForce: 4500,
       shading: true,
       colorful: false,
-      colorPalette: ["#ff6a1a", "#e0a040", "#c9762e", "#ffb347"],
+      colorPalette: ["#ff6a1a", "#d9a253", "#c9762e", "#ffb347"],
       hover: false,
       transparent: true,
       brightness: 0.4,
