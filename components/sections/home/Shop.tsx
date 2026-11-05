@@ -17,24 +17,27 @@ export function Shop() {
       id="shop"
       className="mx-auto w-full max-w-6xl scroll-mt-24 px-6 py-20 sm:py-28"
     >
-      <SectionHeading
-        eyebrow={eyebrow}
-        title={title}
-        intro={body}
-        align="center"
-        className="mx-auto max-w-2xl"
-      />
-      <Reveal delay={0.1} className="mt-10 flex justify-center">
-        <a
-          href={cta.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`${cta.label} (opens ${SITE.booking.name} in a new tab)`}
-          className={buttonClasses("primary")}
-        >
-          {cta.label} <span aria-hidden>↗</span>
-        </a>
-      </Reveal>
+      {/* The one paper card on this site: a preview of the Tea Temple's shop */}
+      <div className="paper mx-auto max-w-3xl rounded px-6 py-12 sm:px-12 sm:py-16">
+        <SectionHeading
+          eyebrow={eyebrow}
+          title={title}
+          intro={body}
+          align="center"
+          className="mx-auto max-w-2xl"
+        />
+        <Reveal delay={0.1} className="mt-10 flex justify-center">
+          <a
+            href={cta.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${cta.label} (opens ${SITE.booking.name} in a new tab)`}
+            className={buttonClasses("primary")}
+          >
+            {cta.label} <span aria-hidden>↗</span>
+          </a>
+        </Reveal>
+      </div>
     </section>
   );
 }

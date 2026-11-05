@@ -51,6 +51,21 @@
   }
 }
 
+/* Paper card (Design Direction, Board A): the theme colours are re-pointed inside it,
+   so every text-cream / text-stone / gold utility turns into ink on paper.
+   Contrast on #ede4d3: text 14.2, secondary 6.7, brass #7a4e10 5.7, jade #3f6b4e 4.9. */
+.paper {
+  --color-stage: #ede4d3;
+  --color-ink: #e6dcc8;
+  --color-cream: #1f150e;
+  --color-tea-cream: #1f150e; /* .btn-lux label */
+  --color-stone: #5a4a3a;
+  --color-gold: #7a4e10;
+  --color-jade: #3f6b4e;
+  background: var(--color-stage);
+  color: var(--color-cream);
+}
+
 /* The 紅飛龍 seal: the same chop as entertheteatemple.com's header. Cinnabar fill,
    used once per page. */
 .seal {

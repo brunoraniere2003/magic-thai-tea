@@ -25,8 +25,13 @@ export function Corporate() {
   return (
     <section
       id="corporate"
-      className="mx-auto w-full max-w-6xl scroll-mt-24 px-6 py-20 sm:py-28"
+      className="relative isolate mx-auto w-full max-w-6xl scroll-mt-24 px-6 py-20 sm:py-28"
     >
+      {/* oxblood glow behind the offer (Board B), kept inside the section */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(70%_55%_at_25%_35%,rgba(74,15,14,0.55),transparent_70%)]"
+      />
       <div className="grid gap-14 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
         <div>
           <SectionHeading
@@ -90,10 +95,10 @@ export function Corporate() {
               <span aria-hidden className="font-display text-5xl leading-none text-gold">
                 &ldquo;
               </span>
-              <p className="mt-2 font-sans text-base leading-relaxed text-cream">
+              <p className="mt-2 font-display text-lg font-light italic leading-relaxed text-cream">
                 {review.quote}
               </p>
-              <p className="mt-6 font-display text-lg text-cream">{review.name}</p>
+              <p className="label mt-6 text-cream">{review.name}</p>
               {review.role ? (
                 <p className="font-sans text-sm text-stone">{review.role}</p>
               ) : null}

@@ -241,18 +241,18 @@ The Temple has no testimonials section, and none gets added (scope rule).
 
 ### Checklist (smallest, highest impact first)
 
-1. [ ] Temple: remap the `:root` colours (15 min).
-2. [ ] Dragon: remap the `@theme` colours and replace the 8 `ember` uses (45 min).
-3. [ ] Temple: self-host Fraunces and Plex Mono, swap headings to Fraunces, drop Alegreya serif (45 min).
-4. [ ] Dragon: add Plex Mono via `next/font` and apply the type scale (30 min).
-5. [ ] Both: add mono labels (eyebrows, steps, price rows, product facts) (1 h).
-6. [ ] Dragon: hero grade, gradient, eyebrow and steam (1.5 h).
-7. [ ] Temple: hero (1 h).
-8. [ ] Temple: paper cards for Three ways, #book, #online and #shop, plus the cart drawer (2 h).
-9. [ ] Both: draw the seal SVG and the cloud line SVG, and place them (1 h).
-10. [ ] Both: grain, and check that reduced motion covers every new animation (30 min).
-11. [ ] Dragon: team-events oxblood and ledger steps, reviews, the "Take the tea home" paper card, TwoDoors emblems (2 h).
-12. [ ] Temple: #gatherings oxblood band and #questions rows (45 min).
+1. [x] Temple: remap the `:root` colours (15 min).
+2. [x] Dragon: remap the `@theme` colours and replace the 8 `ember` uses (45 min).
+3. [x] Temple: self-host Fraunces and Plex Mono, swap headings to Fraunces, drop Alegreya serif (45 min).
+4. [x] Dragon: add Plex Mono via `next/font` and apply the type scale (30 min).
+5. [x] Both: add mono labels (eyebrows, steps, price rows, product facts) (1 h).
+6. [x] Dragon: hero grade, gradient, eyebrow and steam (1.5 h).
+7. [x] Temple: hero (1 h).
+8. [x] Temple: paper cards for Three ways, #book, #online and #shop, plus the cart drawer (2 h).
+9. [x] Both: draw the seal SVG and the cloud line SVG, and place them (1 h).
+10. [x] Both: grain, and check that reduced motion covers every new animation (30 min).
+11. [x] Dragon: team-events oxblood and ledger steps, reviews, the "Take the tea home" paper card, TwoDoors emblems (2 h).
+12. [x] Temple: #gatherings oxblood band and #questions rows (45 min).
 13. [ ] Photos from Ethan, about 1 h per batch: pours, hands, cast iron, steam, slow-shutter Tai Chi, teaware (also an open item).
 
 **Acceptance (every item, before pushing):**
@@ -269,3 +269,30 @@ The Temple has no testimonials section, and none gets added (scope rule).
   - "Ask to join a class" opens Armbridge.
   - The podcast tile opens the intake form.
 - **SEO:** titles, meta descriptions, the h1 and JSON-LD are unchanged unless the copy itself changed.
+
+### As built (2026-11-05): items 1 to 12 are live
+
+Where the build differs from the plan above, and why:
+- **Temple body text stays Alegreya.** Alegreya was the body font, not just the headings, so only h1 to h3 and the questions moved to Fraunces.
+- **Tasting steps keep the Chinese numerals** 一 to 五 instead of mono "1ST STEEP". They were already the better mark.
+- **The Temple hero keeps the pour video** rather than a still photo.
+- **The seal is the existing CSS chop**, not new artwork: `.chop` in the Temple header and `.seal` in the Dragon footer, once per page each.
+- **The cart drawer is unchanged.** It was already oak.
+- **Questions use Fraunces, not mono.** They're sentences, and mono is for labels only.
+- **The reviews rail stays.** It's a swipe list, not an auto-playing carousel.
+- **Grain is 0.035 on both sites**, matching the Dragon's existing `.grain`, instead of 0.05.
+
+How the pieces work, for whoever continues:
+- **Paper cards on both sites are one class, `.paper`.** It re-points the colour variables, so everything inside turns ink-on-paper with no per-component rules.
+  - Temple: `--roast`, `--lantern`, `--liquor`, etc.
+  - Dragon: `--color-cream`, `--color-stone`, `--color-gold`, `--color-tea-cream` (the `.btn-lux` label), etc.
+  - If a control inside a paper card shows light text, it uses a colour the class doesn't re-point yet. Add it to `.paper`.
+- **Mono labels:** `.label` on both sites (Dragon: in the components layer of `app/globals.css`).
+- **Cloud line:** `media/cloud.svg` (Temple) and `public/images/cloud.svg` (Dragon). Same file, brass stroke, at most once per section.
+- **Hero steam:** `.hero-steam` in `app/globals.css`. The desktop WebGL fluid now uses steam and brass colours, not fire.
+
+Gotchas from this build:
+- **No spaces inside Tailwind arbitrary values.** `bg-[radial-gradient(...,rgba(217, 162, 83,0.1),...)]` silently drops the class. Write `rgba(217,162,83,0.1)`.
+- **Stale dev styles:** if the Dragon dev server serves old styles after a big CSS change, stop it, delete `.next/dev/cache` and start it again.
+
+**Left:** item 13, photos from Ethan.

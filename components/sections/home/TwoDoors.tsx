@@ -41,7 +41,7 @@ export function TwoDoors() {
                   className="pointer-events-none absolute inset-0 [background:radial-gradient(70%_60%_at_80%_0%,rgba(217,162,83,0.10),transparent_70%)]"
                 />
                 <Emblem symbol={door.symbol} className="relative size-12 text-gold" />
-                <p className="relative mt-6 font-sans text-xs uppercase tracking-[0.3em] text-gold/80">
+                <p className="label relative mt-6 text-gold">
                   {door.eyebrow}
                 </p>
                 <h3 className="relative mt-3 font-display text-3xl leading-tight text-cream sm:text-4xl">

@@ -53,11 +53,11 @@ export function Reviews() {
             <span aria-hidden className="font-display text-5xl text-gold">
               &ldquo;
             </span>
-            <p className="mt-2 flex-1 font-sans text-base leading-relaxed text-cream">
+            <p className="mt-2 flex-1 font-display text-lg font-light italic leading-relaxed text-cream">
               {review.quote}
             </p>
             <footer className="mt-6">
-              <p className="font-display text-lg text-cream">{review.name}</p>
+              <p className="label text-cream">{review.name}</p>
               {review.role ? (
                 <p className="font-sans text-sm text-stone">{review.role}</p>
               ) : null}
