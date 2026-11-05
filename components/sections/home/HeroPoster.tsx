@@ -58,12 +58,14 @@ export function HeroPoster() {
           className="object-cover object-center"
         />
       </div>
-      {/* light scrim so the headline stays legible without hiding the photo */}
-      <div className="absolute inset-0 bg-stage/30" />
+      {/* low-key grade: darker scrim so the photo reads as one source of light */}
+      <div className="absolute inset-0 bg-stage/40" />
       {/* vertical gradient: heavier at the top (eyebrow) and bottom (CTAs) */}
       <div className="absolute inset-0 bg-gradient-to-b from-stage/70 via-stage/15 to-stage/85" />
-      {/* warm golden glow rising from the bottom */}
-      <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_125%,rgba(217, 162, 83,0.16),transparent_60%)]" />
+      {/* oxblood shadow pooling at the bottom, with a little brass warmth on top (Board B) */}
+      <div className="absolute inset-0 bg-[radial-gradient(130%_80%_at_50%_120%,rgba(74,15,14,0.55),transparent_65%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_50%_125%,rgba(217,162,83,0.10),transparent_60%)]" />
+      <div className="hero-steam" />
     </div>
   );
 }

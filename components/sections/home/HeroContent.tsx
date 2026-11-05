@@ -25,7 +25,7 @@ export function HeroContent() {
     <div className="relative z-10 flex min-h-screen flex-col items-center justify-center gap-5 px-6 py-12 text-center">
       <p
         data-fire-line
-        className="font-sans text-xs uppercase tracking-[0.35em] text-stone"
+        className="label"
       >
         {eyebrow}
         <span className="mt-2 block text-balance font-display text-base normal-case italic tracking-normal text-gold/80 sm:text-lg">
@@ -35,7 +35,7 @@ export function HeroContent() {
 
       <h1
         data-fire-line
-        className="max-w-4xl font-display text-5xl leading-[1.05] text-cream sm:text-7xl"
+        className="max-w-4xl font-display text-5xl font-light leading-[1.05] tracking-[-0.01em] text-cream sm:text-7xl"
       >
         {title}
       </h1>

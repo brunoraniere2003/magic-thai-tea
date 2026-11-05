@@ -31,7 +31,7 @@ export function SectionHeading({
       {eyebrow ? (
         <Reveal
           as="p"
-          className="font-sans text-xs uppercase tracking-[0.3em] text-stone"
+          className="label"
         >
           {eyebrow}
         </Reveal>

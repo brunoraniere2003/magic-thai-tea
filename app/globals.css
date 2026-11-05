@@ -38,6 +38,35 @@
   font-variation-settings: "SOFT" 50;
 }
 
+/* Mono labels (Design Direction): small uppercase facts, never paragraphs.
+   In the components layer so utilities (text-gold, mt-1) still win. */
+@layer components {
+  .label {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-stone);
+  }
+}
+
+/* Hero steam: two soft wisps rising off the tea table. Transform and opacity
+   only (cheap on phones); the reduced-motion block above stops it. */
+.hero-steam {
+  position: absolute;
+  inset: 30% 0 0;
+  pointer-events: none;
+  background:
+    radial-gradient(22% 38% at 44% 78%, rgb(241 233 216 / 0.09), transparent 70%),
+    radial-gradient(18% 30% at 58% 66%, rgb(241 233 216 / 0.06), transparent 70%);
+  animation: hero-steam 12s var(--ease-lux) infinite alternate;
+}
+@keyframes hero-steam {
+  from { transform: translateY(0); opacity: 0.55; }
+  to { transform: translateY(-8%); opacity: 1; }
+}
+
 html {
   background-color: var(--color-stage);
   color: var(--color-cream);

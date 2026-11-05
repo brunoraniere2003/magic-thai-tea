@@ -38,7 +38,7 @@ export function TwoDoors() {
               <article className="relative flex h-full flex-col items-start overflow-hidden rounded-3xl border border-gold/25 bg-ink px-7 py-10 sm:px-10 sm:py-12">
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute inset-0 [background:radial-gradient(70%_60%_at_80%_0%,rgba(217, 162, 83,0.10),transparent_70%)]"
+                  className="pointer-events-none absolute inset-0 [background:radial-gradient(70%_60%_at_80%_0%,rgba(217,162,83,0.10),transparent_70%)]"
                 />
                 <Emblem symbol={door.symbol} className="relative size-12 text-gold" />
                 <p className="relative mt-6 font-sans text-xs uppercase tracking-[0.3em] text-gold/80">

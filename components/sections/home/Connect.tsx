@@ -170,7 +170,7 @@ function Preview({ link }: { link: ConnectLink }) {
   if (kind === "letter") {
     return (
       <div
-        className={`${MEDIA} flex min-h-24 flex-1 items-center justify-center bg-[radial-gradient(70%_70%_at_50%_45%,rgba(217, 162, 83,0.14),transparent_70%)]`}
+        className={`${MEDIA} flex min-h-24 flex-1 items-center justify-center bg-[radial-gradient(70%_70%_at_50%_45%,rgba(217,162,83,0.14),transparent_70%)]`}
       >
         <svg
           aria-hidden

@@ -41,7 +41,7 @@ export function Corporate() {
           >
             {terms.map((term) => (
               <div key={term.label} className="flex flex-col items-center px-3 py-5">
-                <dt className="order-2 mt-1 font-sans text-[0.7rem] uppercase tracking-[0.25em] text-stone">
+                <dt className="label order-2 mt-1">
                   {term.label}
                 </dt>
                 <dd className="font-display text-3xl text-cream">{term.figure}</dd>
@@ -52,8 +52,8 @@ export function Corporate() {
           <Stagger as="ol" className="mt-10 flex flex-col gap-6">
             {corporate.steps.map((step, index) => (
               <li key={step.title} className="flex gap-5">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-gold/50 font-display text-base text-gold">
-                  {index + 1}
+                <span className="label w-8 shrink-0 pt-1.5 text-gold">
+                  {String(index + 1).padStart(2, "0")}
                 </span>
                 <div>
                   <p className="font-display text-xl text-cream">{step.title}</p>
