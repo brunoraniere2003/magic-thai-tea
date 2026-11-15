@@ -35,7 +35,7 @@ Observações, sem ação:
 - [x] `apt upgrade`: 61 pacotes, sem erro. Docker 29.3.1 → 29.9.3, containerd 2.2 → 2.4, Node 22.23.1 → 22.23.5, Ubuntu 24.04.4 → 24.04.5. Ficaram: `cloud-init` (já estava travado de propósito) e dois pacotes em liberação gradual.
 - [x] Reboot: kernel 6.8.0-147 → 6.8.0-149. Tudo de volta em 32 s, sem intervenção: 10 containers, pm2, firewall, timer. Zero units com falha.
 - [x] Conferência final: os 19 endereços públicos respondem igual à linha de base, com uma diferença, a pretendida (3000 fechada). Dados do banco-horas intactos (mesmos 5.183 bytes).
-- [ ] Snapshots da Hostinger: só o dono consegue ver, no painel.
+- [x] Snapshots da Hostinger (conferido no painel em 2026-11-15): backup automático **semanal** ligado, guardado fora do servidor (últimos: 2026-11-10 e 2026-11-03, 10,61 GB, restauração em ~30 min). Snapshot manual criado em 2026-11-15 14:39, depois da manutenção (o painel mostra validade até 2026-11-16). Backup diário é um extra pago (US$ 6/mês), não contratado.
 
 ## Repo
 - [x] `.env.production` no `.gitignore` (no servidor ele guarda a chave da Stripe; o repo é público).
