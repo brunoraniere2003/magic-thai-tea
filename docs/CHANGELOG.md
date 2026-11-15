@@ -141,3 +141,14 @@ Conferido ao vivo com Playwright em 1440px e em iPhone 13, nos dois caminhos de 
 - **Bug encontrado pelo teste e corrigido**: com a conexão do GitHub caída, um `echo` falhava com EPIPE e o `set -e` matava o deploy **entre a troca e o rollback**; no sandbox, o site ficou fora do ar. Corrigido com saída protegida (`say`) e a trava de saída. Sem esse teste, aconteceria em produção na primeira queda de conexão durante um deploy com falha.
 - **10 cenários testados num sandbox real na VPS** (origem git própria, pm2 próprio, porta 3998; site real intocado o tempo todo). Lista em `docs/specs/037-deploy-a-prova-de-falha/tasks.md`.
 - **Instalado em produção**: script v2 (v1 em `/root/backup-deploy-2026-10-11/`), timer habilitado, logrotate semanal (com `su root syslog`, exigido no Ubuntu). O arquivo de rollback mudou para `/var/lib/tai-tea-deploy/rollback-commit`.
+
+## 2026-11-15
+
+### Spec 038: endurecimento e manutenção da VPS
+
+- **Pedido do Ethan** (revisão de segurança dele): fechar a porta 3000, olhar as outras portas, atualizar o sistema. **Dono**: "faça tudo e garanta que vai ficar tudo funcionando no final".
+- **Porta 3000 fechada para a internet**, IPv4 e IPv6 (`ops/firewall-3000.sh` → `tai-tea-firewall`). Só o servidor e as redes Docker falam com ela. Volta sozinha no boot e a cada 5 minutos; testado removendo a regra de propósito. Antes: `http://72.61.59.26:3000` servia o site sem HTTPS, por fora do Caddy.
+- **Manutenção**: 61 pacotes do Ubuntu (24.04.5, Docker 29.9.3, containerd 2.4, Node 22.23.5), pm2 7.1.2, Caddy 2.11.9, kernel 6.8.0-149 com reboot. Tudo voltou sozinho em 32 s. Os 19 endereços públicos da VPS respondem igual à linha de base tirada antes; a única diferença é a 3000 fechada.
+- **Auditoria das outras portas** (nada alterado, são de outros projetos): o `/api/state` do banco-horas segue aberto sem login pelo IP; SSH aceita senha; n8n e CRM pedem senha mas em HTTP puro. Pendências do dono, em `docs/specs/038-endurecimento-vps/tasks.md`.
+- **`.env.production` entra no `.gitignore`**: no servidor ele guarda a chave da Stripe e o repo é público.
+- **Cópia de segurança** de volumes e configs em `/root/backup-upkeep-2026-11-15/`. Snapshot da Hostinger não foi possível tirar (sem acesso ao painel).

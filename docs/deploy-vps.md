@@ -26,13 +26,46 @@ Rodam ali **9 containers de outros projetos**. Nenhum deles pode ser tocado num 
 | 80 | `deploy-caddy-1` (redireciona o nosso http→https; o resto vai pro banco-horas) |
 | 443 | `deploy-caddy-1` (o nosso HTTPS passa por aqui) |
 | 8081 | `banco-horas` (app próprio, container) |
-| 3000 | **`tai-tea` (nós, via pm2 — não é container)** |
+| 3000 | **`tai-tea` (nós, via pm2 — não é container)**. Fechada para a internet desde 2026-11-15 (seção abaixo) |
 | 3009 | `deploy-web-1` |
 | 5678 | `n8n` |
 | 8080 | `crm` |
 | 8090 | `deploy-redirector-1` |
 | 8100 | `matrizes-logicas-game` |
 | 8110 | `estudo-c1` |
+| 8120 | `xadrez-trainer` |
+
+## Porta 3000 fechada para a internet (spec 038)
+
+O app precisa escutar em `*:3000` (o Caddy, em Docker, chega nele por `172.20.0.1:3000`), então quem fecha a porta é o firewall: só o próprio servidor e as redes Docker falam com ela. De fora, `http://72.61.59.26:3000` não responde, em IPv4 e IPv6.
+
+```bash
+tai-tea-firewall status     # "closed to the internet", ou sai com erro
+tai-tea-firewall apply      # recoloca (idempotente)
+tai-tea-firewall remove     # tira tudo: uma chain (TAI_TEA_3000) e um salto na INPUT
+```
+
+A regra volta sozinha no boot (`tai-tea-firewall.service`) e a cada 5 minutos (`ExecStartPre` do `tai-tea-deploy-sync.service`). Não mexe em nenhuma outra porta; o `ufw` segue desligado.
+
+Instalação (feita em 2026-11-15; repetir só se recriar a VPS):
+
+```bash
+cd /var/www/magic-thai-tea
+install -m 0755 ops/firewall-3000.sh /usr/local/sbin/tai-tea-firewall
+install -m 0644 ops/systemd/tai-tea-firewall.service ops/systemd/tai-tea-deploy-sync.service /etc/systemd/system/
+systemctl daemon-reload && systemctl enable --now tai-tea-firewall.service
+```
+
+**Conferir de fora depois de mexer:** `curl -m 8 http://72.61.59.26:3000/` tem que falhar, e `https://theredflyingdragon.com/` tem que dar 200.
+
+## Manutenção do sistema (última: 2026-11-15)
+
+Roteiro e resultado em `docs/specs/038-endurecimento-vps/`. Resumo do que funciona nesta VPS:
+
+- Antes: linha de base de cada endereço público visto de fora, e cópia de volumes e configs em `/root/backup-upkeep-<data>/`.
+- `apt-get upgrade` com `--force-confdef --force-confold`, como unit transitória (`systemd-run`), para não morrer se o SSH cair. A atualização do Docker reinicia todos os containers (~40 s).
+- Caddy: `caddy validate` com a imagem nova **antes** do `docker compose up -d --no-deps caddy`; a imagem anterior fica marcada `caddy:rollback-<data>`.
+- Reboot: todos os containers têm `restart=unless-stopped`, o pm2 volta pelo `pm2-root.service`, e o SSH pelo `ssh.socket`. Em 2026-11-15 tudo voltou em 32 s.
 
 ## Atualizar o site: automático (desde 2026-10-11)
 

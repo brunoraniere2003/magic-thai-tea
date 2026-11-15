@@ -1,0 +1,15 @@
+# Closes port 3000 to the internet at boot (spec 038). The 5-minute sync timer
+# re-applies it too, so a flushed ruleset heals by itself.
+[Unit]
+Description=theredflyingdragon.com: close port 3000 to the internet
+After=network-pre.target
+Before=network-online.target pm2-root.service
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/tai-tea-firewall apply
+
+[Install]
+WantedBy=multi-user.target
