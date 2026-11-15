@@ -1,2 +1,5 @@
 # Shell scripts run on the Linux VPS: never CRLF.
 *.sh text eol=lf
+# Everything in ops/ is installed on the server (systemd units, logrotate):
+# a unit copied from a Windows checkout went up with CRLF on 2026-11-15.
+ops/** text eol=lf

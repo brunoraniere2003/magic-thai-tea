@@ -40,4 +40,5 @@ Observações, sem ação:
 ## Repo
 - [x] `.env.production` no `.gitignore` (no servidor ele guarda a chave da Stripe; o repo é público).
 - [x] Runbook, changelog e índice atualizados.
-- [ ] Push na `main` publicado pelo deploy automático depois de toda a manutenção.
+- [x] Push na `main` publicado pelo deploy automático depois de toda a manutenção (`e2cedbd`, verde).
+- [x] Defeito achado na conferência final e corrigido: a unit do sync tinha subido com CRLF (copiada de um checkout Windows). O systemd tolerou, mas foi reinstalada a partir do checkout do servidor e retestada; `.gitattributes` agora força LF em `ops/**`. **Instalar units sempre a partir de `/var/www/magic-thai-tea/ops/`, nunca por `scp` de uma máquina Windows.**
