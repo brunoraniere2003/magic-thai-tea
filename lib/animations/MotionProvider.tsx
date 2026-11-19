@@ -45,9 +45,17 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
 
     const refresh = () => ScrollTrigger.refresh();
     window.addEventListener("resize", refresh);
-    if (typeof document !== "undefined" && document.fonts?.ready) {
-      document.fonts.ready.then(refresh).catch(() => {});
-    }
+    // A link to a section (/#contact, e.g. from /gongfu-tea-san-francisco)
+    // still lands on it: jump there once the layout has settled.
+    const hashTarget = window.location.hash
+      ? document.getElementById(window.location.hash.slice(1))
+      : null;
+    (document.fonts?.ready ?? Promise.resolve())
+      .then(() => {
+        refresh();
+        if (hashTarget) lenis.scrollTo(hashTarget, { immediate: true });
+      })
+      .catch(() => {});
 
     return () => {
       gsap.ticker.remove(tick);

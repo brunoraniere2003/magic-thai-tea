@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SITE } from "@/content/site";
+import { GONGFU } from "@/content/gongfu";
 import { buildSmsHref } from "@/lib/contact/sms";
 import { FooterEggs } from "@/components/eggs/FooterEggs";
 
@@ -39,7 +40,7 @@ export function Footer() {
             {SITE.menu.map((item) => (
               <li key={item.href}>
                 <Link
-                  href={item.href}
+                  href={item.href.startsWith("#") ? `/${item.href}` : item.href}
                   className="inline-flex min-h-11 items-center font-sans text-sm text-stone transition-colors duration-[400ms] hover:text-cream"
                 >
                   {item.label}
@@ -72,6 +73,12 @@ export function Footer() {
           <p className="font-sans text-xs text-stone">
             © {new Date().getFullYear()} {SITE.name}. All rights reserved.
           </p>
+          <Link
+            href={GONGFU.path}
+            className="font-sans text-xs text-stone transition-colors duration-[400ms] hover:text-cream"
+          >
+            Gongfu tea ceremony in San Francisco
+          </Link>
           <FooterEggs />
         </div>
       </div>

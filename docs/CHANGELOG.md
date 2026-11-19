@@ -152,3 +152,7 @@ Conferido ao vivo com Playwright em 1440px e em iPhone 13, nos dois caminhos de 
 - **Auditoria das outras portas** (nada alterado, são de outros projetos): o `/api/state` do banco-horas segue aberto sem login pelo IP; SSH aceita senha; n8n e CRM pedem senha mas em HTTP puro. Pendências do dono, em `docs/specs/038-endurecimento-vps/tasks.md`.
 - **`.env.production` entra no `.gitignore`**: no servidor ele guarda a chave da Stripe e o repo é público.
 - **Cópia de segurança** de volumes e configs em `/root/backup-upkeep-2026-11-15/`. Snapshot da Hostinger não foi possível tirar (sem acesso ao painel).
+
+## 2026-11-19
+
+- **feat(seo)** — Play 1 da teardown de concorrentes (ADR 0019): `app/sitemap.ts` e `app/robots.ts` (antes os dois davam 404), nova página `/gongfu-tea-san-francisco` (copy em `content/gongfu.ts`) com link no rodapé. Âncoras do menu agora levam de volta à home a partir de outra página (`lib/smoothScroll.ts`, rodapé com `/#secao`). Teste: `app/seo.test.ts`.
